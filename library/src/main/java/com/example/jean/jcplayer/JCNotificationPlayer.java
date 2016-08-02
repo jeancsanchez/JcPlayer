@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.widget.RemoteViews;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+
 /**
  * Created by jean on 12/07/16.
  */
@@ -48,7 +50,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
                     .setSmallIcon(R.drawable.icon)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.icon))
                     .setContent(createNotificationPlayerView())
-                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, new Intent(context.getApplicationContext(), JCPlayerView.class), 0))
+                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, new Intent(context.getApplicationContext(), context.getClass()), 0))
                     .setCategory(Notification.CATEGORY_SOCIAL)
                     .build();
 
