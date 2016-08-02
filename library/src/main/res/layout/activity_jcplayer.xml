@@ -1,0 +1,87 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:layout_marginTop="?attr/actionBarSize"
+android:orientation="vertical"
+tools:context="com.example.jean.jcplayer.JCPlayerView">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/audioList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1">
+    </android.support.v7.widget.RecyclerView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@drawable/clean_bg_player">
+
+        <TextView
+            android:id="@+id/txt_duration"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="10sp"
+            android:layout_marginBottom="2dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:visibility="gone"
+            android:id="@+id/progress_bar_player"
+            android:layout_alignTop="@+id/btn_play"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/txt_current_music"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:maxLines="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+            android:background="@drawable/play"
+            android:layout_gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+
+        <ImageButton
+            android:id="@+id/btn_prev"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+            android:background="@drawable/avancar"
+            android:scaleX="-1"
+            android:layout_alignTop="@+id/btn_play"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="67dp" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+            android:background="@drawable/avancar"
+            android:layout_alignTop="@+id/btn_play"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="67dp" />
+    </RelativeLayout>
+</LinearLayout>

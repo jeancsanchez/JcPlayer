@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="15dp"
+    android:layout_weight="1"
+    android:layout_alignBottom="@+id/slider">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp">
+            <TextView
+                android:id="@+id/audio_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                android:layout_marginEnd="3dp"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/lock"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_column="2"
+                android:layout_gravity="clip_vertical"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>
