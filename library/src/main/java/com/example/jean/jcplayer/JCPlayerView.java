@@ -4,16 +4,16 @@ import android.content.Context;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.util.AttributeSet;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class JCPlayerView extends FrameLayout implements
+public class JCPlayerView extends LinearLayout implements
         JCPlayerService.JCPlayerServiceListener,
         View.OnClickListener {
 
@@ -29,25 +29,35 @@ public class JCPlayerView extends FrameLayout implements
     private AudioAdapter audioAdapter;
 
 
-    public JCPlayerView(Context context) {
+    public JCPlayerView(Context context){
         super(context);
-        View rootView= (View) LayoutInflater.from(context).inflate(R.layout.activity_jcplayer, null);
+        init();
+    }
 
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.audioList);
-        progressBarPlayer = (ProgressBar) rootView.findViewById(R.id.progress_bar_player);
-        btnNext = (ImageButton) rootView.findViewById(R.id.btn_next);
-        btnPrev = (ImageButton) rootView.findViewById(R.id.btn_prev);
-        btnPlay = (ImageButton) rootView.findViewById(R.id.btn_play);
-        txtDuration = (TextView) rootView.findViewById(R.id.txt_duration);
-        txtCurrentMusic = (TextView) rootView.findViewById(R.id.txt_current_music);
-        btnPlay.setTag(R.drawable.play);
+    public JCPlayerView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public JCPlayerView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    private void init(){
+        inflate(getContext(), R.layout.activity_jcplayer, this);
+
+        this.recyclerView = (RecyclerView) findViewById(R.id.audioList);
+        this.progressBarPlayer = (ProgressBar) findViewById(R.id.progress_bar_player);
+        this.btnNext = (ImageButton) findViewById(R.id.btn_next);
+        this.btnPrev = (ImageButton) findViewById(R.id.btn_prev);
+        this.btnPlay = (ImageButton) findViewById(R.id.btn_play);
+        this.txtDuration = (TextView) findViewById(R.id.txt_duration);
+        this.txtCurrentMusic = (TextView) findViewById(R.id.txt_current_music);
+        this.btnPlay.setTag(R.drawable.play);
 
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
         btnPlay.setOnClickListener(this);
-
-        /*test
-        loadAudios();*/
     }
 
 
