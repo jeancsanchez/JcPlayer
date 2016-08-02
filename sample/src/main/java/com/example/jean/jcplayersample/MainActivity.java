@@ -35,6 +35,15 @@ public class MainActivity extends Activity {
         audio2.setUrl("http://www.villopim.com.br/android/Music_02.mp3");
 
 
+        audioList.add(audio1);
+        audioList.add(audio2);
+
         player.initPlaylist(audioList);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        player.createNotification();
     }
 }
