@@ -19,11 +19,6 @@ android {
     }
 }
 
-//repositories{
-//    maven{
-//        url 'file:///home/jean/lib'
-//    }
-//}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -32,8 +27,6 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:24.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
-//    compile 'br.com.jean.jcplayer:jcplayer:0.0.1'
+    compile 'io.github.jeancsanchez.jcplayer:library:0.0.1'
     testCompile 'junit:junit:4.12'
-    compile project(path: ':library')
-    compile project(path: ':library')
 }

@@ -1,5 +1,28 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'jcplayer'
+
+    publishedGroupId = 'io.github.jeancsanchez.jcplayer'
+    libraryName = 'JCPlayer'
+    artifact = 'jcplayer'
+
+    libraryDescription = 'A simple way of make an audio player using custom playlists for Android applications.'
+
+    siteUrl = 'https://github.com/jeancsanchez/JCPlayer'
+    gitUrl = 'https://github.com/jeancsanchez/JCPlayer.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'jeancsanchez'
+    developerName = 'Jean Carlos'
+    developerEmail = 'jeancs.patricio@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
 
 android {
     compileSdkVersion 24
@@ -18,19 +41,6 @@ android {
     }
 }
 
-uploadArchives{
-    repositories{
-        mavenDeployer{
-            repository(url:"file:///home/jean/lib")
-
-            pom.groupId = GROUP
-            pom.artifactId = POM_ARTIFACT_ID
-            pom.version = VERSION_NAME
-        }
-    }
-}
-task install(dependsOn: uploadArchives)
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -41,3 +51,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     testCompile 'junit:junit:4.12'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
