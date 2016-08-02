@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
+
 public class JCPlayerNotificationReceiver extends BroadcastReceiver {
     public JCPlayerNotificationReceiver() {
     }
@@ -34,10 +36,10 @@ public class JCPlayerNotificationReceiver extends BroadcastReceiver {
             case JCNotificationPlayer.NEXT:
                 try {
                     jcAudioPlayer.nextAudio();
-                } catch (IllegalAccessException e) {
+                } catch (AudioListNullPointer e) {
                     try {
                         jcAudioPlayer.continueAudio();
-                    } catch (IllegalAccessException e1) {
+                    } catch (AudioListNullPointer e1) {
                         e1.printStackTrace();
                     }
                 }
@@ -49,7 +51,7 @@ public class JCPlayerNotificationReceiver extends BroadcastReceiver {
                 } catch (Exception e) {
                     try {
                         jcAudioPlayer.continueAudio();
-                    } catch (IllegalAccessException e1) {
+                    } catch (AudioListNullPointer e1) {
                         e1.printStackTrace();
                     }
                 }

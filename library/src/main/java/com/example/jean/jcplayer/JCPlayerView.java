@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
+
 import java.util.List;
 
 public class JCPlayerView extends LinearLayout implements
@@ -117,8 +119,9 @@ public class JCPlayerView extends LinearLayout implements
         progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
         try {
             jcAudioPlayer.playAudio(audio);
-        }catch (IllegalAccessException e) {
+        }catch (AudioListNullPointer e) {
             progressBarPlayer.setVisibility(ProgressBar.GONE);
+            e.printStackTrace();
         }
     }
 
@@ -126,16 +129,18 @@ public class JCPlayerView extends LinearLayout implements
         progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
         try {
             jcAudioPlayer.nextAudio();
-        }catch (IllegalAccessException e){
+        }catch (AudioListNullPointer e){
             progressBarPlayer.setVisibility(ProgressBar.GONE);
+            e.printStackTrace();
         }
     }
 
     private void continueAudio(){
         try {
             jcAudioPlayer.continueAudio();
-        } catch (IllegalAccessException e) {
+        } catch (AudioListNullPointer e) {
             progressBarPlayer.setVisibility(ProgressBar.GONE);
+            e.printStackTrace();
         }
     }
 
@@ -147,8 +152,9 @@ public class JCPlayerView extends LinearLayout implements
         progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
         try {
             jcAudioPlayer.previousAudio();
-        } catch (IllegalAccessException e) {
+        } catch (AudioListNullPointer e) {
             progressBarPlayer.setVisibility(ProgressBar.GONE);
+            e.printStackTrace();
         }
     }
 

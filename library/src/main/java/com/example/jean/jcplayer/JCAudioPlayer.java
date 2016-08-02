@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -46,7 +48,10 @@ public class JCAudioPlayer{
         return instance;
     }
 
-    public void playAudio(Audio audio) throws IllegalAccessException {
+    public void playAudio(Audio audio) throws AudioListNullPointer {
+        if(audioList == null || audioList.size() == 0)
+            throw  new AudioListNullPointer();
+        else {
             if (currentAudio == null)
                 currentAudio = audioList.get(0);
             else
@@ -61,44 +66,55 @@ public class JCAudioPlayer{
                 playing = true;
                 paused = false;
             }
+        }
     }
 
-    public void nextAudio() throws IllegalAccessException {
-        if(currentAudio != null) {
-            try {
-                Audio nextAudio = audioList.get(currentPositionList + position);
-                this.currentAudio = nextAudio;
-                jcPlayerService.stop();
-                jcPlayerService.play(nextAudio);
+    public void nextAudio() throws AudioListNullPointer {
+        if(audioList == null || audioList.size() == 0)
+            throw new AudioListNullPointer();
 
-            }catch (IndexOutOfBoundsException e){
-                playAudio(audioList.get(0));
-                e.printStackTrace();
+        else {
+            if (currentAudio != null) {
+                try {
+                    Audio nextAudio = audioList.get(currentPositionList + position);
+                    this.currentAudio = nextAudio;
+                    jcPlayerService.stop();
+                    jcPlayerService.play(nextAudio);
+
+                } catch (IndexOutOfBoundsException e) {
+                    playAudio(audioList.get(0));
+                    e.printStackTrace();
+                }
             }
-        }
 
-        updatePositionAudioList();
-        playing = true;
-        paused = false;
+            updatePositionAudioList();
+            playing = true;
+            paused = false;
+        }
     }
 
-    public void previousAudio() throws IllegalAccessException {
-        if(currentAudio != null) {
-            try {
-                Audio previousAudio = audioList.get(currentPositionList - position);
-                this.currentAudio = previousAudio;
-                jcPlayerService.stop();
-                jcPlayerService.play(previousAudio);
+    public void previousAudio() throws AudioListNullPointer {
+        if(audioList == null || audioList.size() == 0)
+            throw new AudioListNullPointer();
 
-            }catch (IndexOutOfBoundsException e) {
-                playAudio(audioList.get(0));
-                e.printStackTrace();
+        else {
+            if (currentAudio != null) {
+                try {
+                    Audio previousAudio = audioList.get(currentPositionList - position);
+                    this.currentAudio = previousAudio;
+                    jcPlayerService.stop();
+                    jcPlayerService.play(previousAudio);
+
+                } catch (IndexOutOfBoundsException e) {
+                    playAudio(audioList.get(0));
+                    e.printStackTrace();
+                }
             }
-        }
 
-        updatePositionAudioList();
-        playing = true;
-        paused = false;
+            updatePositionAudioList();
+            playing = true;
+            paused = false;
+        }
     }
 
     public void pauseAudio() {
@@ -107,20 +123,23 @@ public class JCAudioPlayer{
         playing = false;
     }
 
-    public void continueAudio() throws IllegalAccessException {
-        if(currentAudio == null)
-            currentAudio = audioList.get(0);
-        playAudio(currentAudio);
-        playing = true;
-        paused = false;
+    public void continueAudio() throws AudioListNullPointer {
+        if(audioList == null || audioList.size() == 0)
+            throw new AudioListNullPointer();
+
+        else {
+            if (currentAudio == null)
+                currentAudio = audioList.get(0);
+            playAudio(currentAudio);
+            playing = true;
+            paused = false;
+        }
     }
 
     public void stop(){
-        if(jcPlayerService != null) {
-  /*          if(mBound)
-                context.unbindService(mConnection);*/
+        if(jcPlayerService != null)
             jcPlayerService.destroy();
-        }
+
 
         if(jcNotificationPlayer != null)
             jcNotificationPlayer.destroy();
