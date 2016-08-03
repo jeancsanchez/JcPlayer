@@ -6,14 +6,11 @@ import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.SeekBar;
 
 import java.io.IOException;
 
 public class JCPlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
-        SeekBar.OnSeekBarChangeListener,
-        MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnBufferingUpdateListener,
         MediaPlayer.OnErrorListener{
@@ -108,7 +105,6 @@ public class JCPlayerService extends Service implements
                 mediaPlayer.setOnPreparedListener(this);
                 mediaPlayer.setOnBufferingUpdateListener(this);
                 mediaPlayer.setOnCompletionListener(this);
-                mediaPlayer.setOnSeekCompleteListener(this);
                 mediaPlayer.setOnErrorListener(this);
 
             } else if (isPlaying) {
@@ -204,25 +200,5 @@ public class JCPlayerService extends Service implements
             notificationListener.updateTitle(currentAudio.getTitle());
             notificationListener.onPreparedAudio();
         }
-    }
-
-    @Override
-    public void onSeekComplete(MediaPlayer mediaPlayer) {
-
-    }
-
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-    }
-
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-
     }
 }
