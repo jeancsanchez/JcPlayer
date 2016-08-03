@@ -46,7 +46,7 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     private void init(){
-        inflate(getContext(), R.layout.activity_jcplayer, this);
+        inflate(getContext(), R.layout.view_jcplayer, this);
 
         this.recyclerView = (RecyclerView) findViewById(R.id.audioList);
         this.progressBarPlayer = (ProgressBar) findViewById(R.id.progress_bar_player);
@@ -188,24 +188,23 @@ public class JCPlayerView extends LinearLayout implements
     public void updateTime(String time) {
         final String mTime = time;
 
-        new Runnable() {
-                @Override
-                public void run() {
-                    txtDuration.setText(mTime);
-                }
-            };
+        txtDuration.post(new Runnable() {
+            @Override
+            public void run() {
+                txtDuration.setText(mTime);
+            }
+        });
     }
 
     @Override
     public void updateTitle(String title) {
         final String mTitle = title;
-
-        new Runnable() {
+        txtCurrentMusic.post(new Runnable() {
             @Override
             public void run() {
                 txtCurrentMusic.setText(mTitle);
             }
-        };
+        });
     }
 
     public void createNotification(){
