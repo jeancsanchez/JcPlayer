@@ -47,3 +47,8 @@ Init the playlist
 ```java
 player.initPlaylist(playList, MainActivity.this);
 ```
+
+Call the notification player where you want.
+```java
+player.createNotification();
+```
