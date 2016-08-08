@@ -43,12 +43,12 @@ playList.add(audio1);
 playList.add(audio2);
 ```
 
-##Init the playlist
+###Init the playlist
 ```java
 player.initPlaylist(playList, MainActivity.this);
 ```
 
-##Call the notification player where you want.
+###Call the notification player where you want.
 ```java
 player.createNotification();
 ```
