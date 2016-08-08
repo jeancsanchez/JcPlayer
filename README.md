@@ -45,5 +45,5 @@ playList.add(audio2);
 
 Init the playlist
 ```
-player.initPlaylist(audioList, MainActivity.this);
+player.initPlaylist(playList, MainActivity.this);
 ```
