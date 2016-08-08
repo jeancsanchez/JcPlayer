@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
         audioList.add(audio1);
         audioList.add(audio2);
 
-        player.initPlaylist(audioList);
+        player.initPlaylist(audioList, this);
     }
 
     @Override

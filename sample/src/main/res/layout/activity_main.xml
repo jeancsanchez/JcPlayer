@@ -10,6 +10,6 @@
     android:id="@+id/jcplayer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
 </com.example.jean.jcplayer.JCPlayerView>
+
 </android.support.constraint.ConstraintLayout>

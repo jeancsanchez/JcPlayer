@@ -63,9 +63,9 @@ public class JCPlayerView extends LinearLayout implements
     }
 
 
-    public void initPlaylist(List<Audio> audioList){
+    public void initPlaylist(List<Audio> audioList, Context context){
         this.audioList = audioList;
-        jcAudioPlayer = new JCAudioPlayer(getContext(), audioList, JCPlayerView.this);
+        jcAudioPlayer = new JCAudioPlayer(context, audioList, JCPlayerView.this);
         adapterSetup();
     }
 
