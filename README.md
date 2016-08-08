@@ -3,7 +3,7 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 
 
 #Gradle Dependency
-```
+```Gradle
 dependencies {
     // ... other dependencies
     compile 'io.github.jeancsanchez.jcplayer:jcplayer:0.0.2'
@@ -13,7 +13,7 @@ dependencies {
 
 #Getting Started
 You only need  a JCPlayerView on your Layout Activity. All the controls and everything else are created by the player view itself.
-```
+```xml
 <com.example.jean.jcplayer.JCPlayerView
     android:id="@+id/jcplayer"
     android:layout_width="match_parent"
@@ -23,7 +23,7 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
 
 #Code Setup
 Create a list of Audio objects and set the values to it.
-```
+```Java
 player = (JCPlayerView) findViewById(R.id.jcplayer);
 playList = new ArrayList<>();
 
@@ -44,6 +44,6 @@ playList.add(audio2);
 ```
 
 Init the playlist
-```
+```java
 player.initPlaylist(playList, MainActivity.this);
 ```
