@@ -1,7 +1,6 @@
 package com.example.jean.jcplayer;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +24,7 @@ public class JCPlayerView extends LinearLayout implements
     private ImageButton btnNext;
     private ImageButton btnPrev;
     private ImageButton btnPlay;
-    private List<Audio> audioList;
+    private List<Audio> playlist;
     private ProgressBar progressBarPlayer;
     private RecyclerView recyclerView;
     private JCAudioPlayer jcAudioPlayer;
@@ -64,9 +63,14 @@ public class JCPlayerView extends LinearLayout implements
     }
 
 
-    public void initPlaylist(List<Audio> audioList, Context context){
-        this.audioList = audioList;
-        jcAudioPlayer = new JCAudioPlayer(context, audioList, JCPlayerView.this);
+    /**
+     * Initialize the playlist and controls.
+     * @param playlist List of the Audio objects that you want play
+     * @param context Context of the your application
+     */
+    public void initPlaylist(List<Audio> playlist, Context context){
+        this.playlist = playlist;
+        jcAudioPlayer = new JCAudioPlayer(context, playlist, JCPlayerView.this);
         adapterSetup();
     }
 
@@ -76,12 +80,12 @@ public class JCPlayerView extends LinearLayout implements
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(audioAdapter);
-        audioAdapter.setupItems(audioList);
+        audioAdapter.setupItems(playlist);
     }
 
     @Override
     public void onClick(View view) {
-        if(audioList != null)
+        if(playlist != null)
             if(view.getId() ==  R.id.btn_play)
                 if(btnPlay.getTag().equals(R.drawable.pause))
                     pause();
@@ -187,6 +191,11 @@ public class JCPlayerView extends LinearLayout implements
         });
     }
 
+
+    /**
+     * Create a notification player with same playlist.
+     * @param iconResource Path of the icon.
+     */
     public void createNotification(int iconResource){
         if(jcAudioPlayer != null)
             jcAudioPlayer.createNewNotification(iconResource);
