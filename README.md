@@ -50,5 +50,5 @@ player.initPlaylist(playList, MainActivity.this);
 
 ###Call the notification player where you want.
 ```java
-player.createNotification();
+    player.createNotification(R.drawable.icon);
 ```
