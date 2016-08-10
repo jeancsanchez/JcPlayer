@@ -24,8 +24,8 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
 #Code Setup
 Create a list of Audio objects and set the values to it.
 ```Java
-player = (JCPlayerView) findViewById(R.id.jcplayer);
-playList = new ArrayList<>();
+JCPlayerView player = (JCPlayerView) findViewById(R.id.jcplayer);
+List<Audio> playList = new ArrayList<>();
 
 Audio audio1 = new Audio();
 audio1.setId(1);
