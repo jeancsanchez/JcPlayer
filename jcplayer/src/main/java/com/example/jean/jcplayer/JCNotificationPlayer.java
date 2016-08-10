@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
@@ -31,8 +32,6 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     private Context context;
     private String title;
     private String time  = "00:00";
-    private Notification notification;
-
 
     public JCNotificationPlayer(Context context){
         this.context = context;
@@ -45,12 +44,13 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            notification = new Notification.Builder(context)
+            Notification notification = new Notification.Builder(context)
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setSmallIcon(R.drawable.icon)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.icon))
                     .setContent(createNotificationPlayerView())
-                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, new Intent(context.getApplicationContext(), context.getClass()), 0))
+//                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID,
+//                            new Intent(context, context.getClass()), 0))
                     .setCategory(Notification.CATEGORY_SOCIAL)
                     .build();
 
