@@ -5,12 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 /**
  * Created by jean on 12/07/16.
@@ -32,13 +33,16 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     private Context context;
     private String title;
     private String time  = "00:00";
+    private int iconResource;
 
     public JCNotificationPlayer(Context context){
         this.context = context;
     }
 
-    public void createNotificationPlayer(String title){
+    public void createNotificationPlayer(String title, int iconResourceResource){
         this.title = title;
+        this.iconResource = iconResourceResource;
+
         JCAudioPlayer.getInstance().registerNotificationListener(this);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -46,8 +50,8 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
 
             Notification notification = new Notification.Builder(context)
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
-                    .setSmallIcon(R.drawable.icon)
-                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.icon))
+                    .setSmallIcon(iconResourceResource)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
                     .setContent(createNotificationPlayerView())
 //                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID,
 //                            new Intent(context, context.getClass()), 0))
@@ -56,6 +60,10 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
 
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
+    }
+
+    public void updateNotification(){
+        createNotificationPlayer(title, iconResource);
     }
 
     private RemoteViews createNotificationPlayerView(){
@@ -97,24 +105,24 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
 
     @Override
     public void onPaused() {
-        createNotificationPlayer(title);
+        createNotificationPlayer(title, iconResource);
     }
 
     @Override
     public void onPlaying() {
-        createNotificationPlayer(title);
+        createNotificationPlayer(title, iconResource);
     }
 
     @Override
     public void updateTime(String time) {
         this.time = time;
-        createNotificationPlayer(title);
+        createNotificationPlayer(title, iconResource);
     }
 
     @Override
     public void updateTitle(String title) {
         this.title = title;
-        createNotificationPlayer(title);
+        createNotificationPlayer(title, iconResource);
     }
 
     public void destroy(){

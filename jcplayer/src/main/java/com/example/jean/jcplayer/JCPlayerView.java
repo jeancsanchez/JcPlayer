@@ -1,6 +1,7 @@
 package com.example.jean.jcplayer;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -69,27 +70,6 @@ public class JCPlayerView extends LinearLayout implements
         adapterSetup();
     }
 
-
-//    private void loadAudios() {
-//        audioList = new ArrayList<>();
-//
-//        Audio audio1 = new Audio();
-//        audio1.setId(1);
-//        audio1.setPosition(1);
-//        audio1.setName("Track 1");
-//        audio1.setUrl("http://www.villopim.com.br/android/Music_01.mp3");
-//
-//        Audio audio2 = new Audio();
-//        audio2.setId(2);
-//        audio2.setPosition(2);
-//        audio2.setName("Track 2");
-//        audio2.setUrl("http://www.villopim.com.br/android/Music_02.mp3");
-//
-//        audioList.add(audio1);
-//        audioList.add(audio2);
-//
-////        jcAudioPlayer = new JCAudioPlayer(this, audioList, this);
-//    }
 
     protected void adapterSetup() {
         audioAdapter = new AudioAdapter(this);
@@ -207,8 +187,8 @@ public class JCPlayerView extends LinearLayout implements
         });
     }
 
-    public void createNotification(){
+    public void createNotification(int iconResource){
         if(jcAudioPlayer != null)
-            jcAudioPlayer.createNewNotification();
+            jcAudioPlayer.createNewNotification(iconResource);
     }
 }

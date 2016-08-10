@@ -22,7 +22,7 @@ public class JCPlayerNotificationReceiver extends BroadcastReceiver {
             case JCNotificationPlayer.PLAY:
                 try {
                     jcAudioPlayer.continueAudio();
-                    jcAudioPlayer.createNewNotification();
+                    jcAudioPlayer.updateNotification();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -30,7 +30,7 @@ public class JCPlayerNotificationReceiver extends BroadcastReceiver {
 
             case JCNotificationPlayer.PAUSE:
                 jcAudioPlayer.pauseAudio();
-                jcAudioPlayer.createNewNotification();
+                jcAudioPlayer.updateNotification();
                 break;
 
             case JCNotificationPlayer.NEXT:

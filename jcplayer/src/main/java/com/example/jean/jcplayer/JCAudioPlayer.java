@@ -148,9 +148,13 @@ public class JCAudioPlayer{
         playing = true;
     }
 
-    public void createNewNotification(){
+    public void createNewNotification(int iconResource){
         if(currentAudio != null)
-            jcNotificationPlayer.createNotificationPlayer(currentAudio.getTitle());
+            jcNotificationPlayer.createNotificationPlayer(currentAudio.getTitle(), iconResource);
+    }
+
+    public void updateNotification(){
+        jcNotificationPlayer.updateNotification();
     }
 
 
