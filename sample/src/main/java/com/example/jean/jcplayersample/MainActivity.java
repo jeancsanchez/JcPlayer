@@ -1,18 +1,11 @@
 package com.example.jean.jcplayersample;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 
 import com.example.jean.jcplayer.Audio;
 import com.example.jean.jcplayer.JCPlayerView;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +44,6 @@ public class MainActivity extends Activity {
     @Override
     public void onPause(){
         super.onPause();
-        player.createNotification(R.drawable.icon);
+        player.createNotification(R.drawable.myicon);
     }
 }

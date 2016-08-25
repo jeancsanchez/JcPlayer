@@ -20,8 +20,6 @@ public class JCPlayerView extends LinearLayout implements
         View.OnClickListener {
 
     private TextView txtCurrentMusic;
-    private TextView txtDuration;
-    private ImageButton btnNext;
     private ImageButton btnPrev;
     private ImageButton btnPlay;
     private List<Audio> playlist;
@@ -29,6 +27,8 @@ public class JCPlayerView extends LinearLayout implements
     private RecyclerView recyclerView;
     private JCAudioPlayer jcAudioPlayer;
     private AudioAdapter audioAdapter;
+    private TextView txtDuration;
+    private ImageButton btnNext;
 
 
     public JCPlayerView(Context context){
@@ -55,7 +55,7 @@ public class JCPlayerView extends LinearLayout implements
         this.btnPlay = (ImageButton) findViewById(R.id.btn_play);
         this.txtDuration = (TextView) findViewById(R.id.txt_duration);
         this.txtCurrentMusic = (TextView) findViewById(R.id.txt_current_music);
-        this.btnPlay.setTag(R.drawable.play);
+        this.btnPlay.setTag(R.drawable.ic_play_black);
 
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
@@ -87,7 +87,7 @@ public class JCPlayerView extends LinearLayout implements
     public void onClick(View view) {
         if(playlist != null)
             if(view.getId() ==  R.id.btn_play)
-                if(btnPlay.getTag().equals(R.drawable.pause))
+                if(btnPlay.getTag().equals(R.drawable.ic_pause_black))
                     pause();
                 else
                     continueAudio();
@@ -158,14 +158,14 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onPaused() {
-        btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.play, null));
-        btnPlay.setTag(R.drawable.play);
+        btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_play_black, null));
+        btnPlay.setTag(R.drawable.ic_play_black);
     }
 
     @Override
     public void onPlaying() {
-        btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.pause, null));
-        btnPlay.setTag(R.drawable.pause);
+        btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_pause_black, null));
+        btnPlay.setTag(R.drawable.ic_pause_black);
     }
 
     @Override

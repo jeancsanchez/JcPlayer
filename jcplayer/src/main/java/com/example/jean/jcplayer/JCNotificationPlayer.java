@@ -5,11 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.widget.RemoteViews;
 
@@ -42,6 +38,8 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     public void createNotificationPlayer(String title, int iconResourceResource){
         this.title = title;
         this.iconResource = iconResourceResource;
+        Intent openUi = new Intent(context, context.getClass());
+        openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         JCAudioPlayer.getInstance().registerNotificationListener(this);
 
@@ -53,10 +51,23 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
                     .setSmallIcon(iconResourceResource)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
                     .setContent(createNotificationPlayerView())
-//                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID,
-//                            new Intent(context, context.getClass()), 0))
+                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setCategory(Notification.CATEGORY_SOCIAL)
                     .build();
+
+            /*
+
+                private PendingIntent createContentIntent(MediaDescriptionCompat description) {
+                    Intent openUI = new Intent(mService, MusicPlayerActivity.class);
+                    openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    openUI.putExtra(MusicPlayerActivity.EXTRA_START_FULLSCREEN, true);
+                    if (description != null) {
+                        openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+                    }
+                    return PendingIntent.getActivity(mService, REQUEST_CODE, openUI,
+                            PendingIntent.FLAG_CANCEL_CURRENT);
+                }
+             */
 
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
@@ -70,15 +81,16 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
         RemoteViews remoteView;
 
         if (JCAudioPlayer.getInstance().isPaused()){
-            remoteView = new RemoteViews(context.getPackageName(), R.layout.player_notification_pause);
+            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_play);
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID));
         }else {
-            remoteView = new RemoteViews(context.getPackageName(), R.layout.player_notification_play);
+            remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_pause);
             remoteView.setOnClickPendingIntent(R.id.btn_pause_notification, buildPendingIntent(PAUSE, PAUSE_ID));
         }
 
         remoteView.setTextViewText(R.id.txt_current_music_notification, title);
         remoteView.setTextViewText(R.id.txt_duration_notification, time);
+        remoteView.setImageViewResource(R.id.icon_player,iconResource);
         remoteView.setOnClickPendingIntent(R.id.btn_next_notification, buildPendingIntent(NEXT, NEXT_ID));
         remoteView.setOnClickPendingIntent(R.id.btn_prev_notification, buildPendingIntent(PREVIOUS, PREVIOUS_ID));
 

@@ -1,0 +1,75 @@
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/icon_player"
+        android:layout_width="@dimen/icon_with"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:background="@drawable/ic_default" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="5dp">
+
+        <TextView
+            android:id="@+id/txt_duration_notification"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/text_size"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
+            android:maxLines="1"
+            android:text="@string/text_test"/>
+
+        <ImageButton
+            android:id="@+id/btn_play_notification"
+            android:layout_width="@dimen/touch_default"
+            android:layout_height="@dimen/touch_default"
+            android:background="@drawable/ic_play_black"
+            android:layout_gravity="center"
+            android:layout_alignTop="@+id/btn_prev_notification"
+            android:layout_centerHorizontal="true" />
+
+        <ImageButton
+            android:id="@+id/btn_prev_notification"
+            android:layout_width="@dimen/touch_default"
+            android:layout_height="@dimen/touch_default"
+            android:background="@drawable/ic_previous_black"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/txt_current_music_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size"
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:maxLines="2"
+            android:focusable="true"
+            android:textAlignment="center"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
+            android:layout_marginTop="5dp"
+            android:textColor="@android:color/black"
+            android:text="@string/text_test"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageButton
+            android:id="@+id/btn_next_notification"
+            android:layout_width="@dimen/touch_default"
+            android:layout_height="@dimen/touch_default"
+            android:background="@drawable/ic_next_black"
+            android:layout_alignTop="@+id/btn_play_notification"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+</LinearLayout>
