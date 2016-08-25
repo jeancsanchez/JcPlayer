@@ -31,15 +31,6 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
             android:layout_centerHorizontal="true"
             android:text="@string/text_test"/>
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="23dp"
-            android:layout_height="23dp"
-            android:visibility="gone"
-            android:id="@+id/progress_bar_player"
-            android:layout_alignTop="@+id/btn_play"
-            android:layout_centerHorizontal="true" />
-
         <TextView
             android:id="@+id/txt_current_music"
             android:layout_width="match_parent"
@@ -84,5 +75,14 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
             android:layout_alignTop="@+id/btn_play"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="50dp" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:id="@+id/progress_bar_player"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 </LinearLayout>
