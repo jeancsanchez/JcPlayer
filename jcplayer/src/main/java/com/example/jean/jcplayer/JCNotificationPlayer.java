@@ -106,7 +106,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     }
 
     @Override
-    public void onPreparedAudio() {
+    public void onPreparedAudio(String audioName, int duration) {
 
     }
 
@@ -122,7 +122,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
 
     @Override
     public void onContinueAudio() {
-        
+
     }
 
     @Override
@@ -131,7 +131,12 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     }
 
     @Override
-    public void updateTime(String time) {
+    public void onTimeChanged(long currentTime) {
+
+    }
+
+    @Override
+    public void updateTextTime(String time) {
         this.time = time;
         createNotificationPlayer(title, iconResource);
     }

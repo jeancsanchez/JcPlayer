@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class JCPlayerView extends LinearLayout implements
         JCPlayerService.JCPlayerServiceListener,
-        View.OnClickListener {
+        View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     private TextView txtCurrentMusic;
     private ImageButton btnPrev;
@@ -29,6 +30,7 @@ public class JCPlayerView extends LinearLayout implements
     private AudioAdapter audioAdapter;
     private TextView txtDuration;
     private ImageButton btnNext;
+    private SeekBar seekBar;
 
 
     public JCPlayerView(Context context){
@@ -55,11 +57,13 @@ public class JCPlayerView extends LinearLayout implements
         this.btnPlay = (ImageButton) findViewById(R.id.btn_play);
         this.txtDuration = (TextView) findViewById(R.id.txt_duration);
         this.txtCurrentMusic = (TextView) findViewById(R.id.txt_current_music);
+        this.seekBar = (SeekBar) findViewById(R.id.seek_bar);
         this.btnPlay.setTag(R.drawable.ic_play_black);
 
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
         btnPlay.setOnClickListener(this);
+        seekBar.setOnSeekBarChangeListener(this);
     }
 
 
@@ -144,12 +148,16 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     @Override
-    public void onPreparedAudio() {
+    public void onPreparedAudio(String audioName, int duration) {
         progressBarPlayer.setVisibility(ProgressBar.GONE);
+        seekBar.setMax(duration);
     }
 
     @Override
     public void onCompletedAudio() {
+        seekBar.setProgress(0);
+        seekBar.setMax(0);
+
         try {
             jcAudioPlayer.nextAudio();
         } catch (Exception e) {
@@ -175,7 +183,13 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     @Override
-    public void updateTime(String time) {
+    public void onTimeChanged(long currentTime) {
+        int time = (int) currentTime;
+        seekBar.setProgress(time);
+    }
+
+    @Override
+    public void updateTextTime(String time) {
         final String mTime = time;
 
         txtDuration.post(new Runnable() {
@@ -205,5 +219,21 @@ public class JCPlayerView extends LinearLayout implements
     public void createNotification(int iconResource){
         if(jcAudioPlayer != null)
             jcAudioPlayer.createNewNotification(iconResource);
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+        if(fromUser)
+            jcAudioPlayer.seekTo(i);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }

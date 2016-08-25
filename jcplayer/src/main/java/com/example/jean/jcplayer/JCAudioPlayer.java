@@ -157,6 +157,10 @@ public class JCAudioPlayer{
         jcNotificationPlayer.updateNotification();
     }
 
+    public void seekTo(int time){
+        jcPlayerService.seekTo(time);
+    }
+
 
     private void updatePositionAudioList() {
         for(int i = 0; i < audioList.size(); i ++){

@@ -38,12 +38,13 @@ public class JCPlayerService extends Service implements
     }
 
     public interface JCPlayerServiceListener{
-        void onPreparedAudio();
+        void onPreparedAudio(String audioName, int duration);
         void onCompletedAudio();
         void onPaused();
         void onContinueAudio();
         void onPlaying();
-        void updateTime(String time);
+        void onTimeChanged(long currentTime);
+        void updateTextTime(String time);
         void updateTitle(String title);
     }
 
@@ -130,6 +131,10 @@ public class JCPlayerService extends Service implements
             notificationListener.onPlaying();
     }
 
+    public void seekTo(int time){
+        mediaPlayer.seekTo(time);
+    }
+
     private void updateTimeAudio() {
         new Thread() {
             public void run() {
@@ -166,9 +171,12 @@ public class JCPlayerService extends Service implements
 
             String time = sCurrentTime + " /" + sDuration;
 
-            jcPlayerServiceListener.updateTime(time);
-            if (notificationListener != null)
-                notificationListener.updateTime(time);
+            jcPlayerServiceListener.updateTextTime(time);
+            jcPlayerServiceListener.onTimeChanged(currentTime);
+            if (notificationListener != null){
+                notificationListener.updateTextTime(time);
+                jcPlayerServiceListener.onTimeChanged(currentTime);
+            }
     }
 
     @Override
@@ -198,11 +206,11 @@ public class JCPlayerService extends Service implements
         updateTimeAudio();
 
         jcPlayerServiceListener.updateTitle(currentAudio.getTitle());
-        jcPlayerServiceListener.onPreparedAudio();
+        jcPlayerServiceListener.onPreparedAudio(currentAudio.getTitle(), mediaPlayer.getDuration());
 
         if(notificationListener != null) {
             notificationListener.updateTitle(currentAudio.getTitle());
-            notificationListener.onPreparedAudio();
+            notificationListener.onPreparedAudio(currentAudio.getTitle(), mediaPlayer.getDuration());
         }
     }
 }
