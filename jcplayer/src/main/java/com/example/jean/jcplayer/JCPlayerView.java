@@ -120,6 +120,7 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     private void continueAudio(){
+        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
         try {
             jcAudioPlayer.continueAudio();
         } catch (AudioListNullPointer e) {
@@ -160,6 +161,11 @@ public class JCPlayerView extends LinearLayout implements
     public void onPaused() {
         btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_play_black, null));
         btnPlay.setTag(R.drawable.ic_play_black);
+    }
+
+    @Override
+    public void onContinueAudio() {
+        progressBarPlayer.setVisibility(ProgressBar.GONE);
     }
 
     @Override

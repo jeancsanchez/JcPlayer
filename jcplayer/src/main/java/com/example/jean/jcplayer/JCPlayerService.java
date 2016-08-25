@@ -38,12 +38,13 @@ public class JCPlayerService extends Service implements
     }
 
     public interface JCPlayerServiceListener{
-        public void onPreparedAudio();
-        public void onCompletedAudio();
-        public void onPaused();
-        public void onPlaying();
-        public void updateTime(String time);
-        public void updateTitle(String title);
+        void onPreparedAudio();
+        void onCompletedAudio();
+        void onPaused();
+        void onContinueAudio();
+        void onPlaying();
+        void updateTime(String time);
+        void updateTitle(String title);
     }
 
     @Nullable
@@ -114,6 +115,9 @@ public class JCPlayerService extends Service implements
             } else {
                 mediaPlayer.start();
                 isPlaying = true;
+
+                if(jcPlayerServiceListener != null)
+                    jcPlayerServiceListener.onContinueAudio();
             }
         }catch (IOException e){
             e.printStackTrace();

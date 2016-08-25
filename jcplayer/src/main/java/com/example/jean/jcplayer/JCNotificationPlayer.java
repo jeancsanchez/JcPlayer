@@ -121,6 +121,11 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     }
 
     @Override
+    public void onContinueAudio() {
+        
+    }
+
+    @Override
     public void onPlaying() {
         createNotificationPlayer(title, iconResource);
     }
