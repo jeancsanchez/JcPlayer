@@ -131,7 +131,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     }
 
     @Override
-    public void onTimeChanged(int minutes, int seconds) {
+    public void onTimeChanged(long currentTime) {
 
     }
 

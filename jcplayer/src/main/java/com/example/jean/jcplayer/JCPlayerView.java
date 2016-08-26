@@ -151,6 +151,8 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onPreparedAudio(String audioName, int duration) {
+        progressBarPlayer.setVisibility(ProgressBar.GONE);
+
         long aux = duration / 1000;
         int minute = (int) (aux / 60);
         int second = (int) (aux % 60);
@@ -162,9 +164,7 @@ public class JCPlayerView extends LinearLayout implements
                  // Seconds
                  (second < 10 ? "0"+second : second+"");
 
-        progressBarPlayer.setVisibility(ProgressBar.GONE);
         seekBar.setMax(duration);
-
         txtDuration.post(new Runnable() {
             @Override
             public void run() {
@@ -176,7 +176,9 @@ public class JCPlayerView extends LinearLayout implements
     @Override
     public void onCompletedAudio() {
         seekBar.setProgress(0);
-        seekBar.setMax(0);
+        txtCurrentMusic.setText("");
+        txtCurrentDuration.setText("00:00");
+        txtCurrentDuration.setText("00:00");
 
         try {
             jcAudioPlayer.nextAudio();
@@ -203,11 +205,14 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     @Override
-    public void onTimeChanged(int minutes, int seconds) {
+    public void onTimeChanged(long currentPosition) {
+        long aux = currentPosition / 1000;
+        int minutes = (int) (aux / 60);
+        int seconds = (int) (aux % 60);
         final String sMinutes = minutes < 10 ? "0"+minutes : minutes+"";
         final String sSeconds = seconds < 10 ? "0"+seconds : seconds+"";
-        seekBar.setProgress(minutes + seconds);
 
+        seekBar.setProgress((int) currentPosition);
         txtCurrentDuration.post(new Runnable() {
             @Override
             public void run() {

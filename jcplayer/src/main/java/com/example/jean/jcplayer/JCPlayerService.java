@@ -43,7 +43,7 @@ public class JCPlayerService extends Service implements
         void onPaused();
         void onContinueAudio();
         void onPlaying();
-        void onTimeChanged(int minutes, int seconds);
+        void onTimeChanged(long currentTime);
         void updateTime(String time);
         void updateTitle(String title);
     }
@@ -140,15 +140,11 @@ public class JCPlayerService extends Service implements
             public void run() {
                 while (isPlaying){
                     try {
-                        long aux = mediaPlayer.getCurrentPosition() / 1000;
-                        int minutes = (int) (aux / 60);
-                        int seconds = (int) (aux % 60);
-
                         //            jcPlayerServiceListener.updateTime(time);
-                        jcPlayerServiceListener.onTimeChanged(minutes, seconds);
+                        jcPlayerServiceListener.onTimeChanged(mediaPlayer.getCurrentPosition());
                         if (notificationListener != null){
                         //                notificationListener.updateTime(time);
-                            jcPlayerServiceListener.onTimeChanged(minutes, seconds);
+                            jcPlayerServiceListener.onTimeChanged(mediaPlayer.getCurrentPosition());
                         }
 
                         Thread.sleep(1000);
