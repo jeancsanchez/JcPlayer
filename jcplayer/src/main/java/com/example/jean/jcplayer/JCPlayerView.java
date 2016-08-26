@@ -31,6 +31,7 @@ public class JCPlayerView extends LinearLayout implements
     private TextView txtDuration;
     private ImageButton btnNext;
     private SeekBar seekBar;
+    private TextView txtCurrentDuration;
 
 
     public JCPlayerView(Context context){
@@ -55,7 +56,8 @@ public class JCPlayerView extends LinearLayout implements
         this.btnNext = (ImageButton) findViewById(R.id.btn_next);
         this.btnPrev = (ImageButton) findViewById(R.id.btn_prev);
         this.btnPlay = (ImageButton) findViewById(R.id.btn_play);
-        this.txtDuration = (TextView) findViewById(R.id.txt_duration);
+        this.txtDuration = (TextView) findViewById(R.id.txt_total_duration);
+        this.txtCurrentDuration = (TextView) findViewById(R.id.txt_current_duration);
         this.txtCurrentMusic = (TextView) findViewById(R.id.txt_current_music);
         this.seekBar = (SeekBar) findViewById(R.id.seek_bar);
         this.btnPlay.setTag(R.drawable.ic_play_black);
@@ -149,8 +151,17 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onPreparedAudio(String audioName, int duration) {
+        final int mDuration = duration;
+
         progressBarPlayer.setVisibility(ProgressBar.GONE);
         seekBar.setMax(duration);
+
+        txtDuration.post(new Runnable() {
+            @Override
+            public void run() {
+                txtDuration.setText(String.valueOf(mDuration));
+            }
+        });
     }
 
     @Override
@@ -183,21 +194,22 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     @Override
-    public void onTimeChanged(long currentTime) {
-        int time = (int) currentTime;
-        seekBar.setProgress(time);
+    public void onTimeChanged(int minutes, int seconds) {
+        final String sMinutes = minutes < 10 ? "0"+minutes : minutes+"";
+        final String sSeconds = seconds < 10 ? "0"+seconds : seconds+"";
+        seekBar.setProgress(minutes + seconds);
+
+        txtCurrentDuration.post(new Runnable() {
+            @Override
+            public void run() {
+                txtCurrentDuration.setText(String.valueOf(sMinutes + ":" + sSeconds));
+            }
+        });
     }
 
     @Override
-    public void updateTextTime(String time) {
-        final String mTime = time;
+    public void updateTime(String time) {
 
-        txtDuration.post(new Runnable() {
-            @Override
-            public void run() {
-                txtDuration.setText(mTime);
-            }
-        });
     }
 
     @Override

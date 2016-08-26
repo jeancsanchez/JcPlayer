@@ -58,16 +58,6 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
                 android:text="00:00"/>
         </LinearLayout>
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="23dp"
-            android:layout_height="23dp"
-            android:id="@+id/progress_bar_player"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:visibility="gone"
-            android:layout_marginBottom="10dp" />
-
         <ImageButton
             android:id="@+id/btn_play"
             android:layout_width="@dimen/touch_default"
@@ -88,15 +78,25 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="5dp"/>
 
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:id="@+id/progress_bar_player"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="15dp"/>
+
         <ImageButton
             android:id="@+id/btn_prev"
             android:layout_width="@dimen/touch_default"
             android:layout_height="@dimen/touch_default"
             android:background="@drawable/ic_previous_black"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toEndOf="@+id/progress_bar_player" />
+            android:layout_marginBottom="5dp"/>
 
         <TextView
             android:id="@+id/txt_current_music"
@@ -106,15 +106,14 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
             android:marqueeRepeatLimit ="marquee_forever"
             android:maxLines="2"
             android:focusable="true"
+            android:layout_marginTop="5dp"
             android:focusableInTouchMode="true"
             android:ellipsize="marquee"
             android:scrollHorizontally="true"
-            android:text="fa\naf"
             android:gravity="center"
             android:textAlignment="center"
             android:textColor="@android:color/black"
-            android:layout_below="@+id/progress_bar_player"
-            android:layout_toEndOf="@+id/progress_bar_player"
-            android:layout_marginTop="10dp" />
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 </LinearLayout>

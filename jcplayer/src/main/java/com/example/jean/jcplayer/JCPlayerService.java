@@ -43,8 +43,8 @@ public class JCPlayerService extends Service implements
         void onPaused();
         void onContinueAudio();
         void onPlaying();
-        void onTimeChanged(long currentTime);
-        void updateTextTime(String time);
+        void onTimeChanged(int minutes, int seconds);
+        void updateTime(String time);
         void updateTitle(String title);
     }
 
@@ -140,8 +140,17 @@ public class JCPlayerService extends Service implements
             public void run() {
                 while (isPlaying){
                     try {
+                        long aux = mediaPlayer.getCurrentPosition() / 1000;
+                        int minutes = (int) (aux / 60);
+                        int seconds = (int) (aux % 60);
 
-                        updateTimeAudio(mediaPlayer.getDuration(), mediaPlayer.getCurrentPosition());
+                        //            jcPlayerServiceListener.updateTime(time);
+                        jcPlayerServiceListener.onTimeChanged(minutes, seconds);
+                        if (notificationListener != null){
+                        //                notificationListener.updateTime(time);
+                            jcPlayerServiceListener.onTimeChanged(minutes, seconds);
+                        }
+
                         Thread.sleep(1000);
                     }catch (IllegalStateException | InterruptedException | NullPointerException e) {
                         e.printStackTrace();
@@ -151,33 +160,6 @@ public class JCPlayerService extends Service implements
         }.start();
     }
 
-    private void updateTimeAudio(final long duration, final long currentTime){
-            long aux;
-            int minute, second;
-
-            // DURATION
-            aux = duration / 1000;
-            minute = (int) (aux / 60);
-            second = (int) (aux % 60);
-            String sDuration = minute < 10 ? "0"+minute : minute+"";
-            sDuration += ":" + (second < 10 ? "0"+second : second);
-
-            // CURRENT TIME
-            aux = currentTime / 1000;
-            minute = (int) (aux / 60);
-            second = (int) (aux % 60);
-            String sCurrentTime = minute < 10 ? "0"+minute : minute+"";
-            sCurrentTime += ":" + (second < 10 ? "0"+second : second);
-
-            String time = sCurrentTime + " /" + sDuration;
-
-            jcPlayerServiceListener.updateTextTime(time);
-            jcPlayerServiceListener.onTimeChanged(currentTime);
-            if (notificationListener != null){
-                notificationListener.updateTextTime(time);
-                jcPlayerServiceListener.onTimeChanged(currentTime);
-            }
-    }
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
