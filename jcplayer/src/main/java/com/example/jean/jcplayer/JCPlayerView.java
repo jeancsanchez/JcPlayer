@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -106,31 +107,34 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     public void playAudio(Audio audio){
-        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
+        showProgressBar();
         try {
             jcAudioPlayer.playAudio(audio);
         }catch (AudioListNullPointer e) {
-            progressBarPlayer.setVisibility(ProgressBar.GONE);
+            dismissProgressBar();
             e.printStackTrace();
         }
     }
 
     private void next(){
-        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
+        resetPlayerInfo();
+        showProgressBar();
+
         try {
             jcAudioPlayer.nextAudio();
         }catch (AudioListNullPointer e){
-            progressBarPlayer.setVisibility(ProgressBar.GONE);
+            dismissProgressBar();
             e.printStackTrace();
         }
     }
 
     private void continueAudio(){
-        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
+        showProgressBar();
+
         try {
             jcAudioPlayer.continueAudio();
         } catch (AudioListNullPointer e) {
-            progressBarPlayer.setVisibility(ProgressBar.GONE);
+            dismissProgressBar();
             e.printStackTrace();
         }
     }
@@ -140,18 +144,20 @@ public class JCPlayerView extends LinearLayout implements
     }
 
     private void previous(){
-        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
+        resetPlayerInfo();
+        showProgressBar();
+
         try {
             jcAudioPlayer.previousAudio();
         } catch (AudioListNullPointer e) {
-            progressBarPlayer.setVisibility(ProgressBar.GONE);
+            dismissProgressBar();
             e.printStackTrace();
         }
     }
 
     @Override
     public void onPreparedAudio(String audioName, int duration) {
-        progressBarPlayer.setVisibility(ProgressBar.GONE);
+        dismissProgressBar();
 
         long aux = duration / 1000;
         int minute = (int) (aux / 60);
@@ -175,11 +181,7 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onCompletedAudio() {
-        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
-        seekBar.setProgress(0);
-        txtCurrentMusic.setText("");
-        txtCurrentDuration.setText("00:00");
-        txtDuration.setText("00:00");
+        resetPlayerInfo();
 
         try {
             jcAudioPlayer.nextAudio();
@@ -187,6 +189,30 @@ public class JCPlayerView extends LinearLayout implements
             e.printStackTrace();
         }
     }
+
+
+    public void resetPlayerInfo(){
+        seekBar.setProgress(0);
+        txtCurrentMusic.setText("");
+        txtCurrentDuration.setText("00:00");
+        txtDuration.setText("00:00");
+    }
+
+    public void showProgressBar(){
+        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
+        btnPlay.setVisibility(Button.GONE);
+        btnNext.setClickable(false);
+        btnPrev.setClickable(false);
+
+    }
+
+    public void dismissProgressBar(){
+        progressBarPlayer.setVisibility(ProgressBar.GONE);
+        btnPlay.setVisibility(Button.VISIBLE);
+        btnNext.setClickable(true);
+        btnPrev.setClickable(true);
+    }
+
 
     @Override
     public void onPaused() {
@@ -196,7 +222,7 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onContinueAudio() {
-        progressBarPlayer.setVisibility(ProgressBar.GONE);
+        dismissProgressBar();
     }
 
     @Override
@@ -256,11 +282,11 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-
+        showProgressBar();
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-
+        dismissProgressBar();
     }
 }
