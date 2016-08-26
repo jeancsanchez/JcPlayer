@@ -175,10 +175,11 @@ public class JCPlayerView extends LinearLayout implements
 
     @Override
     public void onCompletedAudio() {
+        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
         seekBar.setProgress(0);
         txtCurrentMusic.setText("");
         txtCurrentDuration.setText("00:00");
-        txtCurrentDuration.setText("00:00");
+        txtDuration.setText("00:00");
 
         try {
             jcAudioPlayer.nextAudio();
