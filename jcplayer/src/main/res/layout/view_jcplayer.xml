@@ -20,37 +20,14 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
         android:layout_height="@dimen/player_height"
         android:id="@+id/relativeLayout">
 
-        <ImageButton
-            android:id="@+id/btn_play"
-            android:layout_width="@dimen/touch_default"
-            android:layout_height="@dimen/touch_default"
-            android:background="@drawable/ic_play_black"
-            android:layout_gravity="center"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
-        <TextView
-            android:id="@+id/txt_current_music"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size"
-            android:marqueeRepeatLimit ="marquee_forever"
-            android:maxLines="1"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:ellipsize="marquee"
-            android:scrollHorizontally="true"
-            android:text="@string/text_test"
-            android:gravity="center"
-            android:textColor="@android:color/black"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:layout_marginTop="50dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout">
 
             <TextView
                 android:id="@+id/txt_current_duration"
@@ -65,8 +42,9 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
 
             <SeekBar
                 android:id="@+id/seek_bar"
-                android:layout_width="300dp"
-                android:layout_height="match_parent" />
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@+id/txt_total_duration"
@@ -80,24 +58,6 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
                 android:text="00:00"/>
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btn_prev"
-            android:layout_width="@dimen/touch_default"
-            android:layout_height="@dimen/touch_default"
-            android:background="@drawable/ic_previous_black"
-            android:layout_marginStart="12dp"
-            android:layout_toEndOf="@+id/txt_current_music"
-            android:layout_alignTop="@+id/btn_play" />
-
-        <ImageButton
-            android:id="@+id/btn_next"
-            android:layout_width="@dimen/touch_default"
-            android:layout_height="@dimen/touch_default"
-            android:background="@drawable/ic_next_black"
-            android:layout_marginEnd="14dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/btn_play" />
-
         <ProgressBar
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="23dp"
@@ -107,5 +67,54 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
             android:layout_centerHorizontal="true"
             android:visibility="gone"
             android:layout_marginBottom="10dp" />
+
+        <ImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="@dimen/touch_default"
+            android:layout_height="@dimen/touch_default"
+            android:background="@drawable/ic_play_black"
+            android:layout_gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="@dimen/touch_default"
+            android:layout_height="@dimen/touch_default"
+            android:background="@drawable/ic_next_black"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="5dp"/>
+
+        <ImageButton
+            android:id="@+id/btn_prev"
+            android:layout_width="@dimen/touch_default"
+            android:layout_height="@dimen/touch_default"
+            android:background="@drawable/ic_previous_black"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toEndOf="@+id/progress_bar_player" />
+
+        <TextView
+            android:id="@+id/txt_current_music"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:maxLines="2"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
+            android:text="fa\naf"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:layout_below="@+id/progress_bar_player"
+            android:layout_toEndOf="@+id/progress_bar_player"
+            android:layout_marginTop="10dp" />
     </RelativeLayout>
 </LinearLayout>
