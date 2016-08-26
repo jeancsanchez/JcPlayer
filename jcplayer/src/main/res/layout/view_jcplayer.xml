@@ -8,46 +8,17 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/audioList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1">
     </android.support.v7.widget.RecyclerView>
 
+
     <RelativeLayout
         android:layout_width="match_parent"
+        android:background="@drawable/bg_player_white"
         android:layout_height="@dimen/player_height"
-        android:background="@drawable/clean_bg_player">
-
-        <TextView
-            android:id="@+id/txt_duration"
-            android:textColor="@android:color/black"
-            android:layout_width="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="@dimen/text_size"
-            android:layout_marginBottom="2dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:maxLines="1"
-            android:layout_centerHorizontal="true"
-            android:text="@string/text_test"/>
-
-        <TextView
-            android:id="@+id/txt_current_music"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size"
-            android:marqueeRepeatLimit ="marquee_forever"
-            android:maxLines="2"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:ellipsize="marquee"
-            android:scrollHorizontally="true"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="7dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:text="@string/text_test"/>
+        android:id="@+id/relativeLayout">
 
         <ImageButton
             android:id="@+id/btn_play"
@@ -55,39 +26,86 @@ tools:context="com.example.jean.jcplayer.JCPlayerView">
             android:layout_height="@dimen/touch_default"
             android:background="@drawable/ic_play_black"
             android:layout_gravity="center"
-            android:layout_centerVertical="true"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/txt_current_music"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size"
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:maxLines="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:ellipsize="marquee"
+            android:scrollHorizontally="true"
+            android:text="@string/text_test"
+            android:gravity="center"
+            android:textColor="@android:color/black"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_current_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/text_size"
+                android:textAlignment="center"
+                android:text="00:00"/>
+
+            <SeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="300dp"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/txt_total_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/text_size"
+                android:textAlignment="center"
+                android:text="00:00"/>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/btn_prev"
             android:layout_width="@dimen/touch_default"
             android:layout_height="@dimen/touch_default"
             android:background="@drawable/ic_previous_black"
-            android:layout_alignTop="@+id/btn_play"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="50dp" />
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@+id/txt_current_music"
+            android:layout_alignTop="@+id/btn_play" />
 
         <ImageButton
             android:id="@+id/btn_next"
             android:layout_width="@dimen/touch_default"
             android:layout_height="@dimen/touch_default"
             android:background="@drawable/ic_next_black"
-            android:layout_alignTop="@+id/btn_play"
+            android:layout_marginEnd="14dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="50dp" />
+            android:layout_alignTop="@+id/btn_play" />
 
         <ProgressBar
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="23dp"
             android:layout_height="23dp"
             android:id="@+id/progress_bar_player"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:visibility="gone"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
-
-        <SeekBar
-            android:id="@+id/seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_marginBottom="10dp" />
     </RelativeLayout>
 </LinearLayout>
