@@ -25,8 +25,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:24.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha4'
-//    compile 'io.github.jeancsanchez.jcplayer:jcplayer:0.0.2'
+    //    compile 'io.github.jeancsanchez.jcplayer:jcplayer:0.0.2'
     testCompile 'junit:junit:4.12'
     compile project(path: ':jcplayer')
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
 }
