@@ -17,7 +17,7 @@ import java.util.List;
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> implements View.OnClickListener{
     private Context context;
     private JCPlayerView activity;
-    private List<Audio> audioList;
+    private List<JCAudio> JCAudioList;
 
     public AudioAdapter(JCPlayerView activity) {
         this.activity = activity;
@@ -35,25 +35,25 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public void onBindViewHolder(AudioAdapterViewHolder holder, int position) {
-        String title = position+1 + " - " + audioList.get(position).getTitle();
+        String title = position+1 + " - " + JCAudioList.get(position).getTitle();
         holder.audioTitle.setText(title);
-        holder.itemView.setTag(audioList.get(position));
+        holder.itemView.setTag(JCAudioList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return audioList == null ? 0 : audioList.size();
+        return JCAudioList == null ? 0 : JCAudioList.size();
     }
 
-    public void setupItems(List<Audio> audioList) {
-        this.audioList = audioList;
+    public void setupItems(List<JCAudio> JCAudioList) {
+        this.JCAudioList = JCAudioList;
         notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
-        Audio audio = (Audio) view.getTag();
-        activity.playAudio(audio);
+        JCAudio JCAudio = (JCAudio) view.getTag();
+        activity.playAudio(JCAudio);
     }
 
     static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{

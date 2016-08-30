@@ -6,7 +6,7 @@ android:orientation="vertical"
 tools:context="com.example.jean.jcplayer.JCPlayerView">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/audioList"
+        android:id="@+id/JCAudioList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"

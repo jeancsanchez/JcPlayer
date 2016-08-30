@@ -19,7 +19,7 @@ public class JCPlayerService extends Service implements
     private boolean isPlaying;
     private int duration;
     private int currentTime;
-    private Audio currentAudio;
+    private JCAudio currentJCAudio;
     private JCPlayerServiceListener jcPlayerServiceListener;
     private JCPlayerServiceListener notificationListener;
 
@@ -67,7 +67,7 @@ public class JCPlayerService extends Service implements
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void pause(Audio audio) {
+    public void pause(JCAudio JCAudio) {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
             duration = mediaPlayer.getDuration();
@@ -95,13 +95,13 @@ public class JCPlayerService extends Service implements
         isPlaying = false;
     }
 
-    public void play(Audio audio)  {
-        this.currentAudio = audio;
+    public void play(JCAudio JCAudio)  {
+        this.currentJCAudio = JCAudio;
 
         try {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(audio.getUrl());
+                mediaPlayer.setDataSource(JCAudio.getUrl());
                 mediaPlayer.prepareAsync();
 
                 mediaPlayer.setOnPreparedListener(this);
@@ -111,7 +111,7 @@ public class JCPlayerService extends Service implements
 
             } else if (isPlaying) {
                 stop();
-                play(audio);
+                play(JCAudio);
 
             } else {
                 mediaPlayer.start();
@@ -183,12 +183,12 @@ public class JCPlayerService extends Service implements
         this.currentTime = mediaPlayer.getCurrentPosition();
         updateTimeAudio();
 
-        jcPlayerServiceListener.updateTitle(currentAudio.getTitle());
-        jcPlayerServiceListener.onPreparedAudio(currentAudio.getTitle(), mediaPlayer.getDuration());
+        jcPlayerServiceListener.updateTitle(currentJCAudio.getTitle());
+        jcPlayerServiceListener.onPreparedAudio(currentJCAudio.getTitle(), mediaPlayer.getDuration());
 
         if(notificationListener != null) {
-            notificationListener.updateTitle(currentAudio.getTitle());
-            notificationListener.onPreparedAudio(currentAudio.getTitle(), mediaPlayer.getDuration());
+            notificationListener.updateTitle(currentJCAudio.getTitle());
+            notificationListener.onPreparedAudio(currentJCAudio.getTitle(), mediaPlayer.getDuration());
         }
     }
 }

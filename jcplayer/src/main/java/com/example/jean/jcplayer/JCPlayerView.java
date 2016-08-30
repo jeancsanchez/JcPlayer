@@ -24,7 +24,7 @@ public class JCPlayerView extends LinearLayout implements
     private TextView txtCurrentMusic;
     private ImageButton btnPrev;
     private ImageButton btnPlay;
-    private List<Audio> playlist;
+    private List<JCAudio> playlist;
     private ProgressBar progressBarPlayer;
     private RecyclerView recyclerView;
     private JCAudioPlayer jcAudioPlayer;
@@ -52,7 +52,7 @@ public class JCPlayerView extends LinearLayout implements
     private void init(){
         inflate(getContext(), R.layout.view_jcplayer, this);
 
-        this.recyclerView = (RecyclerView) findViewById(R.id.audioList);
+        this.recyclerView = (RecyclerView) findViewById(R.id.JCAudioList);
         this.progressBarPlayer = (ProgressBar) findViewById(R.id.progress_bar_player);
         this.btnNext = (ImageButton) findViewById(R.id.btn_next);
         this.btnPrev = (ImageButton) findViewById(R.id.btn_prev);
@@ -72,10 +72,10 @@ public class JCPlayerView extends LinearLayout implements
 
     /**
      * Initialize the playlist and controls.
-     * @param playlist List of the Audio objects that you want play
+     * @param playlist List of the JCAudio objects that you want play
      * @param context Context of the your application
      */
-    public void initPlaylist(List<Audio> playlist, Context context){
+    public void initPlaylist(List<JCAudio> playlist, Context context){
         this.playlist = playlist;
         jcAudioPlayer = new JCAudioPlayer(context, playlist, JCPlayerView.this);
         adapterSetup();
@@ -106,10 +106,10 @@ public class JCPlayerView extends LinearLayout implements
                 previous();
     }
 
-    public void playAudio(Audio audio){
+    public void playAudio(JCAudio JCAudio){
         showProgressBar();
         try {
-            jcAudioPlayer.playAudio(audio);
+            jcAudioPlayer.playAudio(JCAudio);
         }catch (AudioListNullPointer e) {
             dismissProgressBar();
             e.printStackTrace();

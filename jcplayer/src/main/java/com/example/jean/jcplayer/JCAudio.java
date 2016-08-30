@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by jean on 27/06/16.
  */
 
-public class Audio implements Serializable {
+public class JCAudio implements Serializable {
     private int id;
 
     private String title;
