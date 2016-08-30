@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
         JCAudioList.add(JCAudio2);
 
         player.initPlaylist(JCAudioList, this);
+
     }
 
     @Override

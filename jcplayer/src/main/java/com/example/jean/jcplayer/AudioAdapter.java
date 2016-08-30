@@ -35,7 +35,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public void onBindViewHolder(AudioAdapterViewHolder holder, int position) {
-        String title = position+1 + " - " + JCAudioList.get(position).getTitle();
+        String title = position+1 + "    " + JCAudioList.get(position).getTitle();
         holder.audioTitle.setText(title);
         holder.itemView.setTag(JCAudioList.get(position));
     }

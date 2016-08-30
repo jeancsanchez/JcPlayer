@@ -11,24 +11,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TableRow
+            android:minHeight="75dp"
+            android:gravity="center_vertical"
             android:paddingEnd="10dp"
             android:paddingStart="10dp">
             <TextView
                 android:id="@+id/audio_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="textStart"
                 android:layout_column="1"
-                android:layout_marginEnd="3dp"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"
+                android:textSize="20sp"
                 android:layout_weight="1"/>
 
             <ImageView
                 android:id="@+id/lock"
+                android:background="@drawable/unlocked"
                 android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_column="2"
-                android:layout_gravity="clip_vertical"/>
+                android:layout_height="25dp"
+                android:layout_column="2"/>
         </TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
     </TableLayout>
 </LinearLayout>
+
