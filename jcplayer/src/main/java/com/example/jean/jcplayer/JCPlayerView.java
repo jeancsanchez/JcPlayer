@@ -13,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
 
 import java.util.List;
@@ -93,17 +95,30 @@ public class JCPlayerView extends LinearLayout implements
     @Override
     public void onClick(View view) {
         if(playlist != null)
-            if(view.getId() ==  R.id.btn_play)
-                if(btnPlay.getTag().equals(R.drawable.ic_pause_black))
+            if(view.getId() ==  R.id.btn_play) {
+                YoYo.with(Techniques.Pulse)
+                    .duration(200)
+                    .playOn(btnPlay);
+
+                if (btnPlay.getTag().equals(R.drawable.ic_pause_black))
                     pause();
                 else
                     continueAudio();
+            }
 
-            if(view.getId() == R.id.btn_next)
+            if(view.getId() == R.id.btn_next) {
+                YoYo.with(Techniques.Pulse)
+                    .duration(200)
+                    .playOn(btnNext);
                 next();
+            }
 
-            if(view.getId() == R.id.btn_prev)
+            if(view.getId() == R.id.btn_prev) {
+                YoYo.with(Techniques.Pulse)
+                    .duration(200)
+                    .playOn(btnPrev);
                 previous();
+            }
     }
 
     public void playAudio(JCAudio JCAudio){
@@ -171,6 +186,7 @@ public class JCPlayerView extends LinearLayout implements
                  (second < 10 ? "0"+second : second+"");
 
         seekBar.setMax(duration);
+
         txtDuration.post(new Runnable() {
             @Override
             public void run() {
@@ -256,6 +272,11 @@ public class JCPlayerView extends LinearLayout implements
     @Override
     public void updateTitle(String title) {
         final String mTitle = title;
+
+        YoYo.with(Techniques.FadeInLeft)
+                .duration(600)
+                .playOn(txtCurrentMusic);
+
         txtCurrentMusic.post(new Runnable() {
             @Override
             public void run() {
