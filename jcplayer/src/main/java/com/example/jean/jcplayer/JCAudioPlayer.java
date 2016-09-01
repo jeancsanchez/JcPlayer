@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
+import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointerException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -48,9 +48,9 @@ public class JCAudioPlayer{
         return instance;
     }
 
-    public void playAudio(JCAudio JCAudio) throws AudioListNullPointer {
+    public void playAudio(JCAudio JCAudio) throws AudioListNullPointerException {
         if(JCAudioList == null || JCAudioList.size() == 0)
-            throw  new AudioListNullPointer();
+            throw  new AudioListNullPointerException();
         else {
             if (currentJCAudio == null)
                 currentJCAudio = JCAudioList.get(0);
@@ -69,9 +69,9 @@ public class JCAudioPlayer{
         }
     }
 
-    public void nextAudio() throws AudioListNullPointer {
+    public void nextAudio() throws AudioListNullPointerException {
         if(JCAudioList == null || JCAudioList.size() == 0)
-            throw new AudioListNullPointer();
+            throw new AudioListNullPointerException();
 
         else {
             if (currentJCAudio != null) {
@@ -93,9 +93,9 @@ public class JCAudioPlayer{
         }
     }
 
-    public void previousAudio() throws AudioListNullPointer {
+    public void previousAudio() throws AudioListNullPointerException {
         if(JCAudioList == null || JCAudioList.size() == 0)
-            throw new AudioListNullPointer();
+            throw new AudioListNullPointerException();
 
         else {
             if (currentJCAudio != null) {
@@ -123,9 +123,9 @@ public class JCAudioPlayer{
         playing = false;
     }
 
-    public void continueAudio() throws AudioListNullPointer {
+    public void continueAudio() throws AudioListNullPointerException {
         if(JCAudioList == null || JCAudioList.size() == 0)
-            throw new AudioListNullPointer();
+            throw new AudioListNullPointerException();
 
         else {
             if (currentJCAudio == null)
