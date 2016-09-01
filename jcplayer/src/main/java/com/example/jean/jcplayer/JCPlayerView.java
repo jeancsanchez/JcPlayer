@@ -15,13 +15,17 @@ import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointer;
+import com.example.jean.jcplayer.JCPlayerExceptions.AudioListNullPointerException;
+import com.example.jean.jcplayer.JCPlayerExceptions.AudioUrlInvalidException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JCPlayerView extends LinearLayout implements
         JCPlayerService.JCPlayerServiceListener,
         View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+
+    private LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
     private TextView txtCurrentMusic;
     private ImageButton btnPrev;
@@ -74,19 +78,135 @@ public class JCPlayerView extends LinearLayout implements
 
     /**
      * Initialize the playlist and controls.
-     * @param playlist List of the JCAudio objects that you want play
-     * @param context Context of the your application
+     * @param mPlaylist List of JCAudio objects that you want play
      */
-    public void initPlaylist(List<JCAudio> playlist, Context context){
-        this.playlist = playlist;
-        jcAudioPlayer = new JCAudioPlayer(context, playlist, JCPlayerView.this);
+    public void initPlaylist(List<JCAudio> mPlaylist){
+        if(playlist == null)
+            playlist = new ArrayList<>();
+
+        for(JCAudio audio : mPlaylist){
+            if( isUrlValid(audio.getUrl()) )
+             this.playlist.add(audio);
+
+            else {
+                try {
+                    throw new AudioUrlInvalidException(audio.getUrl());
+                } catch (AudioUrlInvalidException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
         adapterSetup();
     }
 
 
+    /**
+     * Initialize an anonymous playlist with a default title for all
+     * @param urls List of urls strings
+     */
+    public void initAnonPlaylist(ArrayList<String> urls){
+        JCAudio jcAudio;
+
+        if(playlist == null)
+            playlist = new ArrayList<>();
+
+        for(int i = 0; i < urls.size(); i++){
+            if(isUrlValid(urls.get(i))){
+                jcAudio = new JCAudio();
+                jcAudio.setId(i);
+                jcAudio.setPosition(i);
+                jcAudio.setUrl(urls.get(i));
+                playlist.add(jcAudio);
+
+                generateTitleAudio("Track " + String.valueOf(i+1), i);
+            }else {
+                try {
+                    throw new AudioUrlInvalidException(urls.get(i));
+                } catch (AudioUrlInvalidException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+        adapterSetup();
+    }
+
+
+    /**
+     * Initialize an anonymous playlist, but with a custom title for all
+     * @param urls List of urls strings
+     * @param title Default title
+     */
+    public void initWithTitlePlaylist(ArrayList<String> urls, String title){
+        JCAudio jcAudio;
+
+        if(playlist == null)
+            playlist = new ArrayList<>();
+
+        for(int i = 0; i < urls.size(); i++){
+            if(isUrlValid(urls.get(i))){
+                jcAudio = new JCAudio();
+                jcAudio.setId(i);
+                jcAudio.setPosition(i);
+                jcAudio.setUrl(urls.get(i));
+                playlist.add(jcAudio);
+
+                generateTitleAudio(title + " " + String.valueOf(i+1), i);
+            }else {
+                try {
+                    throw new AudioUrlInvalidException(urls.get(i));
+                } catch (AudioUrlInvalidException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+        adapterSetup();
+    }
+
+
+    /**
+     * Initialize an anonymous playlist, but with a custom title for all
+     * @param title Audio title
+     * @param url List of urls strings
+     */
+    public void addAudio(String title, String url){
+        if(isUrlValid(url)) {
+            if (playlist == null)
+                playlist = new ArrayList<>();
+
+            int lastPosition = playlist.size();
+            playlist.add(lastPosition,
+                    new JCAudio(url, title, /* id */ lastPosition + 1, /* position */ lastPosition + 1));
+
+            if (jcAudioPlayer == null)
+                jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+            adapterSetup();
+        }else {
+            try {
+                throw new AudioUrlInvalidException(url);
+            } catch (AudioUrlInvalidException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    private void generateTitleAudio(String title, int position){
+        playlist.get(position).setTitle(title);
+    }
+
+    private boolean isUrlValid(String url){
+        return url.startsWith("http") || url.startsWith("https");
+    }
+
     protected void adapterSetup() {
         audioAdapter = new AudioAdapter(this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(audioAdapter);
         audioAdapter.setupItems(playlist);
@@ -125,7 +245,7 @@ public class JCPlayerView extends LinearLayout implements
         showProgressBar();
         try {
             jcAudioPlayer.playAudio(JCAudio);
-        }catch (AudioListNullPointer e) {
+        }catch (AudioListNullPointerException e) {
             dismissProgressBar();
             e.printStackTrace();
         }
@@ -137,7 +257,7 @@ public class JCPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.nextAudio();
-        }catch (AudioListNullPointer e){
+        }catch (AudioListNullPointerException e){
             dismissProgressBar();
             e.printStackTrace();
         }
@@ -148,7 +268,7 @@ public class JCPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.continueAudio();
-        } catch (AudioListNullPointer e) {
+        } catch (AudioListNullPointerException e) {
             dismissProgressBar();
             e.printStackTrace();
         }
@@ -164,7 +284,7 @@ public class JCPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.previousAudio();
-        } catch (AudioListNullPointer e) {
+        } catch (AudioListNullPointerException e) {
             dismissProgressBar();
             e.printStackTrace();
         }
@@ -283,8 +403,8 @@ public class JCPlayerView extends LinearLayout implements
 
 
     /**
-     * Create a notification player with same playlist.
-     * @param iconResource Path of the icon.
+     * Create a notification player with same playlist with a custom icon.
+     * @param iconResource icon path.
      */
     public void createNotification(int iconResource){
         if(jcAudioPlayer != null)
