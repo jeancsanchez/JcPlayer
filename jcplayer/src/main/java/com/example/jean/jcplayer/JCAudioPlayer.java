@@ -136,18 +136,6 @@ public class JCAudioPlayer{
         }
     }
 
-    public void stop(){
-        if(jcPlayerService != null)
-            jcPlayerService.destroy();
-
-
-        if(jcNotificationPlayer != null)
-            jcNotificationPlayer.destroy();
-
-        paused = true;
-        playing = true;
-    }
-
     public void createNewNotification(int iconResource){
         if(currentJCAudio != null)
             jcNotificationPlayer.createNotificationPlayer(currentJCAudio.getTitle(), iconResource);
@@ -194,6 +182,8 @@ public class JCAudioPlayer{
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBound = false;
+            playing = false;
+            paused = true;
         }
     };
 
@@ -203,5 +193,10 @@ public class JCAudioPlayer{
 
     public boolean isPaused(){
         return paused;
+    }
+
+    public void kill() {
+        jcPlayerService.destroy();
+        context.unbindService(mConnection);
     }
 }
