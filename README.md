@@ -27,7 +27,7 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
 ###Option 1: Add an url and a title for each audio.
 ```Java
     player.addAudio("My title", "http://www.example.com.br/android/Music_01.mp3");
-    ```
+```
 ###Option 2: Initialize an anonymous playlist with a default title for all
 ```java
     ArrayList<String> urls = new ArrayList<>();
