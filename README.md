@@ -32,6 +32,7 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
 ```java
     ArrayList<String> urls = new ArrayList<>();
     urls.add("http://www.example.com.br/android/Music_01.mp3");
+    urls.add("http://www.example.com.br/android/Music_02.mp3");
     
     player.initAnonPlaylist(urls);
 ```
@@ -40,6 +41,7 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
 ```java
     ArrayList<String> urls = new ArrayList<>();
     urls.add("http://www.example.com.br/android/Music_01.mp3");
+    urls.add("http://www.example.com.br/android/Music_02.mp3");
     
     player.initWithTitlePlaylist(urls, "Awesome music");
 ```
