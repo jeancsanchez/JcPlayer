@@ -54,21 +54,6 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
                     .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
                     .setCategory(Notification.CATEGORY_SOCIAL)
                     .build();
-
-            /*
-
-                private PendingIntent createContentIntent(MediaDescriptionCompat description) {
-                    Intent openUI = new Intent(mService, MusicPlayerActivity.class);
-                    openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    openUI.putExtra(MusicPlayerActivity.EXTRA_START_FULLSCREEN, true);
-                    if (description != null) {
-                        openUI.putExtra(MusicPlayerActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
-                    }
-                    return PendingIntent.getActivity(mService, REQUEST_CODE, openUI,
-                            PendingIntent.FLAG_CANCEL_CURRENT);
-                }
-             */
-
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
@@ -132,12 +117,13 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
 
     @Override
     public void onTimeChanged(long currentTime) {
+        long aux = currentTime/ 1000;
+        int minutes = (int) (aux / 60);
+        int seconds = (int) (aux % 60);
+        final String sMinutes = minutes < 10 ? "0"+minutes : minutes+"";
+        final String sSeconds = seconds < 10 ? "0"+seconds : seconds+"";
+        this.time = sMinutes + ":" + sSeconds;
 
-    }
-
-    @Override
-    public void updateTime(String time) {
-        this.time = time;
         createNotificationPlayer(title, iconResource);
     }
 

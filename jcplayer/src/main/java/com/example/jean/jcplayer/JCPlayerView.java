@@ -264,10 +264,6 @@ public class JCPlayerView extends LinearLayout implements
         });
     }
 
-    @Override
-    public void updateTime(String time) {
-
-    }
 
     @Override
     public void updateTitle(String title) {
