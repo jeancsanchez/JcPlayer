@@ -8,7 +8,7 @@ A simple JCAudio player for Android that you can plugin to your apps quickly get
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:0.0.2'
+    compile 'io.github.jeancsanchez.jcplayer:jcplayer:1.0.0-alpha'
 }
 ```
 
