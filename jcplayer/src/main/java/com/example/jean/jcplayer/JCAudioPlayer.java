@@ -146,7 +146,8 @@ public class JCAudioPlayer{
     }
 
     public void seekTo(int time){
-        jcPlayerService.seekTo(time);
+        if(jcPlayerService != null)
+            jcPlayerService.seekTo(time);
     }
 
 
