@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/jeancsanchez/JCPlayer'
     gitUrl = 'https://github.com/jeancsanchez/JCPlayer.git'
 
-    libraryVersion = '0.0.2'
+    libraryVersion = '1.0.0-alpha'
 
     developerId = 'jeancsanchez'
     developerName = 'Jean Carlos'
@@ -30,7 +30,7 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 1
+        versionCode 2
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
