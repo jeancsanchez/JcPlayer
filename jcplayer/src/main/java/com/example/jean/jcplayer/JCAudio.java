@@ -46,4 +46,17 @@ public class JCAudio implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
+
+
+    public JCAudio(String url, String title, int id, int position){
+        this.id = id;
+        this.position = position;
+        this.title = title;
+        this.url = url;
+
+    }
+
+    public JCAudio(){
+
+    }
 }
