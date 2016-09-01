@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size"
             android:marqueeRepeatLimit ="marquee_forever"
-            android:maxLines="2"
+            android:maxLines="1"
             android:focusable="true"
             android:textAlignment="center"
             android:ellipsize="marquee"
