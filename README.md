@@ -24,33 +24,40 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
 ```
 
 ##Code Setup
-Create a list of Audio objects and set the values to it.
+###Option 1: Add an url and a title for each audio.
 ```Java
-JCPlayerView player = (JCPlayerView) findViewById(R.id.jcplayer);
-List<Audio> playList = new ArrayList<>();
-
-Audio JCAudio1 = new Audio();
-JCAudio1.setId(1);
-JCAudio1.setPosition(1);
-JCAudio1.setTitle("Track 1");
-JCAudio1.setUrl("http://www.example.com.br/android/Music_01.mp3");
-
-Audio JCAudio2 = new Audio();
-JCAudio2.setId(2);
-JCAudio2.setPosition(2);
-JCAudio2.setTitle("Track 2");
-JCAudio2.setUrl("http://www.example.com.br/android/Music_02.mp3");
-
-playList.add(JCAudio1);
-playList.add(JCAudio2);
+    player.addAudio("My title", "http://www.example.com.br/android/Music_01.mp3");
+    ```
+###Option 2: Initialize an anonymous playlist with a default title for all
+```java
+    ArrayList<String> urls = new ArrayList<>();
+    urls.add("http://www.example.com.br/android/Music_01.mp3");
+    
+    player.initAnonPlaylist(urls);
 ```
 
-###Init the playlist
+###Option 3: Initialize an anonymous playlist, but with a custom title for all
 ```java
-player.initPlaylist(playList, MainActivity.this);
+    ArrayList<String> urls = new ArrayList<>();
+    urls.add("http://www.example.com.br/android/Music_01.mp3");
+    
+    player.initWithTitlePlaylist(urls, "Awesome music");
+```
+
+###Option 4: Initialize a list of JCAudio objects
+```java
+    List<Audio> playList = new ArrayList<>();
+    Audio JCAudio1 = new Audio();
+    JCAudio1.setId(1);
+    JCAudio1.setPosition(1);
+    JCAudio1.setTitle("Track 1");
+    JCAudio1.setUrl("http://www.example.com.br/android/Music_01.mp3");
+    playList.add(JCAudio2);
+    
+    player.initPlaylist(playList);
 ```
 
 ###Call the notification player where you want.
 ```java
-    player.createNotification(R.drawable.icon);
+    player.createNotification();
 ```
