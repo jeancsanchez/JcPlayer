@@ -8,8 +8,7 @@
         android:id="@+id/icon_player"
         android:layout_width="@dimen/icon_with"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:background="@drawable/ic_default" />
+        android:layout_margin="5dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"

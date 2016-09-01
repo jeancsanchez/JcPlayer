@@ -295,6 +295,15 @@ public class JCPlayerView extends LinearLayout implements
             jcAudioPlayer.createNewNotification(iconResource);
     }
 
+    /**
+     * Create a notification player with same playlist with a default icon
+     */
+    public void createNotification(){
+        int iconResource = R.drawable.ic_notification_default;
+        if(jcAudioPlayer != null)
+            jcAudioPlayer.createNewNotification(iconResource);
+    }
+
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
         if(fromUser)

@@ -7,9 +7,7 @@
     <ImageView
         android:id="@+id/icon_player"
         android:layout_width="@dimen/icon_with"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:background="@drawable/ic_default" />
+        android:layout_height="@dimen/icon_with"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -58,7 +56,6 @@
             android:textAlignment="center"
             android:ellipsize="marquee"
             android:scrollHorizontally="true"
-            android:layout_marginTop="5dp"
             android:textColor="@android:color/black"
             android:text="@string/text_test"
             android:layout_alignParentTop="true"
