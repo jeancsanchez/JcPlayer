@@ -30,6 +30,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     private String title;
     private String time  = "00:00";
     private int iconResource;
+    private Notification notification;
 
     public JCNotificationPlayer(Context context){
         this.context = context;
@@ -46,14 +47,14 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            Notification notification = new Notification.Builder(context)
-                    .setVisibility(Notification.VISIBILITY_PUBLIC)
-                    .setSmallIcon(iconResourceResource)
-                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
-                    .setContent(createNotificationPlayerView())
-                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
-                    .setCategory(Notification.CATEGORY_SOCIAL)
-                    .build();
+            notification = new Notification.Builder(context)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setSmallIcon(iconResourceResource)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
+                .setContent(createNotificationPlayerView())
+                .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
+                .setCategory(Notification.CATEGORY_SOCIAL)
+                .build();
             notificationManager.notify(NOTIFICATION_ID, notification);
         }
     }
