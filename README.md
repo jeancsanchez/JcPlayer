@@ -3,7 +3,17 @@
 # JCPlayer
 A simple JCAudio player for Android that you can plugin to your apps quickly get JCAudio playback working.
 
-
+##Maven
+```Gradle
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url  "http://dl.bintray.com/jeancsanchez/maven"
+        }
+    }
+}
+```
 ##Gradle Dependency
 ```Gradle
 dependencies {
