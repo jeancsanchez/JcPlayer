@@ -1,7 +1,7 @@
 # [ UNSTABLE ]
 
 # JCPlayer
-A simple JCAudio player for Android that you can plugin to your apps quickly get JCAudio playback working.
+A simple JcAudio player for Android that you can plugin to your apps quickly get JcAudio playback working.
 
 ##Maven
 ```Gradle
@@ -56,7 +56,7 @@ You only need  a JCPlayerView on your Layout Activity. All the controls and ever
     player.initWithTitlePlaylist(urls, "Awesome music");
 ```
 
-###Option 4: Initialize a list of JCAudio objects
+###Option 4: Initialize a list of JcAudio objects
 ```java
     List<Audio> playList = new ArrayList<>();
     Audio JCAudio1 = new Audio();

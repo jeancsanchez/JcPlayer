@@ -7,10 +7,21 @@
     android:layout_height="match_parent"
     tools:context="com.example.jean.jcplayersample.MainActivity">
 
-    <com.example.jean.jcplayer.JCPlayerView
-        android:id="@+id/jcplayer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.example.jean.jcplayer.JCPlayerView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="384dp"
+        android:layout_height="435dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp">
+    </android.support.v7.widget.RecyclerView>
+
+    <com.example.jean.jcplayer.JcPlayerView
+       android:id="@+id/jcplayer"
+       tools:layout_editor_absoluteY="435dp"
+        android:layout_width="384dp"
+        android:layout_height="76dp"
+        tools:layout_editor_absoluteX="0dp" />
 
 </android.support.constraint.ConstraintLayout>

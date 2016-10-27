@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by jean on 27/06/16.
  */
 
-public class JCAudio implements Serializable {
+public class JcAudio implements Serializable {
     private int id;
 
     private String title;
@@ -48,7 +48,7 @@ public class JCAudio implements Serializable {
     }
 
 
-    public JCAudio(String url, String title, int id, int position){
+    public JcAudio(String url, String title, int id, int position){
         this.id = id;
         this.position = position;
         this.title = title;
@@ -56,7 +56,7 @@ public class JCAudio implements Serializable {
 
     }
 
-    public JCAudio(){
+    public JcAudio(){
 
     }
 }

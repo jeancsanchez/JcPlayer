@@ -8,8 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jean.jcplayer.JCAudio;
-import com.example.jean.jcplayer.JCPlayerView;
+import com.example.jean.jcplayer.JcAudio;
 
 import java.util.List;
 
@@ -19,12 +18,12 @@ import java.util.List;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> implements View.OnClickListener{
     private Context context;
-    private JCPlayerView activity;
-    private List<JCAudio> JCAudioList;
+    private MainActivity activity;
+    private List<JcAudio> jcAudioList;
 
-    public AudioAdapter(JCPlayerView activity) {
+    public AudioAdapter(MainActivity activity) {
         this.activity = activity;
-        this.context = activity.getContext();
+        this.context = activity;
     }
 
 
@@ -38,25 +37,25 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public void onBindViewHolder(AudioAdapterViewHolder holder, int position) {
-        String title = position+1 + "    " + JCAudioList.get(position).getTitle();
+        String title = position+1 + "    " + jcAudioList.get(position).getTitle();
         holder.audioTitle.setText(title);
-        holder.itemView.setTag(JCAudioList.get(position));
+        holder.itemView.setTag(jcAudioList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return JCAudioList == null ? 0 : JCAudioList.size();
+        return jcAudioList == null ? 0 : jcAudioList.size();
     }
 
-    public void setupItems(List<JCAudio> JCAudioList) {
-        this.JCAudioList = JCAudioList;
+    public void setupItems(List<JcAudio> jcAudioList) {
+        this.jcAudioList = jcAudioList;
         notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
-        JCAudio JCAudio = (JCAudio) view.getTag();
-        activity.playAudio(JCAudio);
+        JcAudio JcAudio = (JcAudio) view.getTag();
+        activity.playAudio(JcAudio);
     }
 
     static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{
