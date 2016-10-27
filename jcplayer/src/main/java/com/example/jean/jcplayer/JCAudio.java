@@ -56,6 +56,16 @@ public class JcAudio implements Serializable {
 
     }
 
+    public JcAudio(String url, String title){
+        // It looks bad
+        int randomNumber = url.length() + title.length();
+
+        this.id = randomNumber;
+        this.position = randomNumber;
+        this.title = title;
+        this.url = url;
+    }
+
     public JcAudio(){
 
     }
