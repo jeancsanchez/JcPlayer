@@ -2,8 +2,6 @@ package com.example.jean.jcplayer;
 
 import android.content.Context;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
@@ -25,16 +23,12 @@ public class JCPlayerView extends LinearLayout implements
         JCPlayerService.JCPlayerServiceListener,
         View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    private LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-
     private TextView txtCurrentMusic;
     private ImageButton btnPrev;
     private ImageButton btnPlay;
     private List<JCAudio> playlist;
     private ProgressBar progressBarPlayer;
-    private RecyclerView recyclerView;
     private JCAudioPlayer jcAudioPlayer;
-    private AudioAdapter audioAdapter;
     private TextView txtDuration;
     private ImageButton btnNext;
     private SeekBar seekBar;
@@ -58,7 +52,6 @@ public class JCPlayerView extends LinearLayout implements
     private void init(){
         inflate(getContext(), R.layout.view_jcplayer, this);
 
-        this.recyclerView = (RecyclerView) findViewById(R.id.JCAudioList);
         this.progressBarPlayer = (ProgressBar) findViewById(R.id.progress_bar_player);
         this.btnNext = (ImageButton) findViewById(R.id.btn_next);
         this.btnPrev = (ImageButton) findViewById(R.id.btn_prev);
@@ -98,7 +91,6 @@ public class JCPlayerView extends LinearLayout implements
         }
 
         jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
-        adapterSetup();
     }
 
 
@@ -131,7 +123,6 @@ public class JCPlayerView extends LinearLayout implements
         }
 
         jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
-        adapterSetup();
     }
 
 
@@ -165,7 +156,6 @@ public class JCPlayerView extends LinearLayout implements
         }
 
         jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
-        adapterSetup();
     }
 
 
@@ -185,7 +175,6 @@ public class JCPlayerView extends LinearLayout implements
 
             if (jcAudioPlayer == null)
                 jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
-            adapterSetup();
         }else {
             try {
                 throw new AudioUrlInvalidException(url);
@@ -203,13 +192,6 @@ public class JCPlayerView extends LinearLayout implements
 
     private boolean isUrlValid(String url){
         return url.startsWith("http") || url.startsWith("https");
-    }
-
-    protected void adapterSetup() {
-        audioAdapter = new AudioAdapter(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(audioAdapter);
-        audioAdapter.setupItems(playlist);
     }
 
     @Override
@@ -434,5 +416,9 @@ public class JCPlayerView extends LinearLayout implements
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         dismissProgressBar();
+    }
+
+    public List<JCAudio> getMyPlaylist(){
+        return playlist;
     }
 }

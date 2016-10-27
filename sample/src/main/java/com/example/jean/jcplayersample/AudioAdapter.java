@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayersample;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.jean.jcplayer.JCAudio;
+import com.example.jean.jcplayer.JCPlayerView;
 
 import java.util.List;
 
@@ -27,7 +30,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public AudioAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(context).inflate(R.layout.audio_item, parent, false);
+        final View view = LayoutInflater.from(context).inflate(com.example.jean.jcplayer.R.layout.audio_item, parent, false);
         AudioAdapterViewHolder audiosViewHolder = new AudioAdapterViewHolder(view);
         audiosViewHolder.itemView.setOnClickListener(this);
         return audiosViewHolder;
@@ -62,8 +65,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
         public AudioAdapterViewHolder(View view){
             super(view);
-            this.audioTitle = (TextView) view.findViewById(R.id.audio_title);
-            this.audioImage = (ImageView) view.findViewById(R.id.lock);
+            this.audioTitle = (TextView) view.findViewById(com.example.jean.jcplayer.R.id.audio_title);
+            this.audioImage = (ImageView) view.findViewById(com.example.jean.jcplayer.R.id.lock);
         }
     }
 }
