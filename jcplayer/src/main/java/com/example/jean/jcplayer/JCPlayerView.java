@@ -233,6 +233,22 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
+    public void playAudio(String url, String title){
+        showProgressBar();
+
+        JcAudio jcAudio = new JcAudio(url, title);
+        if (playlist == null)
+            playlist = new ArrayList<>();
+        playlist.add(jcAudio);
+
+        try {
+            jcAudioPlayer.playAudio(jcAudio);
+        }catch (AudioListNullPointerException e) {
+            dismissProgressBar();
+            e.printStackTrace();
+        }
+    }
+
     private void next(){
         resetPlayerInfo();
         showProgressBar();
