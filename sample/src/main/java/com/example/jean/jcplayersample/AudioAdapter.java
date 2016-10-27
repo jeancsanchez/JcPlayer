@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayersample;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.jean.jcplayer.JcAudio;
+
 import java.util.List;
 
 /**
@@ -16,18 +18,18 @@ import java.util.List;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> implements View.OnClickListener{
     private Context context;
-    private JCPlayerView activity;
-    private List<JCAudio> JCAudioList;
+    private MainActivity activity;
+    private List<JcAudio> jcAudioList;
 
-    public AudioAdapter(JCPlayerView activity) {
+    public AudioAdapter(MainActivity activity) {
         this.activity = activity;
-        this.context = activity.getContext();
+        this.context = activity;
     }
 
 
     @Override
     public AudioAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(context).inflate(R.layout.audio_item, parent, false);
+        final View view = LayoutInflater.from(context).inflate(com.example.jean.jcplayer.R.layout.audio_item, parent, false);
         AudioAdapterViewHolder audiosViewHolder = new AudioAdapterViewHolder(view);
         audiosViewHolder.itemView.setOnClickListener(this);
         return audiosViewHolder;
@@ -35,25 +37,25 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public void onBindViewHolder(AudioAdapterViewHolder holder, int position) {
-        String title = position+1 + "    " + JCAudioList.get(position).getTitle();
+        String title = position+1 + "    " + jcAudioList.get(position).getTitle();
         holder.audioTitle.setText(title);
-        holder.itemView.setTag(JCAudioList.get(position));
+        holder.itemView.setTag(jcAudioList.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return JCAudioList == null ? 0 : JCAudioList.size();
+        return jcAudioList == null ? 0 : jcAudioList.size();
     }
 
-    public void setupItems(List<JCAudio> JCAudioList) {
-        this.JCAudioList = JCAudioList;
+    public void setupItems(List<JcAudio> jcAudioList) {
+        this.jcAudioList = jcAudioList;
         notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
-        JCAudio JCAudio = (JCAudio) view.getTag();
-        activity.playAudio(JCAudio);
+        JcAudio JcAudio = (JcAudio) view.getTag();
+        activity.playAudio(JcAudio);
     }
 
     static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{
@@ -62,8 +64,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
         public AudioAdapterViewHolder(View view){
             super(view);
-            this.audioTitle = (TextView) view.findViewById(R.id.audio_title);
-            this.audioImage = (ImageView) view.findViewById(R.id.lock);
+            this.audioTitle = (TextView) view.findViewById(com.example.jean.jcplayer.R.id.audio_title);
+            this.audioImage = (ImageView) view.findViewById(com.example.jean.jcplayer.R.id.lock);
         }
     }
 }

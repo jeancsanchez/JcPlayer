@@ -1,28 +1,50 @@
 package com.example.jean.jcplayersample;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
-import com.example.jean.jcplayer.JCAudio;
-import com.example.jean.jcplayer.JCPlayerView;
+import com.example.jean.jcplayer.JcAudio;
+import com.example.jean.jcplayer.JcPlayerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends Activity {
-    private JCPlayerView player;
+public class MainActivity extends AppCompatActivity {
+    private LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+    private JcPlayerView player;
+    private RecyclerView recyclerView;
+    private AudioAdapter audioAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        player = (JCPlayerView) findViewById(R.id.jcplayer);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        player = (JcPlayerView) findViewById(R.id.jcplayer);
 
         ArrayList<String> urls = new ArrayList<>();
         urls.add("http://www.villopim.com.br/android/Music_01.mp3");
         urls.add("http://www.villopim.com.br/android/Music_02.mp3");
         player.initWithTitlePlaylist(urls, "Awesome music");
+
+        adapterSetup();
     }
+
+
+    public void playAudio(JcAudio jcAudio){
+        player.playAudio(jcAudio);
+    }
+
+    protected void adapterSetup() {
+        audioAdapter = new AudioAdapter(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(audioAdapter);
+        audioAdapter.setupItems(player.getMyPlaylist());
+    }
+
 
     @Override
     public void onPause(){

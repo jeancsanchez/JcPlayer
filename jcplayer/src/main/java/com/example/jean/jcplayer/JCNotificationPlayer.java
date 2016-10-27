@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 /**
  * Created by jean on 12/07/16.
  */
-public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceListener{
+public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceListener{
     public static final int NOTIFICATION_ID = 100;
     public static final int NEXT_ID = 0;
     public static final int PREVIOUS_ID = 1;
@@ -32,7 +32,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     private int iconResource;
     private Notification notification;
 
-    public JCNotificationPlayer(Context context){
+    public JcNotificationPlayer(Context context){
         this.context = context;
     }
 
@@ -42,7 +42,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        JCAudioPlayer.getInstance().registerNotificationListener(this);
+        JcAudioPlayer.getInstance().registerNotificationListener(this);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -66,7 +66,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
     private RemoteViews createNotificationPlayerView(){
         RemoteViews remoteView;
 
-        if (JCAudioPlayer.getInstance().isPaused()){
+        if (JcAudioPlayer.getInstance().isPaused()){
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_play);
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID));
         }else {
@@ -85,7 +85,7 @@ public class JCNotificationPlayer implements JCPlayerService.JCPlayerServiceList
 
 
     private PendingIntent buildPendingIntent(String action, int id){
-        Intent playIntent = new Intent(context.getApplicationContext(), JCPlayerNotificationReceiver.class);
+        Intent playIntent = new Intent(context.getApplicationContext(), JcPlayerNotificationReceiver.class);
         playIntent.putExtra(ACTION, action);
 
         return PendingIntent.getBroadcast(context.getApplicationContext(), id, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
