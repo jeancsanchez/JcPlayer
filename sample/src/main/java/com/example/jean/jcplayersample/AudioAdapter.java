@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jean.jcplayer.JcAudio;
@@ -60,12 +59,10 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{
         private TextView audioTitle;
-        private ImageView audioImage;
 
         public AudioAdapterViewHolder(View view){
             super(view);
             this.audioTitle = (TextView) view.findViewById(com.example.jean.jcplayersample.R.id.audio_title);
-            this.audioImage = (ImageView) view.findViewById(com.example.jean.jcplayersample.R.id.lock);
         }
     }
 }

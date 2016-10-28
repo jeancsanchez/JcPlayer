@@ -22,14 +22,6 @@
                 android:layout_column="1"
                 android:textSize="18sp"
                 android:layout_weight="1"/>
-
-            <ImageView
-                android:id="@+id/lock"
-                android:visibility="gone"
-                android:background="@drawable/unlocked"
-                android:layout_width="20dp"
-                android:layout_height="25dp"
-                android:layout_column="2"/>
         </TableRow>
         <TextView
             android:layout_width="match_parent"
