@@ -29,7 +29,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public AudioAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(context).inflate(com.example.jean.jcplayer.R.layout.audio_item, parent, false);
+        final View view = LayoutInflater.from(context).inflate(com.example.jean.jcplayersample.R.layout.audio_item, parent, false);
         AudioAdapterViewHolder audiosViewHolder = new AudioAdapterViewHolder(view);
         audiosViewHolder.itemView.setOnClickListener(this);
         return audiosViewHolder;
@@ -64,8 +64,8 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
         public AudioAdapterViewHolder(View view){
             super(view);
-            this.audioTitle = (TextView) view.findViewById(com.example.jean.jcplayer.R.id.audio_title);
-            this.audioImage = (ImageView) view.findViewById(com.example.jean.jcplayer.R.id.lock);
+            this.audioTitle = (TextView) view.findViewById(com.example.jean.jcplayersample.R.id.audio_title);
+            this.audioImage = (ImageView) view.findViewById(com.example.jean.jcplayersample.R.id.lock);
         }
     }
 }

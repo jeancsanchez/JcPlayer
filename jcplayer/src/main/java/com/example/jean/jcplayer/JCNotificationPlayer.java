@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 /**
@@ -31,6 +32,7 @@ public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceList
     private String time  = "00:00";
     private int iconResource;
     private Notification notification;
+    private NotificationCompat.Builder notificationCompat;
 
     public JcNotificationPlayer(Context context){
         this.context = context;
@@ -41,12 +43,12 @@ public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceList
         this.iconResource = iconResourceResource;
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
         JcAudioPlayer.getInstance().registerNotificationListener(this);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(notificationManager == null)
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notification = new Notification.Builder(context)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setSmallIcon(iconResourceResource)
@@ -56,6 +58,15 @@ public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceList
                 .setCategory(Notification.CATEGORY_SOCIAL)
                 .build();
             notificationManager.notify(NOTIFICATION_ID, notification);
+        } else {
+            notificationCompat = new NotificationCompat.Builder(context)
+                    .setVisibility(Notification.VISIBILITY_PUBLIC)
+                    .setSmallIcon(iconResourceResource)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
+                    .setContent(createNotificationPlayerView())
+                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
+                    .setCategory(Notification.CATEGORY_SOCIAL);
+            notificationManager.notify(NOTIFICATION_ID, notificationCompat.build());
         }
     }
 
