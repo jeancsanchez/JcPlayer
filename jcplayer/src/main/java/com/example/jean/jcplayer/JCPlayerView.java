@@ -1,6 +1,7 @@
 package com.example.jean.jcplayer;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -414,7 +415,15 @@ public class JcPlayerView extends LinearLayout implements
      * Create a notification player with same playlist with a default icon
      */
     public void createNotification(){
-        int iconResource = R.drawable.ic_notification_default;
+        int iconResource;
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            // For light theme
+            iconResource = R.drawable.ic_notification_default_black;
+        else
+            // For dark theme
+            iconResource = R.drawable.ic_notification_default_white;
+
         if(jcAudioPlayer != null)
             jcAudioPlayer.createNewNotification(iconResource);
     }
