@@ -291,6 +291,7 @@ public class JcPlayerView extends LinearLayout implements
     @Override
     public void onPreparedAudio(String audioName, int duration) {
         dismissProgressBar();
+        resetPlayerInfo();
 
         long aux = duration / 1000;
         int minute = (int) (aux / 60);
