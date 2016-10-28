@@ -56,10 +56,7 @@ public class JcAudioPlayer {
         if(JcAudioList == null || JcAudioList.size() == 0)
             throw  new AudioListNullPointerException();
         else {
-            if (currentJcAudio == null)
-                currentJcAudio = JcAudioList.get(0);
-            else
-                currentJcAudio = JcAudio;
+            currentJcAudio = JcAudio;
 
             if (!mBound)
                 initJCPlayerService();
