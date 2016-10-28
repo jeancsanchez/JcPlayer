@@ -134,12 +134,12 @@ public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceList
         createNotificationPlayer(title, iconResource);
     }
 
-    public void destroy(){
-        if(notificationManager != null);
-        try {
-            notificationManager.cancel(NOTIFICATION_ID);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
+    public void destroyNotificationIfExists() {
+        if (notificationManager != null)
+            try {
+                notificationManager.cancel(NOTIFICATION_ID);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
     }
 }

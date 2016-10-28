@@ -51,4 +51,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         player.createNotification();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        player.kill();
+    }
 }

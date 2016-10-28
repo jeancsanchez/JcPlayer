@@ -24,7 +24,7 @@ public class JcAudioPlayer {
     private JcAudio currentJcAudio;
     private int currentPositionList;
     private Context context;
-    private static JcAudioPlayer instance;
+    private static JcAudioPlayer instance = null;
     public boolean mBound = false;
     private boolean playing;
     private boolean paused;
@@ -36,6 +36,10 @@ public class JcAudioPlayer {
         this.listener = listener;
         instance = JcAudioPlayer.this;
         this.jcNotificationPlayer = new JcNotificationPlayer(context);
+    }
+
+    public void setInstance(JcAudioPlayer instance){
+        this.instance = instance;
     }
 
     public void registerNotificationListener(JcPlayerService.JCPlayerServiceListener notificationListener){
@@ -197,7 +201,25 @@ public class JcAudioPlayer {
     }
 
     public void kill() {
-        jcPlayerService.destroy();
-        context.unbindService(mConnection);
+        if (jcPlayerService != null) {
+            jcPlayerService.stop();
+            jcPlayerService.destroy();
+        }
+
+        if (mBound)
+            try {
+                context.unbindService(mConnection);
+            }catch (IllegalArgumentException e){
+
+            }
+
+        if (jcNotificationPlayer != null) {
+            jcNotificationPlayer.destroyNotificationIfExists();
+        }
+
+        if(JcAudioPlayer.getInstance() != null)
+            JcAudioPlayer.getInstance().setInstance(null);
     }
+
+
 }

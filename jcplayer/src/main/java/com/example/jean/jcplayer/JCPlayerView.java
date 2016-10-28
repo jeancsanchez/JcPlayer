@@ -424,6 +424,10 @@ public class JcPlayerView extends LinearLayout implements
             jcAudioPlayer.seekTo(i);
     }
 
+    public void kill() {
+        jcAudioPlayer.kill();
+    }
+
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         showProgressBar();
