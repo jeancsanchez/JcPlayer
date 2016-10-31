@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/jeancsanchez/JCPlayer'
     gitUrl = 'https://github.com/jeancsanchez/JCPlayer.git'
 
-    libraryVersion = '1.0.0-alpha'
+    libraryVersion = '2.0.0-alpha'
 
     developerId = 'jeancsanchez'
     developerName = 'Jean Carlos'
