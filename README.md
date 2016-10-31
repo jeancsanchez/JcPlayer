@@ -1,5 +1,3 @@
-# [ UNSTABLE ]
-
 # JCPlayer
 A simple JcAudio player for Android that you can plugin to your apps quickly get JcAudio playback working.
 
@@ -18,7 +16,7 @@ allprojects {
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:1.0.0-alpha'
+    compile 'io.github.jeancsanchez.jcplayer:jcplayer:2.0.0-alpha'
 }
 ```
 
