@@ -435,7 +435,8 @@ public class JcPlayerView extends LinearLayout implements
     }
 
     public void kill() {
-        jcAudioPlayer.kill();
+        if(jcAudioPlayer != null)
+            jcAudioPlayer.kill();
     }
 
     @Override
