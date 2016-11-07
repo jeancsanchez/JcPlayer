@@ -242,6 +242,9 @@ public class JcPlayerView extends LinearLayout implements
             playlist = new ArrayList<>();
         playlist.add(jcAudio);
 
+        if(jcAudioPlayer == null)
+            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+
         try {
             jcAudioPlayer.playAudio(jcAudio);
         }catch (AudioListNullPointerException e) {
