@@ -355,7 +355,10 @@ public class JcPlayerView extends LinearLayout implements
 
     @Override
     public void onPaused() {
-        btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_play_black, null));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_play_black, null));
+        else
+            btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_play_black, null));
         btnPlay.setTag(R.drawable.ic_play_black);
     }
 
@@ -366,7 +369,11 @@ public class JcPlayerView extends LinearLayout implements
 
     @Override
     public void onPlaying() {
-        btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_pause_black, null));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_pause_black, null));
+        else
+            btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_pause_black, null));
+
         btnPlay.setTag(R.drawable.ic_pause_black);
     }
 
