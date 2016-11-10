@@ -75,7 +75,7 @@ You only need  a JcPlayerView on your Layout Activity. All the controls and ever
     urls.add("http://www.example.com.br/android/Music_01.mp3");
     urls.add("http://www.example.com.br/android/Music_02.mp3");
     
-    player.initWithTitlePlaylist(urls, "Awesome music");
+    jcplayerView.initWithTitlePlaylist(urls, "Awesome music");
 ```
 
 ###Call the notification player where you want.
