@@ -84,7 +84,7 @@ You only need  a JcPlayerView on your Layout Activity. All the controls and ever
 ```
 OR
 ```java
-    player.createNotification(R.drawable.myIcon); // Your icon resource
+    jcplayerView.createNotification(R.drawable.myIcon); // Your icon resource
 ```
 
 ###How can I get callbacks of player status?
