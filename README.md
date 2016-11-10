@@ -1,3 +1,6 @@
+![Version](https://img.shields.io/badge/version-1.2.0-green.svg)
+[![Version](https://img.shields.io/badge/Bintray-jeancsanchez-blue.svg)](https://bintray.com/jeancsanchez/maven/jcplayer)
+</br>
 # JCPlayer
 A simple JcAudio player for Android that you can plugin to your apps quickly get JcAudio playback working.
 
