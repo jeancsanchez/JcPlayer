@@ -2,7 +2,7 @@
 [![Version](https://img.shields.io/badge/Bintray-jeancsanchez-blue.svg)](https://bintray.com/jeancsanchez/maven/jcplayer)
 </br>
 # JcPlayer
-A simple auio player for Android that you can plugin to your apps quickly get JcAudio playback working.
+A simple auio player for Android that you can plugin to your apps quickly get audio playback working.
 
 ## Tested URLs
 - http://xxxx/abc.mp3
