@@ -1,5 +1,25 @@
-# JCPlayer
-A simple JcAudio player for Android that you can plugin to your apps quickly get JcAudio playback working.
+![Version](https://img.shields.io/badge/version-2.0.2--alpha-green.svg)
+[![Version](https://img.shields.io/badge/Bintray-jeancsanchez-blue.svg)](https://bintray.com/jeancsanchez/maven/jcplayer)
+</br>
+![alt tag]
+(http://im.ezgif.com/tmp/ezgif-2691612172.gif)
+# JcPlayer
+A simple auio player for Android that you can plugin to your apps quickly get audio playback working.
+
+## Tested URLs
+- http://xxxx/abc.mp3
+
+## Not tested URLs
+- http://xxxx/abc.m4a
+- http://xxxx:1232
+- http://xxxx/abc.pls
+- http://xxxx/abc.ram
+- http://xxxx/abc.wax
+- rtmp://xxxx
+- http://xxxx/abc.aspx
+- http://xxxx/abc.php
+- http://xxxx/abc.html
+- mms://xxxx
 
 ##Maven
 ```Gradle
@@ -16,58 +36,67 @@ allprojects {
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:2.0.1-alpha'
+    compile 'io.github.jeancsanchez.jcplayer:jcplayer:2.0.2-alpha'
 }
 ```
 
 
 ##Getting Started
-You only need  a JCPlayerView on your Layout Activity. All the controls and everything else are created by the player view itself.
+You only need  a JcPlayerView on your Layout Activity. All the controls and everything else are created by the player view itself.
 ```xml
-<com.example.jean.jcplayer.JCPlayerView
+<com.example.jean.jcplayer.JcPlayerView
     android:id="@+id/jcplayer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-</com.example.jean.jcplayer.JCPlayerView>
+</com.example.jean.jcplayer.JcPlayerView>
 ```
 
 ##Code Setup
-###Option 1: Add an url and a title for each audio.
-```Java
-    player.addAudio("My title", "http://www.example.com.br/android/Music_01.mp3");
+####Find your JcPlayerView xml and...
+```java
+    jcplayerView = (JcPlayerView) findViewById(R.id.jcplayerView);
 ```
+
+###Option 1: Just play 
+```java
+    jcplayerView.playAudio("http://www.example.com.br/audio.mp3", "Nice audio");
+```
+
 ###Option 2: Initialize an anonymous playlist with a default title for all
 ```java
     ArrayList<String> urls = new ArrayList<>();
     urls.add("http://www.example.com.br/android/Music_01.mp3");
     urls.add("http://www.example.com.br/android/Music_02.mp3");
     
-    player.initAnonPlaylist(urls);
+    jcplayerView.initAnonPlaylist(urls);
 ```
 
-###Option 3: Initialize an anonymous playlist, but with a custom title for all
+###Option 3: Initialize an playlist with a custom title for all
 ```java
     ArrayList<String> urls = new ArrayList<>();
     urls.add("http://www.example.com.br/android/Music_01.mp3");
     urls.add("http://www.example.com.br/android/Music_02.mp3");
     
-    player.initWithTitlePlaylist(urls, "Awesome music");
-```
-
-###Option 4: Initialize a list of JcAudio objects
-```java
-    List<Audio> playList = new ArrayList<>();
-    Audio JCAudio1 = new Audio();
-    JCAudio1.setId(1);
-    JCAudio1.setPosition(1);
-    JCAudio1.setTitle("Track 1");
-    JCAudio1.setUrl("http://www.example.com.br/android/Music_01.mp3");
-    playList.add(JCAudio2);
-    
-    player.initPlaylist(playList);
+    jcplayerView.initWithTitlePlaylist(urls, "Awesome music");
 ```
 
 ###Call the notification player where you want.
 ```java
-    player.createNotification();
+    jcplayerView.createNotification(); // default icon
 ```
+OR
+```java
+    jcplayerView.createNotification(R.drawable.myIcon); // Your icon resource
+```
+
+###How can I get callbacks of player status?
+```java
+    MyActivity implements JcPlayerService{
+        ....
+        // Just be happy :D
+```
+
+## TODO LIST##
+
+* [ ] Support others audio formats.
+* [ ] Support and test others urls.
