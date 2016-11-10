@@ -80,7 +80,7 @@ You only need  a JcPlayerView on your Layout Activity. All the controls and ever
 
 ###Call the notification player where you want.
 ```java
-    player.createNotification(); // default icon
+    jcplayerView.createNotification(); // default icon
 ```
 OR
 ```java
