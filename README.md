@@ -54,7 +54,7 @@ You only need  a JcPlayerView on your Layout Activity. All the controls and ever
 
 ###Option 1: Just play 
 ```java
-    jcplayerView.playAudio("http://www.example.com.br/audio.mp3, "Nice audio");
+    jcplayerView.playAudio("http://www.example.com.br/audio.mp3", "Nice audio");
 ```
 
 ###Option 2: Initialize an anonymous playlist with a default title for all
