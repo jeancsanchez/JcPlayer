@@ -43,7 +43,7 @@ dependencies {
 
 
 ##Getting Started
-You only need  a JcPlayerView on your Layout Activity. All the controls and everything else are created by the player view itself.
+You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls and everything else are created by the player view itself.
 ```xml
 <com.example.jean.jcplayer.JcPlayerView
     android:id="@+id/jcplayer"
