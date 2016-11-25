@@ -6,20 +6,20 @@ import android.content.Intent;
 
 import com.example.jean.jcplayer.JcPlayerExceptions.AudioListNullPointerException;
 
-public class JCPlayerNotificationReceiver extends BroadcastReceiver {
-    public JCPlayerNotificationReceiver() {
+public class JcPlayerNotificationReceiver extends BroadcastReceiver {
+    public JcPlayerNotificationReceiver() {
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        JCAudioPlayer jcAudioPlayer = JCAudioPlayer.getInstance();
+        JcAudioPlayer jcAudioPlayer = JcAudioPlayer.getInstance();
         String action = "";
 
-        if(intent.hasExtra(JCNotificationPlayer.ACTION))
-            action = intent.getStringExtra(JCNotificationPlayer.ACTION);
+        if(intent.hasExtra(JcNotificationPlayer.ACTION))
+            action = intent.getStringExtra(JcNotificationPlayer.ACTION);
 
         switch (action){
-            case JCNotificationPlayer.PLAY:
+            case JcNotificationPlayer.PLAY:
                 try {
                     jcAudioPlayer.continueAudio();
                     jcAudioPlayer.updateNotification();
@@ -28,12 +28,12 @@ public class JCPlayerNotificationReceiver extends BroadcastReceiver {
                 }
                 break;
 
-            case JCNotificationPlayer.PAUSE:
+            case JcNotificationPlayer.PAUSE:
                 jcAudioPlayer.pauseAudio();
                 jcAudioPlayer.updateNotification();
                 break;
 
-            case JCNotificationPlayer.NEXT:
+            case JcNotificationPlayer.NEXT:
                 try {
                     jcAudioPlayer.nextAudio();
                 } catch (AudioListNullPointerException e) {
@@ -45,7 +45,7 @@ public class JCPlayerNotificationReceiver extends BroadcastReceiver {
                 }
                 break;
 
-            case JCNotificationPlayer.PREVIOUS:
+            case JcNotificationPlayer.PREVIOUS:
                 try {
                     jcAudioPlayer.previousAudio();
                 } catch (Exception e) {

@@ -5,14 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.jean.jcplayer.JCAudio;
-import com.example.jean.jcplayer.JCPlayerView;
+import com.example.jean.jcplayer.JcAudio;
+import com.example.jean.jcplayer.JcPlayerView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-    private JCPlayerView player;
+    private JcPlayerView player;
     private RecyclerView recyclerView;
     private AudioAdapter audioAdapter;
 
@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        player = (JCPlayerView) findViewById(R.id.jcplayer);
+        player = (JcPlayerView) findViewById(R.id.jcplayer);
 
         ArrayList<String> urls = new ArrayList<>();
         urls.add("http://www.villopim.com.br/android/Music_01.mp3");
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void playAudio(JCAudio jcAudio){
+    public void playAudio(JcAudio jcAudio){
         player.playAudio(jcAudio);
     }
 

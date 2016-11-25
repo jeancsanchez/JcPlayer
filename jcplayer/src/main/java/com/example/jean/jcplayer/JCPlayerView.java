@@ -20,33 +20,33 @@ import com.example.jean.jcplayer.JcPlayerExceptions.AudioUrlInvalidException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JCPlayerView extends LinearLayout implements
-        JCPlayerService.JCPlayerServiceListener,
+public class JcPlayerView extends LinearLayout implements
+        JcPlayerService.JCPlayerServiceListener,
         View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     private TextView txtCurrentMusic;
     private ImageButton btnPrev;
     private ImageButton btnPlay;
-    private List<JCAudio> playlist;
+    private List<JcAudio> playlist;
     private ProgressBar progressBarPlayer;
-    private JCAudioPlayer jcAudioPlayer;
+    private JcAudioPlayer jcAudioPlayer;
     private TextView txtDuration;
     private ImageButton btnNext;
     private SeekBar seekBar;
     private TextView txtCurrentDuration;
 
 
-    public JCPlayerView(Context context){
+    public JcPlayerView(Context context){
         super(context);
         init();
     }
 
-    public JCPlayerView(Context context, AttributeSet attrs) {
+    public JcPlayerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public JCPlayerView(Context context, AttributeSet attrs, int defStyle) {
+    public JcPlayerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
@@ -74,11 +74,11 @@ public class JCPlayerView extends LinearLayout implements
      * Initialize the playlist and controls.
      * @param mPlaylist List of JcAudio objects that you want play
      */
-    public void initPlaylist(List<JCAudio> mPlaylist){
+    public void initPlaylist(List<JcAudio> mPlaylist){
         if(playlist == null)
             playlist = new ArrayList<>();
 
-        for(JCAudio audio : mPlaylist){
+        for(JcAudio audio : mPlaylist){
             if( isUrlValid(audio.getUrl()) )
              this.playlist.add(audio);
 
@@ -91,7 +91,7 @@ public class JCPlayerView extends LinearLayout implements
             }
         }
 
-        jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
     }
 
 
@@ -100,14 +100,14 @@ public class JCPlayerView extends LinearLayout implements
      * @param urls List of urls strings
      */
     public void initAnonPlaylist(ArrayList<String> urls){
-        JCAudio jcAudio;
+        JcAudio jcAudio;
 
         if(playlist == null)
             playlist = new ArrayList<>();
 
         for(int i = 0; i < urls.size(); i++){
             if(isUrlValid(urls.get(i))){
-                jcAudio = new JCAudio();
+                jcAudio = new JcAudio();
                 jcAudio.setId(i);
                 jcAudio.setPosition(i);
                 jcAudio.setUrl(urls.get(i));
@@ -123,7 +123,7 @@ public class JCPlayerView extends LinearLayout implements
             }
         }
 
-        jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
     }
 
 
@@ -133,14 +133,14 @@ public class JCPlayerView extends LinearLayout implements
      * @param title Default title
      */
     public void initWithTitlePlaylist(ArrayList<String> urls, String title){
-        JCAudio jcAudio;
+        JcAudio jcAudio;
 
         if(playlist == null)
             playlist = new ArrayList<>();
 
         for(int i = 0; i < urls.size(); i++){
             if(isUrlValid(urls.get(i))){
-                jcAudio = new JCAudio();
+                jcAudio = new JcAudio();
                 jcAudio.setId(i);
                 jcAudio.setPosition(i);
                 jcAudio.setUrl(urls.get(i));
@@ -156,7 +156,7 @@ public class JCPlayerView extends LinearLayout implements
             }
         }
 
-        jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
     }
 
 
@@ -172,10 +172,10 @@ public class JCPlayerView extends LinearLayout implements
 
             int lastPosition = playlist.size();
             playlist.add(lastPosition,
-                    new JCAudio(url, title, /* id */ lastPosition + 1, /* position */ lastPosition + 1));
+                    new JcAudio(url, title, /* id */ lastPosition + 1, /* position */ lastPosition + 1));
 
             if (jcAudioPlayer == null)
-                jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+                jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
         }else {
             try {
                 throw new AudioUrlInvalidException(url);
@@ -224,7 +224,7 @@ public class JCPlayerView extends LinearLayout implements
             }
     }
 
-    public void playAudio(JCAudio JcAudio){
+    public void playAudio(JcAudio JcAudio){
         showProgressBar();
         try {
             jcAudioPlayer.playAudio(JcAudio);
@@ -237,13 +237,13 @@ public class JCPlayerView extends LinearLayout implements
     public void playAudio(String url, String title){
         showProgressBar();
 
-        JCAudio jcAudio = new JCAudio(url, title);
+        JcAudio jcAudio = new JcAudio(url, title);
         if (playlist == null)
             playlist = new ArrayList<>();
         playlist.add(jcAudio);
 
         if(jcAudioPlayer == null)
-            jcAudioPlayer = new JCAudioPlayer(getContext(), playlist, JCPlayerView.this);
+            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
 
         try {
             jcAudioPlayer.playAudio(jcAudio);
@@ -459,7 +459,7 @@ public class JCPlayerView extends LinearLayout implements
         dismissProgressBar();
     }
 
-    public List<JCAudio> getMyPlaylist(){
+    public List<JcAudio> getMyPlaylist(){
         return playlist;
     }
 }
