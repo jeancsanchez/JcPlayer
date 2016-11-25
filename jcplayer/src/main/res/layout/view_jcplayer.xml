@@ -3,7 +3,7 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:orientation="vertical"
-tools:context="com.example.jean.jcplayer.JCPlayerView">
+tools:context="com.example.jean.jcplayer.JcPlayerView">
     <RelativeLayout
         android:layout_width="match_parent"
         android:background="@drawable/bg_player_white"

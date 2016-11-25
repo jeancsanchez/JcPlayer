@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.jean.jcplayer.JCAudio;
+import com.example.jean.jcplayer.JcAudio;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> implements View.OnClickListener{
     private Context context;
     private MainActivity activity;
-    private List<JCAudio> jcAudioList;
+    private List<JcAudio> jcAudioList;
 
     public AudioAdapter(MainActivity activity) {
         this.activity = activity;
@@ -46,14 +46,14 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
         return jcAudioList == null ? 0 : jcAudioList.size();
     }
 
-    public void setupItems(List<JCAudio> jcAudioList) {
+    public void setupItems(List<JcAudio> jcAudioList) {
         this.jcAudioList = jcAudioList;
         notifyDataSetChanged();
     }
 
     @Override
     public void onClick(View view) {
-        JCAudio JcAudio = (JCAudio) view.getTag();
+        JcAudio JcAudio = (com.example.jean.jcplayer.JcAudio) view.getTag();
         activity.playAudio(JcAudio);
     }
 
