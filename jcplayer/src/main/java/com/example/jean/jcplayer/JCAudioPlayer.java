@@ -15,44 +15,44 @@ import java.util.List;
  * Created by jean on 12/07/16.
  */
 
-public class JcAudioPlayer {
-    public JcPlayerService jcPlayerService;
-    private JcPlayerService.JCPlayerServiceListener listener;
-    private JcPlayerService.JCPlayerServiceListener notificationListener;
-    private JcNotificationPlayer jcNotificationPlayer;
-    private List<JcAudio> JcAudioList;
-    private JcAudio currentJcAudio;
+public class JCAudioPlayer {
+    public JCPlayerService jcPlayerService;
+    private JCPlayerService.JCPlayerServiceListener listener;
+    private JCPlayerService.JCPlayerServiceListener notificationListener;
+    private JCNotificationPlayer jcNotificationPlayer;
+    private List<JCAudio> JcAudioList;
+    private JCAudio currentJcAudio;
     private int currentPositionList;
     private Context context;
-    private static JcAudioPlayer instance = null;
+    private static JCAudioPlayer instance = null;
     public boolean mBound = false;
     private boolean playing;
     private boolean paused;
     private int position = 1;
 
-    public JcAudioPlayer(Context context, List<JcAudio> JcAudioList, JcPlayerService.JCPlayerServiceListener listener){
+    public JCAudioPlayer(Context context, List<JCAudio> JcAudioList, JCPlayerService.JCPlayerServiceListener listener){
         this.context = context;
         this.JcAudioList = JcAudioList;
         this.listener = listener;
-        instance = JcAudioPlayer.this;
-        this.jcNotificationPlayer = new JcNotificationPlayer(context);
+        instance = JCAudioPlayer.this;
+        this.jcNotificationPlayer = new JCNotificationPlayer(context);
     }
 
-    public void setInstance(JcAudioPlayer instance){
+    public void setInstance(JCAudioPlayer instance){
         this.instance = instance;
     }
 
-    public void registerNotificationListener(JcPlayerService.JCPlayerServiceListener notificationListener){
+    public void registerNotificationListener(JCPlayerService.JCPlayerServiceListener notificationListener){
         this.notificationListener = notificationListener;
         if(jcNotificationPlayer != null)
             jcPlayerService.registerNotificationListener(notificationListener);
     }
 
-    public static JcAudioPlayer getInstance(){
+    public static JCAudioPlayer getInstance(){
         return instance;
     }
 
-    public void playAudio(JcAudio JcAudio) throws AudioListNullPointerException {
+    public void playAudio(JCAudio JcAudio) throws AudioListNullPointerException {
         if(JcAudioList == null || JcAudioList.size() == 0)
             throw  new AudioListNullPointerException();
         else {
@@ -77,7 +77,7 @@ public class JcAudioPlayer {
         else {
             if (currentJcAudio != null) {
                 try {
-                    JcAudio nextJcAudio = JcAudioList.get(currentPositionList + position);
+                    JCAudio nextJcAudio = JcAudioList.get(currentPositionList + position);
                     this.currentJcAudio = nextJcAudio;
                     jcPlayerService.stop();
                     jcPlayerService.play(nextJcAudio);
@@ -101,7 +101,7 @@ public class JcAudioPlayer {
         else {
             if (currentJcAudio != null) {
                 try {
-                    JcAudio previousJcAudio = JcAudioList.get(currentPositionList - position);
+                    JCAudio previousJcAudio = JcAudioList.get(currentPositionList - position);
                     this.currentJcAudio = previousJcAudio;
                     jcPlayerService.stop();
                     jcPlayerService.play(previousJcAudio);
@@ -161,9 +161,9 @@ public class JcAudioPlayer {
 
     private synchronized void initJCPlayerService(){
         if(!mBound) {
-            Intent intent = new Intent(context.getApplicationContext(), JcPlayerService.class);
-            intent.putExtra(JcNotificationPlayer.PLAYLIST, (Serializable) JcAudioList);
-            intent.putExtra(JcNotificationPlayer.CURRENT_AUDIO, currentJcAudio);
+            Intent intent = new Intent(context.getApplicationContext(), JCPlayerService.class);
+            intent.putExtra(JCNotificationPlayer.PLAYLIST, (Serializable) JcAudioList);
+            intent.putExtra(JCNotificationPlayer.CURRENT_AUDIO, currentJcAudio);
             context.bindService(intent, mConnection, context.getApplicationContext().BIND_AUTO_CREATE);
         }
     }
@@ -171,7 +171,7 @@ public class JcAudioPlayer {
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            JcPlayerService.JCPlayerServiceBinder binder = (JcPlayerService.JCPlayerServiceBinder) service;
+            JCPlayerService.JCPlayerServiceBinder binder = (JCPlayerService.JCPlayerServiceBinder) service;
             jcPlayerService = binder.getService();
             jcPlayerService.registerListener(listener);
             jcPlayerService.play(currentJcAudio);
@@ -214,8 +214,8 @@ public class JcAudioPlayer {
             jcNotificationPlayer.destroyNotificationIfExists();
         }
 
-        if(JcAudioPlayer.getInstance() != null)
-            JcAudioPlayer.getInstance().setInstance(null);
+        if(JCAudioPlayer.getInstance() != null)
+            JCAudioPlayer.getInstance().setInstance(null);
     }
 
 

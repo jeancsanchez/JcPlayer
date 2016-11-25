@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by jean on 27/06/16.
  */
 
-public class JcAudio implements Serializable {
+public class JCAudio implements Serializable {
     private int id;
 
     private String title;
@@ -48,7 +48,7 @@ public class JcAudio implements Serializable {
     }
 
 
-    public JcAudio(String url, String title, int id, int position){
+    public JCAudio(String url, String title, int id, int position){
         this.id = id;
         this.position = position;
         this.title = title;
@@ -56,7 +56,7 @@ public class JcAudio implements Serializable {
 
     }
 
-    public JcAudio(String url, String title){
+    public JCAudio(String url, String title){
         // It looks bad
         int randomNumber = url.length() + title.length();
 
@@ -66,7 +66,7 @@ public class JcAudio implements Serializable {
         this.url = url;
     }
 
-    public JcAudio(){
+    public JCAudio(){
 
     }
 }

@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 
 import java.io.IOException;
 
-public class JcPlayerService extends Service implements
+public class JCPlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnBufferingUpdateListener,
@@ -19,13 +19,13 @@ public class JcPlayerService extends Service implements
     private boolean isPlaying;
     private int duration;
     private int currentTime;
-    private JcAudio currentJcAudio;
+    private JCAudio currentJcAudio;
     private JCPlayerServiceListener jcPlayerServiceListener;
     private JCPlayerServiceListener notificationListener;
 
     public class JCPlayerServiceBinder extends Binder {
-        public JcPlayerService getService(){
-            return JcPlayerService.this;
+        public JCPlayerService getService(){
+            return JCPlayerService.this;
         }
     }
 
@@ -58,7 +58,7 @@ public class JcPlayerService extends Service implements
         super.onCreate();
     }
 
-    public JcPlayerService() {
+    public JCPlayerService() {
     }
 
     @Override
@@ -66,7 +66,7 @@ public class JcPlayerService extends Service implements
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void pause(JcAudio JcAudio) {
+    public void pause(JCAudio JcAudio) {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
             duration = mediaPlayer.getDuration();
@@ -94,7 +94,7 @@ public class JcPlayerService extends Service implements
         isPlaying = false;
     }
 
-    public void play(JcAudio JcAudio)  {
+    public void play(JCAudio JcAudio)  {
         this.currentJcAudio = JcAudio;
 
         try {

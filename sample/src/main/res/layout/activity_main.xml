@@ -18,7 +18,7 @@
         tools:layout_editor_absoluteX="0dp">
     </android.support.v7.widget.RecyclerView>
 
-    <com.example.jean.jcplayer.JcPlayerView
+    <com.example.jean.jcplayer.JCPlayerView
         android:id="@+id/jcplayer"
         tools:layout_editor_absoluteY="435dp"
         android:layout_width="match_parent"
