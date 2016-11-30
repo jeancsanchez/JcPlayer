@@ -82,13 +82,8 @@ public class JcPlayerView extends LinearLayout implements
             if( isUrlValid(audio.getUrl()) )
              this.playlist.add(audio);
 
-            else {
-                try {
-                    throw new AudioUrlInvalidException(audio.getUrl());
-                } catch (AudioUrlInvalidException e) {
-                    e.printStackTrace();
-                }
-            }
+            else
+                throw new AudioUrlInvalidException(audio.getUrl());
         }
 
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
@@ -114,13 +109,8 @@ public class JcPlayerView extends LinearLayout implements
                 playlist.add(jcAudio);
 
                 generateTitleAudio("Track " + String.valueOf(i+1), i);
-            }else {
-                try {
-                    throw new AudioUrlInvalidException(urls.get(i));
-                } catch (AudioUrlInvalidException e) {
-                    e.printStackTrace();
-                }
-            }
+            }else
+                throw new AudioUrlInvalidException(urls.get(i));
         }
 
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
@@ -147,13 +137,8 @@ public class JcPlayerView extends LinearLayout implements
                 playlist.add(jcAudio);
 
                 generateTitleAudio(title + " " + String.valueOf(i+1), i);
-            }else {
-                try {
-                    throw new AudioUrlInvalidException(urls.get(i));
-                } catch (AudioUrlInvalidException e) {
-                    e.printStackTrace();
-                }
-            }
+            }else
+                throw new AudioUrlInvalidException(urls.get(i));
         }
 
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
@@ -176,13 +161,8 @@ public class JcPlayerView extends LinearLayout implements
 
             if (jcAudioPlayer == null)
                 jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        }else {
-            try {
-                throw new AudioUrlInvalidException(url);
-            } catch (AudioUrlInvalidException e) {
-                e.printStackTrace();
-            }
-        }
+        }else
+            throw new AudioUrlInvalidException(url);
     }
 
 
