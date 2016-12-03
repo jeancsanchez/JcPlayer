@@ -2,11 +2,13 @@ package com.example.jean.jcplayer;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
+import android.widget.Toast;
 import java.io.IOException;
 
 public class JcPlayerService extends Service implements
@@ -14,6 +16,9 @@ public class JcPlayerService extends Service implements
         MediaPlayer.OnCompletionListener,
         MediaPlayer.OnBufferingUpdateListener,
         MediaPlayer.OnErrorListener{
+
+    private static final String TAG = JcPlayerService.class.getSimpleName();
+
     private final IBinder mBinder = new JCPlayerServiceBinder();
     private MediaPlayer mediaPlayer;
     private boolean isPlaying;
@@ -22,6 +27,7 @@ public class JcPlayerService extends Service implements
     private JcAudio currentJcAudio;
     private JCPlayerServiceListener jcPlayerServiceListener;
     private JCPlayerServiceListener notificationListener;
+    private AssetFileDescriptor assetFileDescriptor = null; // For Asset and Raw file.
 
     public class JCPlayerServiceBinder extends Binder {
         public JcPlayerService getService(){
@@ -94,13 +100,31 @@ public class JcPlayerService extends Service implements
         isPlaying = false;
     }
 
-    public void play(JcAudio JcAudio)  {
-        this.currentJcAudio = JcAudio;
+    public void play(JcAudio jcAudio)  {
+        this.currentJcAudio = jcAudio;
 
         try {
             if (mediaPlayer == null) {
                 mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(JcAudio.getUrl());
+
+                if(jcAudio.getOrigin() == Origin.URL) {
+                    mediaPlayer.setDataSource(jcAudio.getPath());
+                } else if(jcAudio.getOrigin() == Origin.RAW) {
+                    assetFileDescriptor = getApplicationContext().getResources().openRawResourceFd(Integer.parseInt(jcAudio.getPath()));
+                    if (assetFileDescriptor == null) return; // TODO: Should throw error.
+                    mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(),
+                        assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                    assetFileDescriptor.close();
+                    assetFileDescriptor = null;
+                } else if(jcAudio.getOrigin() == Origin.ASSETS) {
+                    assetFileDescriptor = getApplicationContext().getAssets().openFd(jcAudio.getPath());
+                    mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(),
+                        assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                    assetFileDescriptor.close();
+                    assetFileDescriptor = null;
+                } else if(jcAudio.getOrigin() == Origin.FILE_PATH) {
+                    mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(jcAudio.getPath()));
+                }
                 mediaPlayer.prepareAsync();
 
                 mediaPlayer.setOnPreparedListener(this);
@@ -110,7 +134,7 @@ public class JcPlayerService extends Service implements
 
             } else if (isPlaying) {
                 stop();
-                play(JcAudio);
+                play(jcAudio);
 
             } else {
                 mediaPlayer.start();
@@ -126,8 +150,7 @@ public class JcPlayerService extends Service implements
         updateTimeAudio();
         jcPlayerServiceListener.onPlaying();
 
-        if(notificationListener != null)
-            notificationListener.onPlaying();
+        if(notificationListener != null) notificationListener.onPlaying();
     }
 
     public void seekTo(int time){
@@ -140,21 +163,20 @@ public class JcPlayerService extends Service implements
                 while (isPlaying){
                     try {
 
-                        if(jcPlayerServiceListener  != null)
+                        if(jcPlayerServiceListener  != null) {
                             jcPlayerServiceListener.onTimeChanged(mediaPlayer.getCurrentPosition());
-
-                        if (notificationListener != null)
-                                        notificationListener.onTimeChanged(mediaPlayer.getCurrentPosition());
-
+                        }
+                        if (notificationListener != null) {
+                            notificationListener.onTimeChanged(mediaPlayer.getCurrentPosition());
+                        }
                         Thread.sleep(1000);
-                    }catch (IllegalStateException | InterruptedException | NullPointerException e) {
+                    } catch (IllegalStateException | InterruptedException | NullPointerException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }.start();
     }
-
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
@@ -163,10 +185,8 @@ public class JcPlayerService extends Service implements
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        if(jcPlayerServiceListener != null)
-            jcPlayerServiceListener.onCompletedAudio();
-        if(notificationListener != null)
-            notificationListener.onCompletedAudio();
+        if(jcPlayerServiceListener != null) jcPlayerServiceListener.onCompletedAudio();
+        if(notificationListener != null) notificationListener.onCompletedAudio();
     }
 
     @Override

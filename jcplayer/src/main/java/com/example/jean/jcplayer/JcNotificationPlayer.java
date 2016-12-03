@@ -60,6 +60,7 @@ public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceList
             notificationManager.notify(NOTIFICATION_ID, notification);
         } else {
             notificationCompat = new NotificationCompat.Builder(context)
+                    //TODO: Set to API below Build.VERSION.SDK_INT
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setSmallIcon(iconResourceResource)
                     .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
@@ -93,7 +94,6 @@ public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceList
 
         return  remoteView;
     }
-
 
     private PendingIntent buildPendingIntent(String action, int id){
         Intent playIntent = new Intent(context.getApplicationContext(), JcPlayerNotificationReceiver.class);
