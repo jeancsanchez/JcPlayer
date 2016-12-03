@@ -1,5 +1,6 @@
 package com.example.jean.jcplayer;
 
+import android.support.annotation.RawRes;
 import java.io.Serializable;
 
 /**
@@ -7,19 +8,42 @@ import java.io.Serializable;
  */
 
 public class JcAudio implements Serializable {
-    private int id;
+    private long id;
 
     private String title;
 
     private int position;
 
-    private String url;
+    private String path;
 
-    public int getId() {
+    private Origin origin;
+
+    public JcAudio(){}
+
+    public JcAudio(String path, String title, Origin origin){
+        // It looks bad
+        int randomNumber = path.length() + title.length();
+
+        this.id = randomNumber;
+        this.position = randomNumber;
+        this.title = title;
+        this.path = path;
+        this.origin = origin;
+    }
+
+    public JcAudio(String path, String title, long id, int position, Origin origin){
+        this.id = id;
+        this.position = position;
+        this.title = title;
+        this.path = path;
+        this.origin = origin;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -39,34 +63,51 @@ public class JcAudio implements Serializable {
         this.position = position;
     }
 
-    public String getUrl() {
-        return url;
+    public String getPath() {
+        return path;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setPath(String path) {
+        this.path = path;
     }
 
-
-    public JcAudio(String url, String title, int id, int position){
-        this.id = id;
-        this.position = position;
-        this.title = title;
-        this.url = url;
-
+    public Origin getOrigin() {
+        return origin;
     }
 
-    public JcAudio(String url, String title){
-        // It looks bad
-        int randomNumber = url.length() + title.length();
-
-        this.id = randomNumber;
-        this.position = randomNumber;
-        this.title = title;
-        this.url = url;
+    public void setOrigin(Origin origin) {
+        this.origin = origin;
     }
 
-    public JcAudio(){
+    public static JcAudio createFromRaw(@RawRes int rawId){
+        return new JcAudio(String.valueOf(rawId), String.valueOf(rawId), Origin.RAW);
+    }
 
+    public static JcAudio createFromRaw(String title, @RawRes int rawId){
+        return new JcAudio(String.valueOf(rawId), title, Origin.RAW);
+    }
+
+    public static JcAudio createFromAssets(String assetName){
+        return new JcAudio(assetName, assetName, Origin.ASSETS);
+    }
+
+    public static JcAudio createFromAssets(String title, String assetName){
+        return new JcAudio(title, assetName, Origin.ASSETS);
+    }
+
+    public static JcAudio createFromURL(String url) {
+        return new JcAudio(url, url, Origin.URL);
+    }
+
+    public static JcAudio createFromURL(String title, String url) {
+        return new JcAudio(title, url, Origin.URL);
+    }
+
+    public static JcAudio createFromFilePath(String filePath) {
+        return new JcAudio(filePath, filePath, Origin.FILE_PATH);
+    }
+
+    public static JcAudio createFromFilePath(String title, String filePath) {
+        return new JcAudio(title, filePath, Origin.FILE_PATH);
     }
 }

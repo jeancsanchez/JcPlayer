@@ -207,7 +207,7 @@ public class JcAudioPlayer {
             try {
                 context.unbindService(mConnection);
             }catch (IllegalArgumentException e){
-
+                //TODO: Add readable exception here
             }
 
         if (jcNotificationPlayer != null) {
@@ -217,6 +217,4 @@ public class JcAudioPlayer {
         if(JcAudioPlayer.getInstance() != null)
             JcAudioPlayer.getInstance().setInstance(null);
     }
-
-
 }
