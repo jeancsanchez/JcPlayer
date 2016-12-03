@@ -25,16 +25,21 @@ public class MainActivity extends AppCompatActivity {
         player = (JcPlayerView) findViewById(R.id.jcplayer);
 
         ArrayList<JcAudio> jcAudios = new ArrayList<>();
-        jcAudios.add(JcAudio.createFromURL("http://www.villopim.com.br/android/Music_01.mp3"));
+        jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
+        jcAudios.add(JcAudio.createFromAssets("Asset audio", "49.v4.mid"));
+        jcAudios.add(JcAudio.createFromRaw("Raw audio", R.raw.a_34));
+        jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "13.mid"));
+        jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
         //urls.add(new FileAndOrigin("http://www.villopim.com.br/android/Music_02.mp3", Origin.URL));
         //jcAudios.add(JcAudio.createFromFilePath("test", this.getFilesDir() + "/" + "13.mid"));
         //jcAudios.add(JcAudio.createFromFilePath("test", this.getFilesDir() + "/" + "123123.mid")); // invalid file path
-        jcAudios.add(JcAudio.createFromAssets("49.v4.mid"));
-        jcAudios.add(JcAudio.createFromAssets("tester", "aaa.mid")); // invalid assets file
-        jcAudios.add(JcAudio.createFromRaw(R.raw.a_203));
+//        jcAudios.add(JcAudio.createFromAssets("49.v4.mid"));
+//        jcAudios.add(JcAudio.createFromRaw(R.raw.a_203));
         //jcAudios.add(JcAudio.createFromRaw("a_34", R.raw.a_34));
         //urls.add(new FileAndOrigin(String.valueOf(1), Origin.RAW)); // invalid raw file.
-        player.initWithTitlePlaylist(jcAudios, "Awesome music");
+//        player.initWithTitlePlaylist(jcAudios, "Awesome music");
+        player.initPlaylist(jcAudios);
+
 
         adapterSetup();
     }
