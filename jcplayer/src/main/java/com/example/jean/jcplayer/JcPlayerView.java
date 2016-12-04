@@ -426,4 +426,9 @@ public class JcPlayerView extends LinearLayout implements
     public void onPathError(JcAudio jcAudio) {
         dismissProgressBar();
     }
+
+    public void registerServiceListener(JcPlayerService.JcPlayerServiceListener jcPlayerServiceListener) {
+        if(jcAudioPlayer != null)
+            jcAudioPlayer.registerServiceListener(jcPlayerServiceListener);
+    }
 }

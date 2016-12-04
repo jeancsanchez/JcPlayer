@@ -56,6 +56,12 @@ public class JcAudioPlayer {
             jcPlayerService.registerInvalidPathListener(invalidPathListener);
     }
 
+    public void registerServiceListener(JcPlayerService.JcPlayerServiceListener jcPlayerServiceListener) {
+        this.listener = jcPlayerServiceListener;
+        if(jcPlayerService != null)
+            jcPlayerService.registerServicePlayerListener(jcPlayerServiceListener);
+    }
+
     public static JcAudioPlayer getInstance(){
         return instance;
     }

@@ -66,13 +66,17 @@ public class JcPlayerService extends Service implements
     public void registerServicePlayerListener(JcPlayerServiceListener jcPlayerServiceListener){
         if(jcPlayerServiceListeners == null)
             jcPlayerServiceListeners = new ArrayList<>();
-        jcPlayerServiceListeners.add(jcPlayerServiceListener);
+
+        if(!jcPlayerServiceListeners.contains(jcPlayerServiceListener))
+            jcPlayerServiceListeners.add(jcPlayerServiceListener);
     }
 
     public void registerInvalidPathListener(OnInvalidPathListener invalidPathListener) {
         if(invalidPathListeners == null)
             invalidPathListeners = new ArrayList<>();
-        invalidPathListeners.add(invalidPathListener);
+
+        if(!invalidPathListeners.contains(invalidPathListeners))
+            invalidPathListeners.add(invalidPathListener);
     }
 
     @Nullable
