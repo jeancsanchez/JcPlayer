@@ -13,7 +13,7 @@ import android.widget.RemoteViews;
 /**
  * Created by jean on 12/07/16.
  */
-public class JcNotificationPlayer implements JcPlayerService.JCPlayerServiceListener{
+public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceListener {
     public static final int NOTIFICATION_ID = 100;
     public static final int NEXT_ID = 0;
     public static final int PREVIOUS_ID = 1;
