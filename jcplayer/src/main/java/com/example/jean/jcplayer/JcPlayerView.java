@@ -248,6 +248,10 @@ public class JcPlayerView extends LinearLayout implements
         return jcAudioPlayer.getPlaylist();
     }
 
+    public JcAudio getCurrentAudio(){
+        return jcAudioPlayer.getCurrentAudio();
+    }
+
     private void createJcAudioPlayer() {
         if (jcAudioPlayer == null) {
             List<JcAudio> playlist = new ArrayList<>();
@@ -421,9 +425,5 @@ public class JcPlayerView extends LinearLayout implements
     @Override
     public void onPathError(JcAudio jcAudio) {
         dismissProgressBar();
-    }
-
-    public JcAudio getCurrentAudio(){
-        return jcAudioPlayer.getCurrentAudio();
     }
 }
