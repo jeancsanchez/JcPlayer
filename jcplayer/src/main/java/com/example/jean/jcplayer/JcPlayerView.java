@@ -153,29 +153,6 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-  /**
-   * Play audio from url
-   * @param path path of file
-   * @param title title of file
-   * @param origin origin of the file
-   */
-    //TODO: Should we expose this to user? A: Yes, case the user want to play an anonymous audio
-    public void playAudio(String title, String path, Origin origin) {
-        showProgressBar();
-        createJcAudioPlayer();
-
-        JcAudio jcAudio = new JcAudio(title, path, origin);
-        if(!jcAudioPlayer.getPlaylist().contains(jcAudio))
-            jcAudioPlayer.getPlaylist().add(jcAudio);
-
-        try {
-            jcAudioPlayer.playAudio(jcAudio);
-        } catch (AudioListNullPointerException e) {
-            dismissProgressBar();
-            e.printStackTrace();
-        }
-    }
-
     public void next() {
         resetPlayerInfo();
         showProgressBar();
