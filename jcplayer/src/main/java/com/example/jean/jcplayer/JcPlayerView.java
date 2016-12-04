@@ -16,20 +16,13 @@ import android.widget.TextView;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioAssetsInvalidException;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioFilePathInvalidException;
 import com.example.jean.jcplayer.JcPlayerExceptions.AudioListNullPointerException;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioRawInvalidException;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioUrlInvalidException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JcPlayerView extends LinearLayout implements
-        JcPlayerService.JCPlayerServiceListener,
+        JcPlayerService.JcPlayerServiceListener,
         View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     private static final int PULSE_ANIMATION_DURATION = 200;
@@ -38,7 +31,6 @@ public class JcPlayerView extends LinearLayout implements
     private TextView txtCurrentMusic;
     private ImageButton btnPrev;
     private ImageButton btnPlay;
-    private List<JcAudio> playlist;
     private ProgressBar progressBarPlayer;
     private JcAudioPlayer jcAudioPlayer;
     private TextView txtDuration;
@@ -46,6 +38,7 @@ public class JcPlayerView extends LinearLayout implements
     private SeekBar seekBar;
     private TextView txtCurrentDuration;
     private AssetFileDescriptor assetFileDescriptor;
+    private boolean initialized;
 
     public JcPlayerView(Context context){
         super(context);
@@ -86,239 +79,70 @@ public class JcPlayerView extends LinearLayout implements
      * @param playlist List of JcAudio objects that you want play
      */
     public void initPlaylist(List<JcAudio> playlist){
-        if(this.playlist == null)
-            this.playlist = new ArrayList<>();
-
-        for(JcAudio audio : playlist){
-            if( isAudioFileValid(audio.getPath(), audio.getOrigin()) )
-             this.playlist.add(audio);
-
-            else {
-                throwError(audio.getPath(), audio.getOrigin());
-            }
-        }
-
-        jcAudioPlayer = new JcAudioPlayer(getContext(), this.playlist, JcPlayerView.this);
-    }
-
-
-    /**
-     * Initialize an anonymous playlist with a default title for all
-     * @param jcAudios List of urls strings
-     */
-    public void initAnonPlaylist(List<JcAudio> jcAudios){
-        if(playlist == null)
-            playlist = new ArrayList<>();
-
-        for(int i = 0; i < jcAudios.size(); i++){
-            if(isAudioFileValid(jcAudios.get(i))){
-                jcAudios.get(i).setId(i);
-                jcAudios.get(i).setPosition(i);
-                playlist.add(jcAudios.get(i));
-
-                generateTitleAudio(getContext().getString(R.string.track_number, i+1), i);
-            }else {
-                throwError(jcAudios.get(i));
-            }
-        }
-
+        sortPlaylist(playlist);
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        initialized = true;
     }
 
-
     /**
-     * Initialize an anonymous playlist, but with a custom title for all
-     * @param jcAudios List of JcAudio files.
-     * @param title Default title
+     * Initialize an anonymous playlist with a default JcPlayer title for all audios
+     * @param playlist List of urls strings
      */
-    public void initWithTitlePlaylist(List<JcAudio> jcAudios, String title){
-
-        if(playlist == null)
-            playlist = new ArrayList<>();
-
-        for(int i = 0; i < jcAudios.size(); i++){
-            // We don't catch for error here. Let user add a file eventhough not a valid file.
-            jcAudios.get(i).setId(i);
-            jcAudios.get(i).setPosition(i);
-            playlist.add(jcAudios.get(i));
-
-            generateTitleAudio(title + " " + String.valueOf(i+1), i);
-
-
-            //}else {
-                //try {
-                //    throw new AudioUrlInvalidException(fileAndOrigins.get(i).getPath());
-                //} catch (AudioUrlInvalidException e) {
-                //    e.printStackTrace();
-                //}
-                //throwError(jcAudios.get(i));
-            //}
-        }
-
+    public void initAnonPlaylist(List<JcAudio> playlist){
+        sortPlaylist(playlist);
+        generateTitleAudio(playlist, getContext().getString(R.string.track_number));
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        initialized = true;
     }
 
     /**
-     * Initialize an anonymous playlist, but with a custom title for all
+     * Initialize an anonymous playlist, but with a custom title for all audios
+     * @param playlist List of JcAudio files.
+     * @param title Default title for all audios
+     */
+    public void initWithTitlePlaylist(List<JcAudio> playlist, String title){
+        sortPlaylist(playlist);
+        generateTitleAudio(playlist, title);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        initialized = true;
+    }
+
+    /**
+     * Add an audio for the playlist
      * @param title Audio title
      * @param path path of the file
      * @param origin origin of the file as in {@link Origin}
      */
-    //TODO: Should we expose this to user?
-    private void addAudio(String title, String path, Origin origin){
-        if(isAudioFileValid(path, origin)) {
-            if (playlist == null)
-                playlist = new ArrayList<>();
+    //TODO: Should we expose this to user? A: Yes, because the user can add files to playlist without creating a new List of JcAudio objects, just adding this files dynamically.
+    public void addAudio(String title, String path, Origin origin) {
+        createJcAudioPlayer();
+        List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
+        int lastPosition = playlist.size();
 
-            int lastPosition = playlist.size();
-            playlist.add(lastPosition,
-                    new JcAudio(path, title, /* id */ lastPosition + 1, /* position */ lastPosition + 1,
-                        origin));
-
-            if (jcAudioPlayer == null)
-                jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        }
-        else {
-            throwError(path, origin);
-        }
-    }
-
-  /**
-   * Adding new audio file to playlist
-   * @param jcAudio Audio file generated from JcAudio factory
-   */
-  public void addAudio(JcAudio jcAudio){
-        if(isAudioFileValid(jcAudio)) {
-            if (playlist == null)
-                playlist = new ArrayList<>();
-
-            int lastPosition = playlist.size();
-            jcAudio.setId(lastPosition + 1);
-            jcAudio.setPosition(lastPosition + 1);
+        JcAudio jcAudio = new JcAudio(path, title, /* id */ lastPosition + 1, /* position */ lastPosition + 1, origin);
+        if(!playlist.contains(jcAudio))
             playlist.add(lastPosition, jcAudio);
-
-            if (jcAudioPlayer == null)
-                jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        }
-        else {
-            throwError(jcAudio);
-        }
     }
 
-    private void throwError(JcAudio jcAudio) {
-        throwError(jcAudio.getPath(), jcAudio.getOrigin());
-    }
+    /**
+     * Remove an audio for the playlist
+     * @param jcAudio JcAudio object
+     */
+    public void removeAudio(JcAudio jcAudio) {
+        if(jcAudioPlayer != null) {
+            List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
 
-    private void throwError(String path, Origin origin) {
-        if(origin == Origin.URL) {
-            throw new AudioUrlInvalidException(path);
-        } else if(origin == Origin.RAW) {
-            try {
-                throw new AudioRawInvalidException(path);
-            } catch (AudioRawInvalidException e) {
-                e.printStackTrace();
-            }
-        } else if(origin == Origin.ASSETS) {
-            try {
-                throw new AudioAssetsInvalidException(path);
-            } catch (AudioAssetsInvalidException e) {
-                e.printStackTrace();
-            }
-        } else if(origin == Origin.FILE_PATH) {
-            try {
-                throw new AudioFilePathInvalidException(path);
-            } catch (AudioFilePathInvalidException e) {
-                e.printStackTrace();
-            }
+            if (playlist != null && playlist.contains(jcAudio))
+                playlist.remove(jcAudio);
         }
     }
-
-    private void generateTitleAudio(String title, int position){
-        playlist.get(position).setTitle(title);
-    }
-
-    private boolean isAudioFileValid(JcAudio jcAudio){
-        return isAudioFileValid(jcAudio.getPath(), jcAudio.getOrigin());
-    }
-
-    private boolean isAudioFileValid(String path, Origin origin) {
-        if(origin == Origin.URL) {
-            return path.startsWith("http") || path.startsWith("https");
-        } else if(origin == Origin.RAW) {
-            assetFileDescriptor = null;
-            assetFileDescriptor = getContext().getResources().openRawResourceFd(Integer.parseInt(path));
-            return assetFileDescriptor != null;
-        } else if(origin == Origin.ASSETS) {
-            try {
-                assetFileDescriptor = null;
-                assetFileDescriptor = getContext().getAssets().openFd(path);
-                return assetFileDescriptor != null;
-            } catch (IOException e) {
-                e.printStackTrace(); //TODO: need to give user more readable error.
-                return false;
-            }
-        } else if(origin == Origin.FILE_PATH) {
-            File file = new File(path);
-            //TODO: find an alternative to checking if file is exist, this code is slower on average.
-            //read more: http://stackoverflow.com/a/8868140
-            return file.exists();
-        } else {
-            // We should never arrive here.
-            return false; // We don't know what the origin of the Audio File
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-        if(playlist != null)
-            if(view.getId() ==  R.id.btn_play) {
-                YoYo.with(Techniques.Pulse)
-                    .duration(PULSE_ANIMATION_DURATION)
-                    .playOn(btnPlay);
-
-                if (btnPlay.getTag().equals(R.drawable.ic_pause_black))
-                    pause();
-                else
-                    continueAudio();
-            }
-
-            if(view.getId() == R.id.btn_next) {
-                YoYo.with(Techniques.Pulse)
-                    .duration(PULSE_ANIMATION_DURATION)
-                    .playOn(btnNext);
-                next();
-            }
-
-            if(view.getId() == R.id.btn_prev) {
-                YoYo.with(Techniques.Pulse)
-                    .duration(PULSE_ANIMATION_DURATION)
-                    .playOn(btnPrev);
-                previous();
-            }
-    }
-
-  //TODO: This is the old code. Still relevant?
-    //public void playAudio(JcAudio JcAudio){
-    //    showProgressBar();
-    //    try {
-    //        jcAudioPlayer.playAudio(JcAudio);
-    //    }catch (AudioListNullPointerException e) {
-    //        dismissProgressBar();
-    //        e.printStackTrace();
-    //    }
-    //}
 
     public void playAudio(JcAudio jcAudio) {
         showProgressBar();
+        createJcAudioPlayer();
+        if(!jcAudioPlayer.getPlaylist().contains(jcAudio))
+            jcAudioPlayer.getPlaylist().add(jcAudio);
 
-        if (playlist == null) {
-            playlist = new ArrayList<>();
-        }
-        playlist.add(jcAudio);
-
-        if(jcAudioPlayer == null) {
-            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        }
         try {
             jcAudioPlayer.playAudio(jcAudio);
         } catch (AudioListNullPointerException e) {
@@ -333,17 +157,14 @@ public class JcPlayerView extends LinearLayout implements
    * @param title title of file
    * @param origin origin of the file
    */
-    //TODO: Should we expose this to user?
-    private void playAudio(String path, String title, Origin origin) {
+    //TODO: Should we expose this to user? A: Yes, case the user want to play an anonymous audio
+    public void playAudio(String title, String path, Origin origin) {
         showProgressBar();
+        createJcAudioPlayer();
 
-        JcAudio jcAudio = new JcAudio(path, title, origin);
-        if (playlist == null)
-            playlist = new ArrayList<>();
-        playlist.add(jcAudio);
-
-        if(jcAudioPlayer == null)
-            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        JcAudio jcAudio = new JcAudio(title, path, origin);
+        if(!jcAudioPlayer.getPlaylist().contains(jcAudio))
+            jcAudioPlayer.getPlaylist().add(jcAudio);
 
         try {
             jcAudioPlayer.playAudio(jcAudio);
@@ -353,7 +174,7 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-    private void next() {
+    public void next() {
         resetPlayerInfo();
         showProgressBar();
 
@@ -365,7 +186,7 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-    private void continueAudio() {
+    public void continueAudio() {
         showProgressBar();
 
         try {
@@ -376,11 +197,11 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-    private void pause() {
+    public void pause() {
         jcAudioPlayer.pauseAudio();
     }
 
-    private void previous() {
+    public void previous() {
         resetPlayerInfo();
         showProgressBar();
 
@@ -390,6 +211,100 @@ public class JcPlayerView extends LinearLayout implements
             dismissProgressBar();
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(initialized)
+            if(view.getId() ==  R.id.btn_play) {
+                YoYo.with(Techniques.Pulse)
+                        .duration(PULSE_ANIMATION_DURATION)
+                        .playOn(btnPlay);
+
+                if (btnPlay.getTag().equals(R.drawable.ic_pause_black))
+                    pause();
+                else
+                    continueAudio();
+            }
+
+        if(view.getId() == R.id.btn_next) {
+            YoYo.with(Techniques.Pulse)
+                    .duration(PULSE_ANIMATION_DURATION)
+                    .playOn(btnNext);
+            next();
+        }
+
+        if(view.getId() == R.id.btn_prev) {
+            YoYo.with(Techniques.Pulse)
+                    .duration(PULSE_ANIMATION_DURATION)
+                    .playOn(btnPrev);
+            previous();
+        }
+    }
+
+    /**
+     * Create a notification player with same playlist with a custom icon.
+     * @param iconResource icon path.
+     */
+    public void createNotification(int iconResource){
+        if(jcAudioPlayer != null) jcAudioPlayer.createNewNotification(iconResource);
+    }
+
+    /**
+     * Create a notification player with same playlist with a default icon
+     */
+    public void createNotification(){
+        if(jcAudioPlayer != null) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // For light theme
+                jcAudioPlayer.createNewNotification(R.drawable.ic_notification_default_black);
+            } else {
+                // For dark theme
+                jcAudioPlayer.createNewNotification(R.drawable.ic_notification_default_white);
+            }
+        }
+    }
+
+    public List<JcAudio> getMyPlaylist(){
+        return jcAudioPlayer.getPlaylist();
+    }
+
+    private void createJcAudioPlayer() {
+        if (jcAudioPlayer == null) {
+            List<JcAudio> playlist = new ArrayList<>();
+            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        }
+        initialized = true;
+    }
+
+    private void sortPlaylist(List<JcAudio> playlist){
+        for(int i = 0; i < playlist.size(); i++) {
+            JcAudio jcAudio = playlist.get(i);
+            jcAudio.setPosition(i);
+        }
+    }
+
+    private void generateTitleAudio(List<JcAudio> playlist, String title){
+        for(int i = 0; i < playlist.size(); i++){
+            if(title.equals(getContext().getString(R.string.track_number)))
+                playlist.get(i).setTitle(getContext().getString(R.string.track_number) + " " + String.valueOf(i));
+            else
+                playlist.get(i).setTitle(title);
+        }
+    }
+
+    private void showProgressBar(){
+        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
+        btnPlay.setVisibility(Button.GONE);
+        btnNext.setClickable(false);
+        btnPrev.setClickable(false);
+    }
+
+    private void dismissProgressBar(){
+        progressBarPlayer.setVisibility(ProgressBar.GONE);
+        btnPlay.setVisibility(Button.VISIBLE);
+        btnNext.setClickable(true);
+        btnPrev.setClickable(true);
     }
 
     @Override
@@ -429,26 +344,11 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-
     public void resetPlayerInfo(){
         seekBar.setProgress(0);
         txtCurrentMusic.setText("");
         txtCurrentDuration.setText(getContext().getString(R.string.play_initial_time));
         txtDuration.setText(getContext().getString(R.string.play_initial_time));
-    }
-
-    public void showProgressBar(){
-        progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
-        btnPlay.setVisibility(Button.GONE);
-        btnNext.setClickable(false);
-        btnPrev.setClickable(false);
-    }
-
-    public void dismissProgressBar(){
-        progressBarPlayer.setVisibility(ProgressBar.GONE);
-        btnPlay.setVisibility(Button.VISIBLE);
-        btnNext.setClickable(true);
-        btnPrev.setClickable(true);
     }
 
     @Override
@@ -513,36 +413,10 @@ public class JcPlayerView extends LinearLayout implements
         });
     }
 
-    /**
-     * Create a notification player with same playlist with a custom icon.
-     * @param iconResource icon path.
-     */
-    public void createNotification(int iconResource){
-        if(jcAudioPlayer != null) jcAudioPlayer.createNewNotification(iconResource);
-    }
-
-    /**
-     * Create a notification player with same playlist with a default icon
-     */
-    public void createNotification(){
-        if(jcAudioPlayer != null) {
-          if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // For light theme
-            jcAudioPlayer.createNewNotification(R.drawable.ic_notification_default_black);
-          } else {
-            // For dark theme
-            jcAudioPlayer.createNewNotification(R.drawable.ic_notification_default_white);
-          }
-        }
-    }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
         if(fromUser) jcAudioPlayer.seekTo(i);
-    }
-
-    public void kill() {
-        if(jcAudioPlayer != null) jcAudioPlayer.kill();
     }
 
     @Override
@@ -555,7 +429,12 @@ public class JcPlayerView extends LinearLayout implements
         dismissProgressBar();
     }
 
-    public List<JcAudio> getMyPlaylist(){
-        return playlist;
+    public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener){
+        if(jcAudioPlayer != null)
+            jcAudioPlayer.registerInvalidPathListener(registerInvalidPathListener);
+    }
+
+    public void kill() {
+        if(jcAudioPlayer != null) jcAudioPlayer.kill();
     }
 }
