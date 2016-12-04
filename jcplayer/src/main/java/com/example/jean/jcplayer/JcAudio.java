@@ -9,18 +9,13 @@ import java.io.Serializable;
 
 public class JcAudio implements Serializable {
     private long id;
-
     private String title;
-
     private int position;
-
     private String path;
-
     private Origin origin;
 
-    public JcAudio(){}
 
-    public JcAudio(String path, String title, Origin origin){
+    public JcAudio(String title, String path, Origin origin){
         // It looks bad
         int randomNumber = path.length() + title.length();
 
@@ -31,7 +26,7 @@ public class JcAudio implements Serializable {
         this.origin = origin;
     }
 
-    public JcAudio(String path, String title, long id, int position, Origin origin){
+    public JcAudio(String title, String path, long id, int position, Origin origin){
         this.id = id;
         this.position = position;
         this.title = title;
@@ -84,7 +79,7 @@ public class JcAudio implements Serializable {
     }
 
     public static JcAudio createFromRaw(String title, @RawRes int rawId){
-        return new JcAudio(String.valueOf(rawId), title, Origin.RAW);
+        return new JcAudio(title, String.valueOf(rawId), Origin.RAW);
     }
 
     public static JcAudio createFromAssets(String assetName){
