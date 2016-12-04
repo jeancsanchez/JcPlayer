@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 public class JcAudioPlayer {
-    public JcPlayerService jcPlayerService;
+    private JcPlayerService jcPlayerService;
     private JcPlayerService.JCPlayerServiceListener listener;
     private JcPlayerService.JCPlayerServiceListener notificationListener;
     private JcNotificationPlayer jcNotificationPlayer;
