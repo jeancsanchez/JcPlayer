@@ -228,4 +228,8 @@ public class JcAudioPlayer {
     public List<JcAudio> getPlaylist() {
         return playlist;
     }
+
+    public JcAudio getCurrentAudio() {
+        return jcPlayerService.getCurrentAudio();
+    }
 }

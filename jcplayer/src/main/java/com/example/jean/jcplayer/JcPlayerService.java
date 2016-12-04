@@ -38,6 +38,7 @@ public class JcPlayerService extends Service implements
     private JcPlayerServiceListener notificationListener;
     private AssetFileDescriptor assetFileDescriptor = null; // For Asset and Raw file.
 
+
     public class JcPlayerServiceBinder extends Binder {
         public JcPlayerService getService(){
             return JcPlayerService.this;
@@ -301,5 +302,9 @@ public class JcPlayerService extends Service implements
             notificationListener.updateTitle(currentJcAudio.getTitle());
             notificationListener.onPreparedAudio(currentJcAudio.getTitle(), mediaPlayer.getDuration());
         }
+    }
+
+    public JcAudio getCurrentAudio() {
+        return currentJcAudio;
     }
 }
