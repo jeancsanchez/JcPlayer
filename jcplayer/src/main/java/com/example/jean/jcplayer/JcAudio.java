@@ -1,6 +1,7 @@
 package com.example.jean.jcplayer;
 
 import android.support.annotation.RawRes;
+
 import java.io.Serializable;
 
 /**
