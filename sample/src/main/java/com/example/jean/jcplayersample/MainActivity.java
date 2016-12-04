@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity implements JcPlayerService.O
         player = (JcPlayerView) findViewById(R.id.jcplayer);
 
         ArrayList<JcAudio> jcAudios = new ArrayList<>();
-//        jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
-//        jcAudios.add(JcAudio.createFromAssets("Asset audio", "49.v4.mid"));
-//        jcAudios.add(JcAudio.createFromRaw("Raw audio", R.raw.a_34));
-//        jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "CANTO DA GRAÚNA.mp3"));
-//        jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
-//        player.initPlaylist(jcAudios);
+        jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
+        jcAudios.add(JcAudio.createFromAssets("Asset audio", "49.v4.mid"));
+        jcAudios.add(JcAudio.createFromRaw("Raw audio", R.raw.a_34));
+        jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "CANTO DA GRAÚNA.mp3"));
+        jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
+        player.initPlaylist(jcAudios);
 
 
 //        jcAudios.add(JcAudio.createFromFilePath("test", this.getFilesDir() + "/" + "13.mid"));
@@ -50,12 +50,11 @@ public class MainActivity extends AppCompatActivity implements JcPlayerService.O
 //        jcAudios.add(JcAudio.createFromRaw("a_34", R.raw.a_34));
 //        player.initAnonPlaylist(jcAudios);
 
-
-        // Adding new audios to playlist
-        player.addAudio(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
-        player.addAudio(JcAudio.createFromAssets("49.v4.mid"));
-        player.addAudio(JcAudio.createFromRaw(R.raw.a_34));
-        player.addAudio(JcAudio.createFromFilePath(this.getFilesDir() + "/" + "121212.mmid"));
+//        Adding new audios to playlist
+//        player.addAudio(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
+//        player.addAudio(JcAudio.createFromAssets("49.v4.mid"));
+//        player.addAudio(JcAudio.createFromRaw(R.raw.a_34));
+//        player.addAudio(JcAudio.createFromFilePath(this.getFilesDir() + "/" + "121212.mmid"));
 
         player.registerInvalidPathListener(this);
         adapterSetup();
