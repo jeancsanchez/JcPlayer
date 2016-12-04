@@ -8,7 +8,13 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
+
+import com.example.jean.jcplayer.JcPlayerExceptions.AudioAssetsInvalidException;
+import com.example.jean.jcplayer.JcPlayerExceptions.AudioFilePathInvalidException;
+import com.example.jean.jcplayer.JcPlayerExceptions.AudioRawInvalidException;
+import com.example.jean.jcplayer.JcPlayerExceptions.AudioUrlInvalidException;
+
+import java.io.File;
 import java.io.IOException;
 
 public class JcPlayerService extends Service implements
@@ -19,31 +25,24 @@ public class JcPlayerService extends Service implements
 
     private static final String TAG = JcPlayerService.class.getSimpleName();
 
-    private final IBinder mBinder = new JCPlayerServiceBinder();
+    private final IBinder mBinder = new JcPlayerServiceBinder();
     private MediaPlayer mediaPlayer;
     private boolean isPlaying;
     private int duration;
     private int currentTime;
     private JcAudio currentJcAudio;
-    private JCPlayerServiceListener jcPlayerServiceListener;
-    private JCPlayerServiceListener notificationListener;
+    private JcPlayerServiceListener jcPlayerServiceListener;
+    private JcPlayerServiceListener notificationListener;
     private AssetFileDescriptor assetFileDescriptor = null; // For Asset and Raw file.
+    private OnInvalidPathListener invalidPathListener;
 
-    public class JCPlayerServiceBinder extends Binder {
+    public class JcPlayerServiceBinder extends Binder {
         public JcPlayerService getService(){
             return JcPlayerService.this;
         }
     }
 
-    public void registerListener(JCPlayerServiceListener jcPlayerServiceListener){
-        this.jcPlayerServiceListener = jcPlayerServiceListener;
-    }
-
-    public void registerNotificationListener(JCPlayerServiceListener notificationListener){
-        this.notificationListener = notificationListener;
-    }
-
-    public interface JCPlayerServiceListener{
+    public interface JcPlayerServiceListener {
         void onPreparedAudio(String audioName, int duration);
         void onCompletedAudio();
         void onPaused();
@@ -51,6 +50,22 @@ public class JcPlayerService extends Service implements
         void onPlaying();
         void onTimeChanged(long currentTime);
         void updateTitle(String title);
+    }
+
+    public interface OnInvalidPathListener {
+        void onPathError(JcAudio jcAudio);
+    }
+
+    public void registerNotificationListener(JcPlayerServiceListener notificationListener){
+        this.notificationListener = notificationListener;
+    }
+
+    public void registerServicePlayerListener(JcPlayerServiceListener jcPlayerServiceListener){
+        this.jcPlayerServiceListener = jcPlayerServiceListener;
+    }
+
+    public void registerInvalidPathListener(OnInvalidPathListener invalidPathListener) {
+        this.invalidPathListener= invalidPathListener;
     }
 
     @Nullable
@@ -103,54 +118,57 @@ public class JcPlayerService extends Service implements
     public void play(JcAudio jcAudio)  {
         this.currentJcAudio = jcAudio;
 
-        try {
-            if (mediaPlayer == null) {
-                mediaPlayer = new MediaPlayer();
+        if(isAudioFileValid(jcAudio.getPath(), jcAudio.getOrigin())) {
+            try {
+                if (mediaPlayer == null) {
+                    mediaPlayer = new MediaPlayer();
 
-                if(jcAudio.getOrigin() == Origin.URL) {
-                    mediaPlayer.setDataSource(jcAudio.getPath());
-                } else if(jcAudio.getOrigin() == Origin.RAW) {
-                    assetFileDescriptor = getApplicationContext().getResources().openRawResourceFd(Integer.parseInt(jcAudio.getPath()));
-                    if (assetFileDescriptor == null) return; // TODO: Should throw error.
-                    mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(),
-                        assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
-                    assetFileDescriptor.close();
-                    assetFileDescriptor = null;
-                } else if(jcAudio.getOrigin() == Origin.ASSETS) {
-                    assetFileDescriptor = getApplicationContext().getAssets().openFd(jcAudio.getPath());
-                    mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(),
-                        assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
-                    assetFileDescriptor.close();
-                    assetFileDescriptor = null;
-                } else if(jcAudio.getOrigin() == Origin.FILE_PATH) {
-                    mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(jcAudio.getPath()));
+                    if (jcAudio.getOrigin() == Origin.URL) {
+                        mediaPlayer.setDataSource(jcAudio.getPath());
+                    } else if (jcAudio.getOrigin() == Origin.RAW) {
+                        assetFileDescriptor = getApplicationContext().getResources().openRawResourceFd(Integer.parseInt(jcAudio.getPath()));
+                        if (assetFileDescriptor == null) return; // TODO: Should throw error.
+                        mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(),
+                                assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                        assetFileDescriptor.close();
+                        assetFileDescriptor = null;
+                    } else if (jcAudio.getOrigin() == Origin.ASSETS) {
+                        assetFileDescriptor = getApplicationContext().getAssets().openFd(jcAudio.getPath());
+                        mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(),
+                                assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                        assetFileDescriptor.close();
+                        assetFileDescriptor = null;
+                    } else if (jcAudio.getOrigin() == Origin.FILE_PATH) {
+                        mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(jcAudio.getPath()));
+                    }
+
+                    mediaPlayer.prepareAsync();
+                    mediaPlayer.setOnPreparedListener(this);
+                    mediaPlayer.setOnBufferingUpdateListener(this);
+                    mediaPlayer.setOnCompletionListener(this);
+                    mediaPlayer.setOnErrorListener(this);
+
+                } else if (isPlaying) {
+                    stop();
+                    play(jcAudio);
+
+                } else {
+                    mediaPlayer.start();
+                    isPlaying = true;
+
+                    if (jcPlayerServiceListener != null)
+                        jcPlayerServiceListener.onContinueAudio();
                 }
-                mediaPlayer.prepareAsync();
-
-                mediaPlayer.setOnPreparedListener(this);
-                mediaPlayer.setOnBufferingUpdateListener(this);
-                mediaPlayer.setOnCompletionListener(this);
-                mediaPlayer.setOnErrorListener(this);
-
-            } else if (isPlaying) {
-                stop();
-                play(jcAudio);
-
-            } else {
-                mediaPlayer.start();
-                isPlaying = true;
-
-                if(jcPlayerServiceListener != null)
-                    jcPlayerServiceListener.onContinueAudio();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
 
-        updateTimeAudio();
-        jcPlayerServiceListener.onPlaying();
+            updateTimeAudio();
+            jcPlayerServiceListener.onPlaying();
 
-        if(notificationListener != null) notificationListener.onPlaying();
+            if (notificationListener != null) notificationListener.onPlaying();
+        }else
+            throwError(jcAudio.getPath(), jcAudio.getOrigin());
     }
 
     public void seekTo(int time){
@@ -189,6 +207,61 @@ public class JcPlayerService extends Service implements
         if(notificationListener != null) notificationListener.onCompletedAudio();
     }
 
+    private void throwError(String path, Origin origin) {
+        if(origin == Origin.URL) {
+            throw new AudioUrlInvalidException(path);
+        } else if(origin == Origin.RAW) {
+            try {
+                throw new AudioRawInvalidException(path);
+            } catch (AudioRawInvalidException e) {
+                e.printStackTrace();
+            }
+        } else if(origin == Origin.ASSETS) {
+            try {
+                throw new AudioAssetsInvalidException(path);
+            } catch (AudioAssetsInvalidException e) {
+                e.printStackTrace();
+            }
+        } else if(origin == Origin.FILE_PATH) {
+            try {
+                throw new AudioFilePathInvalidException(path);
+            } catch (AudioFilePathInvalidException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(invalidPathListener != null)
+            invalidPathListener.onPathError(currentJcAudio);
+    }
+
+
+    private boolean isAudioFileValid(String path, Origin origin) {
+        if(origin == Origin.URL) {
+            return path.startsWith("http") || path.startsWith("https");
+        } else if(origin == Origin.RAW) {
+            assetFileDescriptor = null;
+            assetFileDescriptor = getApplicationContext().getResources().openRawResourceFd(Integer.parseInt(path));
+            return assetFileDescriptor != null;
+        } else if(origin == Origin.ASSETS) {
+            try {
+                assetFileDescriptor = null;
+                assetFileDescriptor = getApplicationContext().getAssets().openFd(path);
+                return assetFileDescriptor != null;
+            } catch (IOException e) {
+                e.printStackTrace(); //TODO: need to give user more readable error.
+                return false;
+            }
+        } else if(origin == Origin.FILE_PATH) {
+            File file = new File(path);
+            //TODO: find an alternative to checking if file is exist, this code is slower on average.
+            //read more: http://stackoverflow.com/a/8868140
+            return file.exists();
+        } else {
+            // We should never arrive here.
+            return false; // We don't know what the origin of the Audio File
+        }
+    }
+
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
         return false;
@@ -210,4 +283,6 @@ public class JcPlayerService extends Service implements
             notificationListener.onPreparedAudio(currentJcAudio.getTitle(), mediaPlayer.getDuration());
         }
     }
+
+
 }
