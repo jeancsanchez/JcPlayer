@@ -112,17 +112,16 @@ public class JcPlayerView extends LinearLayout implements
 
     /**
      * Add an audio for the playlist
-     * @param title Audio title
-     * @param path path of the file
-     * @param origin origin of the file as in {@link Origin}
      */
     //TODO: Should we expose this to user? A: Yes, because the user can add files to playlist without creating a new List of JcAudio objects, just adding this files dynamically.
-    public void addAudio(String title, String path, Origin origin) {
+    public void addAudio(JcAudio jcAudio) {
         createJcAudioPlayer();
         List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
         int lastPosition = playlist.size();
 
-        JcAudio jcAudio = new JcAudio(path, title, /* id */ lastPosition + 1, /* position */ lastPosition + 1, origin);
+        jcAudio.setId(lastPosition + 1);
+        jcAudio.setPosition(lastPosition + 1);
+
         if(!playlist.contains(jcAudio))
             playlist.add(lastPosition, jcAudio);
     }
@@ -291,7 +290,7 @@ public class JcPlayerView extends LinearLayout implements
     private void generateTitleAudio(List<JcAudio> playlist, String title){
         for(int i = 0; i < playlist.size(); i++){
             if(title.equals(getContext().getString(R.string.track_number)))
-                playlist.get(i).setTitle(getContext().getString(R.string.track_number) + " " + String.valueOf(i));
+                playlist.get(i).setTitle(getContext().getString(R.string.track_number) + " " + String.valueOf(i+1));
             else
                 playlist.get(i).setTitle(title);
         }
