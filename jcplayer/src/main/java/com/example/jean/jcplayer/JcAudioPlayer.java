@@ -52,6 +52,8 @@ public class JcAudioPlayer {
 
     public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener){
         this.invalidPathListener = registerInvalidPathListener;
+        if(jcPlayerService != null)
+            jcPlayerService.registerInvalidPathListener(invalidPathListener);
     }
 
     public static JcAudioPlayer getInstance(){
