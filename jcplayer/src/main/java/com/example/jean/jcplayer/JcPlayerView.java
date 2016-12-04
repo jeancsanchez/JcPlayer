@@ -23,7 +23,7 @@ import java.util.List;
 
 public class JcPlayerView extends LinearLayout implements
         JcPlayerService.JcPlayerServiceListener,
-        View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+        View.OnClickListener, SeekBar.OnSeekBarChangeListener, JcPlayerService.OnInvalidPathListener {
 
     private static final int PULSE_ANIMATION_DURATION = 200;
     private static final int TITLE_ANIMATION_DURATION = 600;
@@ -81,6 +81,7 @@ public class JcPlayerView extends LinearLayout implements
     public void initPlaylist(List<JcAudio> playlist){
         sortPlaylist(playlist);
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        jcAudioPlayer.registerInvalidPathListener(this);
         initialized = true;
     }
 
@@ -92,6 +93,7 @@ public class JcPlayerView extends LinearLayout implements
         sortPlaylist(playlist);
         generateTitleAudio(playlist, getContext().getString(R.string.track_number));
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        jcAudioPlayer.registerInvalidPathListener(this);
         initialized = true;
     }
 
@@ -104,6 +106,7 @@ public class JcPlayerView extends LinearLayout implements
         sortPlaylist(playlist);
         generateTitleAudio(playlist, title);
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+        jcAudioPlayer.registerInvalidPathListener(this);
         initialized = true;
     }
 
@@ -274,6 +277,7 @@ public class JcPlayerView extends LinearLayout implements
             List<JcAudio> playlist = new ArrayList<>();
             jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
         }
+        jcAudioPlayer.registerInvalidPathListener(this);
         initialized = true;
     }
 
@@ -436,5 +440,10 @@ public class JcPlayerView extends LinearLayout implements
 
     public void kill() {
         if(jcAudioPlayer != null) jcAudioPlayer.kill();
+    }
+
+    @Override
+    public void onPathError(JcAudio jcAudio) {
+        dismissProgressBar();
     }
 }
