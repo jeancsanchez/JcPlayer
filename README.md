@@ -14,9 +14,6 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 
 ## Tested files
 - http://xxxx/abc.mp3
-- http://xxxx/abc.mp3
-- http://xxxx/abc.mp3
-- http://xxxx/abc.mp3
 
 ## Not tested URLs
 - http://xxxx/abc.m4a
