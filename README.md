@@ -7,7 +7,15 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ![alt tag]
 (https://github.com/jeancsanchez/JcPlayer/blob/master/sample/jcplayer-gif-definitive.gif)
 
-## Tested URLs
+## New features
+- Raw files
+- Asset Files
+- Local files
+
+## Tested files
+- http://xxxx/abc.mp3
+- http://xxxx/abc.mp3
+- http://xxxx/abc.mp3
 - http://xxxx/abc.mp3
 
 ## Not tested URLs
