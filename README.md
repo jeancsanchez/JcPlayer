@@ -7,7 +7,12 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ![alt tag]
 (https://github.com/jeancsanchez/JcPlayer/blob/master/sample/jcplayer-gif-definitive.gif)
 
-## Tested URLs
+## New features
+- Raw files
+- Asset Files
+- Local files
+
+## Tested files
 - http://xxxx/abc.mp3
 
 ## Not tested URLs
@@ -37,7 +42,7 @@ allprojects {
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:2.0.3-alpha'
+    compile 'io.github.jeancsanchez.jcplayer:jcplayer:2.6.0-alpha'
 }
 ```
 
@@ -58,26 +63,27 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
     jcplayerView = (JcPlayerView) findViewById(R.id.jcplayerView);
 ```
 
-###Option 1: Just play 
+###Option 1: Just init a playlist
 ```java
-    jcplayerView.playAudio("http://www.example.com.br/audio.mp3", "Nice audio");
+    ArrayList<JcAudio> jcAudios = new ArrayList<>();
+    jcAudios.add(JcAudio.createFromURL("url audio","http://xxx/audio.mp3"));
+    jcAudios.add(JcAudio.createFromAssets("Asset audio", "audio.mp3"));
+    jcAudios.add(JcAudio.createFromRaw("Raw audio", R.raw.audio));
+
+    jcplayerView.initPlaylist(jcAudios);
 ```
 
 ###Option 2: Initialize an anonymous playlist with a default title for all
 ```java
-    ArrayList<String> urls = new ArrayList<>();
-    urls.add("http://www.example.com.br/android/Music_01.mp3");
-    urls.add("http://www.example.com.br/android/Music_02.mp3");
-    
-    jcplayerView.initAnonPlaylist(urls);
+    jcplayerView.addAudio(JcAudio.createFromURL("url audio","http://xxx/audio.mp3"));
+    jcplayerView.addAudio(JcAudio.createFromAssets("audio.mp3"));
+    jcplayerView.addAudio(JcAudio.createFromRaw(R.raw.audio));
+
+    jcplayerView.initAnonPlaylist(jcAudios);
 ```
 
 ###Option 3: Initialize an playlist with a custom title for all
-```java
-    ArrayList<String> urls = new ArrayList<>();
-    urls.add("http://www.example.com.br/android/Music_01.mp3");
-    urls.add("http://www.example.com.br/android/Music_02.mp3");
-    
+```java    
     jcplayerView.initWithTitlePlaylist(urls, "Awesome music");
 ```
 
@@ -92,9 +98,11 @@ OR
 
 ###How can I get callbacks of player status?
 ```java
-    MyActivity implements JcPlayerService{
+    MyActivity implements JcPlayerService.JcPlayerServiceListener {
         ....
+        jcplayerView.registerServiceListener(this);
         // Just be happy :D
+ }
 ```
 
 ## TODO LIST##
