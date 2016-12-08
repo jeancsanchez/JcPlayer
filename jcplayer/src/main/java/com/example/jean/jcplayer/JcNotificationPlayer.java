@@ -38,25 +38,26 @@ public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceList
         this.context = context;
     }
 
-    public void createNotificationPlayer(String title, int iconResourceResource){
+    public void createNotificationPlayer(String title, int iconResourceResource) {
         this.title = title;
         this.iconResource = iconResourceResource;
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         JcAudioPlayer.getInstance().registerNotificationListener(this);
 
-        if(notificationManager == null)
+        if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notification = new Notification.Builder(context)
-                .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setSmallIcon(iconResourceResource)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
-                .setContent(createNotificationPlayerView())
-                .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
-                .setCategory(Notification.CATEGORY_SOCIAL)
-                .build();
+                    .setVisibility(Notification.VISIBILITY_PUBLIC)
+                    .setSmallIcon(iconResourceResource)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), iconResourceResource))
+                    .setContent(createNotificationPlayerView())
+                    .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
+                    .setCategory(Notification.CATEGORY_SOCIAL)
+                    .build();
             notificationManager.notify(NOTIFICATION_ID, notification);
         } else {
             notificationCompat = new NotificationCompat.Builder(context)
@@ -71,31 +72,31 @@ public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceList
         }
     }
 
-    public void updateNotification(){
+    public void updateNotification() {
         createNotificationPlayer(title, iconResource);
     }
 
-    private RemoteViews createNotificationPlayerView(){
+    private RemoteViews createNotificationPlayerView() {
         RemoteViews remoteView;
 
-        if (JcAudioPlayer.getInstance().isPaused()){
+        if (JcAudioPlayer.getInstance().isPaused()) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_play);
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID));
-        }else {
+        } else {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_pause);
             remoteView.setOnClickPendingIntent(R.id.btn_pause_notification, buildPendingIntent(PAUSE, PAUSE_ID));
         }
 
         remoteView.setTextViewText(R.id.txt_current_music_notification, title);
         remoteView.setTextViewText(R.id.txt_duration_notification, time);
-        remoteView.setImageViewResource(R.id.icon_player,iconResource);
+        remoteView.setImageViewResource(R.id.icon_player, iconResource);
         remoteView.setOnClickPendingIntent(R.id.btn_next_notification, buildPendingIntent(NEXT, NEXT_ID));
         remoteView.setOnClickPendingIntent(R.id.btn_prev_notification, buildPendingIntent(PREVIOUS, PREVIOUS_ID));
 
-        return  remoteView;
+        return remoteView;
     }
 
-    private PendingIntent buildPendingIntent(String action, int id){
+    private PendingIntent buildPendingIntent(String action, int id) {
         Intent playIntent = new Intent(context.getApplicationContext(), JcPlayerNotificationReceiver.class);
         playIntent.putExtra(ACTION, action);
 
@@ -129,11 +130,11 @@ public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceList
 
     @Override
     public void onTimeChanged(long currentTime) {
-        long aux = currentTime/ 1000;
+        long aux = currentTime / 1000;
         int minutes = (int) (aux / 60);
         int seconds = (int) (aux % 60);
-        final String sMinutes = minutes < 10 ? "0"+minutes : minutes+"";
-        final String sSeconds = seconds < 10 ? "0"+seconds : seconds+"";
+        final String sMinutes = minutes < 10 ? "0" + minutes : minutes + "";
+        final String sSeconds = seconds < 10 ? "0" + seconds : seconds + "";
         this.time = sMinutes + ":" + sSeconds;
 
         createNotificationPlayer(title, iconResource);
@@ -146,11 +147,12 @@ public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceList
     }
 
     public void destroyNotificationIfExists() {
-        if (notificationManager != null)
+        if (notificationManager != null) {
             try {
                 notificationManager.cancel(NOTIFICATION_ID);
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
+        }
     }
 }

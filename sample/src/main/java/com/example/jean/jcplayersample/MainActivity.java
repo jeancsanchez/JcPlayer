@@ -67,10 +67,27 @@ public class MainActivity extends AppCompatActivity implements JcPlayerService.O
     }
 
     protected void adapterSetup() {
-        audioAdapter = new AudioAdapter(this);
+        audioAdapter = new AudioAdapter(player.getMyPlaylist());
+        audioAdapter.setOnItemClickListener(new AudioAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                player.playAudio(player.getMyPlaylist().get(position));
+            }
+
+            @Override
+            public void onSongItemDeleteClicked(int position) {
+                Toast.makeText(MainActivity.this, "Delete song at position " + position,
+                        Toast.LENGTH_SHORT).show();
+//                if(player.getCurrentPlayedAudio() != null) {
+//                    Toast.makeText(MainActivity.this, "Current audio = " + player.getCurrentPlayedAudio().getPath(),
+//                            Toast.LENGTH_SHORT).show();
+//                }
+                removeItem(position);
+            }
+        });
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(audioAdapter);
-        audioAdapter.setupItems(player.getMyPlaylist());
     }
 
     @Override
@@ -90,5 +107,11 @@ public class MainActivity extends AppCompatActivity implements JcPlayerService.O
         Toast.makeText(this, jcAudio.getPath() + " with problems", Toast.LENGTH_LONG).show();
 //        player.removeAudio(jcAudio);
 //        player.next();
+    }
+
+    private void removeItem(int position) {
+//        jcAudios.remove(position);
+        player.removeAudio(player.getMyPlaylist().get(position));
+        audioAdapter.notifyItemRemoved(position);
     }
 }

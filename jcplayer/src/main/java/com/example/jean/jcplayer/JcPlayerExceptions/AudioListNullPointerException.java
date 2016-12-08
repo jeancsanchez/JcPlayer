@@ -5,7 +5,7 @@ package com.example.jean.jcplayer.JcPlayerExceptions;
  */
 
 public class AudioListNullPointerException extends NullPointerException {
-    public AudioListNullPointerException(){
+    public AudioListNullPointerException() {
         super("The playlist is empty or null");
     }
 }

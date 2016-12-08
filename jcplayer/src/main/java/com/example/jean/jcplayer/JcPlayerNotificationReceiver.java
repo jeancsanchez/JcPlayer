@@ -15,10 +15,11 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
         JcAudioPlayer jcAudioPlayer = JcAudioPlayer.getInstance();
         String action = "";
 
-        if(intent.hasExtra(JcNotificationPlayer.ACTION))
+        if (intent.hasExtra(JcNotificationPlayer.ACTION)) {
             action = intent.getStringExtra(JcNotificationPlayer.ACTION);
+        }
 
-        switch (action){
+        switch (action) {
             case JcNotificationPlayer.PLAY:
                 try {
                     jcAudioPlayer.continueAudio();

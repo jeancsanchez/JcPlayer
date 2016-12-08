@@ -1,10 +1,10 @@
 package com.example.jean.jcplayersample;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.jean.jcplayer.JcAudio;
@@ -15,23 +15,33 @@ import java.util.List;
  * Created by jean on 27/06/16.
  */
 
-public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> implements View.OnClickListener{
-    private Context context;
-    private MainActivity activity;
+public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> {
     private List<JcAudio> jcAudioList;
 
-    public AudioAdapter(MainActivity activity) {
-        this.activity = activity;
-        this.context = activity;
+    private static OnItemClickListener mListener;
+
+    // Define the mListener interface
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+        void onSongItemDeleteClicked(int position);
+    }
+
+    // Define the method that allows the parent activity or fragment to define the listener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mListener = listener;
+    }
+
+    public AudioAdapter(List<JcAudio> jcAudioList) {
+        this.jcAudioList = jcAudioList;
     }
 
 
     @Override
     public AudioAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(context).inflate(com.example.jean.jcplayersample.R.layout.audio_item, parent, false);
-        AudioAdapterViewHolder audiosViewHolder = new AudioAdapterViewHolder(view);
-        audiosViewHolder.itemView.setOnClickListener(this);
-        return audiosViewHolder;
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.audio_item, parent, false);
+        return new AudioAdapterViewHolder(view);
+//        audiosViewHolder.itemView.setOnClickListener(this);
+//        return audiosViewHolder;
     }
 
     @Override
@@ -46,23 +56,36 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
         return jcAudioList == null ? 0 : jcAudioList.size();
     }
 
-    public void setupItems(List<JcAudio> jcAudioList) {
-        this.jcAudioList = jcAudioList;
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void onClick(View view) {
-        JcAudio JcAudio = (com.example.jean.jcplayer.JcAudio) view.getTag();
-        activity.playAudio(JcAudio);
-    }
+//    @Override
+//    public void onClick(View view) {
+//        JcAudio JcAudio = (com.example.jean.jcplayer.JcAudio) view.getTag();
+//        activity.playAudio(JcAudio);
+//    }
 
     static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{
         private TextView audioTitle;
+        private Button btnDelete;
 
         public AudioAdapterViewHolder(View view){
             super(view);
-            this.audioTitle = (TextView) view.findViewById(com.example.jean.jcplayersample.R.id.audio_title);
+            this.audioTitle = (TextView) view.findViewById(R.id.audio_title);
+            this.btnDelete = (Button) view.findViewById(R.id.btn_delete);
+
+            btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(mListener != null) {
+                        mListener.onSongItemDeleteClicked(getAdapterPosition());
+                    }
+                }
+            });
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    // Triggers click upwards to the adapter on click
+                    if (mListener != null) mListener.onItemClick(getAdapterPosition());
+                }
+            });
         }
     }
 }

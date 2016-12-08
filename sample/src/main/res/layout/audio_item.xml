@@ -2,32 +2,33 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_marginTop="15dp"
     android:layout_weight="1"
     android:layout_alignBottom="@+id/slider">
-    <TableLayout
+    <TextView
+        android:id="@+id/audio_title"
+        android:paddingStart="10dp"
+        android:paddingLeft="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TableRow
-            android:minHeight="65dp"
-            android:gravity="center_vertical"
-            android:paddingStart="10dp">
-            <TextView
-                android:id="@+id/audio_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="textStart"
-                android:layout_column="1"
-                android:textSize="18sp"
-                android:layout_weight="1"/>
-        </TableRow>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:paddingStart="3dp"
-            android:paddingEnd="3dp"
-            android:background="@android:color/darker_gray"/>
-    </TableLayout>
+        android:layout_height="wrap_content"
+        android:textAlignment="textStart"
+        android:gravity="start"
+        android:layout_column="1"
+        android:textSize="18sp"
+        android:layout_weight="1"/>
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="Delete"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:paddingStart="3dp"
+        android:paddingEnd="3dp"
+        android:background="@android:color/darker_gray"/>
 </LinearLayout>

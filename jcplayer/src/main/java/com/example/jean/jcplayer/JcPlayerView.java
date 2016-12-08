@@ -2,7 +2,6 @@ package com.example.jean.jcplayer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.os.Build;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
@@ -37,10 +36,9 @@ public class JcPlayerView extends LinearLayout implements
     private ImageButton btnNext;
     private SeekBar seekBar;
     private TextView txtCurrentDuration;
-    private AssetFileDescriptor assetFileDescriptor;
-    private boolean initialized;
+    private boolean isInitialized;
 
-    public JcPlayerView(Context context){
+    public JcPlayerView(Context context) {
         super(context);
         init();
     }
@@ -55,7 +53,7 @@ public class JcPlayerView extends LinearLayout implements
         super(context, attrs, defStyle);
     }
 
-    private void init(){
+    private void init() {
         inflate(getContext(), R.layout.view_jcplayer, this);
 
         this.progressBarPlayer = (ProgressBar) findViewById(R.id.progress_bar_player);
@@ -76,38 +74,46 @@ public class JcPlayerView extends LinearLayout implements
 
     /**
      * Initialize the playlist and controls.
+     *
      * @param playlist List of JcAudio objects that you want play
      */
-    public void initPlaylist(List<JcAudio> playlist){
-        sortPlaylist(playlist);
+    public void initPlaylist(List<JcAudio> playlist) {
+        // Don't sort if the playlist have position number.
+        // We need to do this because there is a possibility that the user reload previous playlist
+        // from persistence storage like sharedPreference or SQLite.
+        if (!isAlreadySorted(playlist)) {
+            sortPlaylist(playlist);
+        }
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
         jcAudioPlayer.registerInvalidPathListener(this);
-        initialized = true;
+        isInitialized = true;
     }
 
     /**
      * Initialize an anonymous playlist with a default JcPlayer title for all audios
+     *
      * @param playlist List of urls strings
      */
-    public void initAnonPlaylist(List<JcAudio> playlist){
+    public void initAnonPlaylist(List<JcAudio> playlist) {
         sortPlaylist(playlist);
         generateTitleAudio(playlist, getContext().getString(R.string.track_number));
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
         jcAudioPlayer.registerInvalidPathListener(this);
-        initialized = true;
+        isInitialized = true;
     }
 
     /**
      * Initialize an anonymous playlist, but with a custom title for all audios
+     *
      * @param playlist List of JcAudio files.
-     * @param title Default title for all audios
+     * @param title    Default title for all audios
      */
-    public void initWithTitlePlaylist(List<JcAudio> playlist, String title){
+    public void initWithTitlePlaylist(List<JcAudio> playlist, String title) {
         sortPlaylist(playlist);
         generateTitleAudio(playlist, title);
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
         jcAudioPlayer.registerInvalidPathListener(this);
-        initialized = true;
+        isInitialized = true;
     }
 
     /**
@@ -122,27 +128,40 @@ public class JcPlayerView extends LinearLayout implements
         jcAudio.setId(lastPosition + 1);
         jcAudio.setPosition(lastPosition + 1);
 
-        if(!playlist.contains(jcAudio))
+        if (!playlist.contains(jcAudio)) {
             playlist.add(lastPosition, jcAudio);
+        }
     }
 
     /**
      * Remove an audio for the playlist
+     *
      * @param jcAudio JcAudio object
      */
     public void removeAudio(JcAudio jcAudio) {
-        if(jcAudioPlayer != null) {
+        if (jcAudioPlayer != null) {
             List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
 
-            if (playlist != null && playlist.contains(jcAudio))
+            if (playlist != null && playlist.contains(jcAudio)) {
+                if (playlist.size() > 1) {
+                    // play next audio when currently played audio is removed.
+                    if (jcAudioPlayer.isPlaying()) {
+                        next();
+                    }
+                } else {
+                    //TODO: Maybe we need jcAudioPlayer.stopPlay() for stopping the player
+                    pause();
+                    resetPlayerInfo();
+                }
                 playlist.remove(jcAudio);
+            }
         }
     }
 
     public void playAudio(JcAudio jcAudio) {
         showProgressBar();
         createJcAudioPlayer();
-        if(!jcAudioPlayer.getPlaylist().contains(jcAudio))
+        if (!jcAudioPlayer.getPlaylist().contains(jcAudio))
             jcAudioPlayer.getPlaylist().add(jcAudio);
 
         try {
@@ -159,7 +178,7 @@ public class JcPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.nextAudio();
-        } catch (AudioListNullPointerException e){
+        } catch (AudioListNullPointerException e) {
             dismissProgressBar();
             e.printStackTrace();
         }
@@ -194,26 +213,27 @@ public class JcPlayerView extends LinearLayout implements
 
     @Override
     public void onClick(View view) {
-        if(initialized)
-            if(view.getId() ==  R.id.btn_play) {
+        if (isInitialized) {
+            if (view.getId() == R.id.btn_play) {
                 YoYo.with(Techniques.Pulse)
                         .duration(PULSE_ANIMATION_DURATION)
                         .playOn(btnPlay);
 
-                if (btnPlay.getTag().equals(R.drawable.ic_pause_black))
+                if (btnPlay.getTag().equals(R.drawable.ic_pause_black)) {
                     pause();
-                else
+                } else {
                     continueAudio();
+                }
             }
-
-        if(view.getId() == R.id.btn_next) {
+        }
+        if (view.getId() == R.id.btn_next) {
             YoYo.with(Techniques.Pulse)
                     .duration(PULSE_ANIMATION_DURATION)
                     .playOn(btnNext);
             next();
         }
 
-        if(view.getId() == R.id.btn_prev) {
+        if (view.getId() == R.id.btn_prev) {
             YoYo.with(Techniques.Pulse)
                     .duration(PULSE_ANIMATION_DURATION)
                     .playOn(btnPrev);
@@ -223,18 +243,19 @@ public class JcPlayerView extends LinearLayout implements
 
     /**
      * Create a notification player with same playlist with a custom icon.
+     *
      * @param iconResource icon path.
      */
-    public void createNotification(int iconResource){
-        if(jcAudioPlayer != null) jcAudioPlayer.createNewNotification(iconResource);
+    public void createNotification(int iconResource) {
+        if (jcAudioPlayer != null) jcAudioPlayer.createNewNotification(iconResource);
     }
 
     /**
      * Create a notification player with same playlist with a default icon
      */
-    public void createNotification(){
-        if(jcAudioPlayer != null) {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    public void createNotification() {
+        if (jcAudioPlayer != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // For light theme
                 jcAudioPlayer.createNewNotification(R.drawable.ic_notification_default_black);
             } else {
@@ -244,11 +265,11 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-    public List<JcAudio> getMyPlaylist(){
+    public List<JcAudio> getMyPlaylist() {
         return jcAudioPlayer.getPlaylist();
     }
 
-    public JcAudio getCurrentAudio(){
+    public JcAudio getCurrentAudio() {
         return jcAudioPlayer.getCurrentAudio();
     }
 
@@ -258,33 +279,48 @@ public class JcPlayerView extends LinearLayout implements
             jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
         }
         jcAudioPlayer.registerInvalidPathListener(this);
-        initialized = true;
+        isInitialized = true;
     }
 
-    private void sortPlaylist(List<JcAudio> playlist){
-        for(int i = 0; i < playlist.size(); i++) {
+    private void sortPlaylist(List<JcAudio> playlist) {
+        for (int i = 0; i < playlist.size(); i++) {
             JcAudio jcAudio = playlist.get(i);
+            jcAudio.setId(i);
             jcAudio.setPosition(i);
         }
     }
 
-    private void generateTitleAudio(List<JcAudio> playlist, String title){
-        for(int i = 0; i < playlist.size(); i++){
-            if(title.equals(getContext().getString(R.string.track_number)))
-                playlist.get(i).setTitle(getContext().getString(R.string.track_number) + " " + String.valueOf(i+1));
-            else
+    /**
+     * Check if playlist already sorted or not.
+     * We need to check because there is a possibility that the user reload previous playlist
+     * from persistence storage like sharedPreference or SQLite.
+     *
+     * @param playlist list of JcAudio
+     * @return true if sorted, false if not.
+     */
+    private boolean isAlreadySorted(List<JcAudio> playlist) {
+        // If there is position in the first audio, then playlist is already sorted.
+        return playlist != null && playlist.get(0).getPosition() != 0;
+    }
+
+    private void generateTitleAudio(List<JcAudio> playlist, String title) {
+        for (int i = 0; i < playlist.size(); i++) {
+            if (title.equals(getContext().getString(R.string.track_number))) {
+                playlist.get(i).setTitle(getContext().getString(R.string.track_number) + " " + String.valueOf(i + 1));
+            } else {
                 playlist.get(i).setTitle(title);
+            }
         }
     }
 
-    private void showProgressBar(){
+    private void showProgressBar() {
         progressBarPlayer.setVisibility(ProgressBar.VISIBLE);
         btnPlay.setVisibility(Button.GONE);
         btnNext.setClickable(false);
         btnPrev.setClickable(false);
     }
 
-    private void dismissProgressBar(){
+    private void dismissProgressBar() {
         progressBarPlayer.setVisibility(ProgressBar.GONE);
         btnPlay.setVisibility(Button.VISIBLE);
         btnNext.setClickable(true);
@@ -300,12 +336,11 @@ public class JcPlayerView extends LinearLayout implements
         int minute = (int) (aux / 60);
         int second = (int) (aux % 60);
 
-        final String sDuration =
-                // Minutes
-                (minute < 10 ? "0"+minute : minute+"")
-                        + ":" +
-                 // Seconds
-                 (second < 10 ? "0"+second : second+"");
+        final String sDuration = // Minutes
+                                (minute < 10 ? "0" + minute : minute + "")
+                                + ":" +
+                                // Seconds
+                                (second < 10 ? "0" + second : second + "");
 
         seekBar.setMax(duration);
 
@@ -328,7 +363,7 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
-    public void resetPlayerInfo(){
+    public void resetPlayerInfo() {
         seekBar.setProgress(0);
         txtCurrentMusic.setText("");
         txtCurrentDuration.setText(getContext().getString(R.string.play_initial_time));
@@ -338,11 +373,11 @@ public class JcPlayerView extends LinearLayout implements
     @Override
     public void onPaused() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-          btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
-                                R.drawable.ic_play_black, null));
+            btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.ic_play_black, null));
         } else {
-          btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
-                                        R.drawable.ic_play_black, null));
+            btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.ic_play_black, null));
         }
         btnPlay.setTag(R.drawable.ic_play_black);
     }
@@ -355,11 +390,11 @@ public class JcPlayerView extends LinearLayout implements
     @Override
     public void onPlaying() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-          btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
-                                R.drawable.ic_pause_black, null));
+            btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.ic_pause_black, null));
         } else {
-          btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
-                                        R.drawable.ic_pause_black, null));
+            btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
+                    R.drawable.ic_pause_black, null));
         }
         btnPlay.setTag(R.drawable.ic_pause_black);
     }
@@ -369,8 +404,8 @@ public class JcPlayerView extends LinearLayout implements
         long aux = currentPosition / 1000;
         int minutes = (int) (aux / 60);
         int seconds = (int) (aux % 60);
-        final String sMinutes = minutes < 10 ? "0"+minutes : minutes+"";
-        final String sSeconds = seconds < 10 ? "0"+seconds : seconds+"";
+        final String sMinutes = minutes < 10 ? "0" + minutes : minutes + "";
+        final String sSeconds = seconds < 10 ? "0" + seconds : seconds + "";
 
         seekBar.setProgress((int) currentPosition);
         txtCurrentDuration.post(new Runnable() {
@@ -400,7 +435,7 @@ public class JcPlayerView extends LinearLayout implements
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-        if(fromUser) jcAudioPlayer.seekTo(i);
+        if (fromUser) jcAudioPlayer.seekTo(i);
     }
 
     @Override
@@ -413,13 +448,14 @@ public class JcPlayerView extends LinearLayout implements
         dismissProgressBar();
     }
 
-    public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener){
-        if(jcAudioPlayer != null)
+    public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener) {
+        if (jcAudioPlayer != null) {
             jcAudioPlayer.registerInvalidPathListener(registerInvalidPathListener);
+        }
     }
 
     public void kill() {
-        if(jcAudioPlayer != null) jcAudioPlayer.kill();
+        if (jcAudioPlayer != null) jcAudioPlayer.kill();
     }
 
     @Override
@@ -428,7 +464,8 @@ public class JcPlayerView extends LinearLayout implements
     }
 
     public void registerServiceListener(JcPlayerService.JcPlayerServiceListener jcPlayerServiceListener) {
-        if(jcAudioPlayer != null)
+        if (jcAudioPlayer != null) {
             jcAudioPlayer.registerServiceListener(jcPlayerServiceListener);
+        }
     }
 }
