@@ -104,6 +104,8 @@ OR
         // Just be happy :D
  }
 ```
+#Note
+> - The list view is own developer responsibilty
 
 ## TODO LIST##
 
