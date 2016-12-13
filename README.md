@@ -98,11 +98,22 @@ OR
 
 ###How can I get callbacks of player status?
 ```java
-    MyActivity implements JcPlayerService.JcPlayerServiceListener {
-        ....
-        jcplayerView.registerServiceListener(this);
-        // Just be happy :D
+MyActivity implements JcPlayerView.JcPlayerViewServiceListener {
+    ...
+    jcplayerView.registerServiceListener(this);
+    // Just be happy :D
  }
+```
+
+###How can I get callbacks of status file is invalid?
+```java
+MyActivity implements JcPlayerView.OnInvalidPathListener {
+   ...
+   @Override
+   public void onPathError(JcAudio jcAudio) {
+       Toast.makeText(this, jcAudio.getPath() + " with problems", Toast.LENGTH_LONG).show();
+   }
+}
 ```
 
 ## TODO LIST##

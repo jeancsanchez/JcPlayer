@@ -7,13 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import com.example.jean.jcplayer.JcAudio;
-import com.example.jean.jcplayer.JcPlayerService;
 import com.example.jean.jcplayer.JcPlayerView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements JcPlayerService.OnInvalidPathListener {
-    private LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+public class MainActivity extends AppCompatActivity implements JcPlayerView.OnInvalidPathListener {
     private JcPlayerView player;
     private RecyclerView recyclerView;
     private AudioAdapter audioAdapter;
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements JcPlayerService.O
                 removeItem(position);
             }
         });
-
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(audioAdapter);
     }
@@ -113,5 +111,9 @@ public class MainActivity extends AppCompatActivity implements JcPlayerService.O
 //        jcAudios.remove(position);
         player.removeAudio(player.getMyPlaylist().get(position));
         audioAdapter.notifyItemRemoved(position);
+    }
+
+    private void test() {
+
     }
 }

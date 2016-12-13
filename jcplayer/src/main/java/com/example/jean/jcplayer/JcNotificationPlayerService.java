@@ -13,19 +13,21 @@ import android.widget.RemoteViews;
 /**
  * Created by jean on 12/07/16.
  */
-public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceListener {
-    public static final int NOTIFICATION_ID = 100;
-    public static final int NEXT_ID = 0;
-    public static final int PREVIOUS_ID = 1;
-    public static final int PLAY_ID = 2;
-    public static final int PAUSE_ID = 3;
-    public static final String NEXT = "NEXT";
-    public static final String PREVIOUS = "PREVIOUS";
-    public static final String PAUSE = "PAUSE";
-    public static final String PLAY = "PLAY";
-    public static final String ACTION = "ACTION";
-    public static final String PLAYLIST = "PLAYLIST";
-    public static final String CURRENT_AUDIO = "CURRENT_AUDIO";
+class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceListener {
+    static final String NEXT = "NEXT";
+    static final String PREVIOUS = "PREVIOUS";
+    static final String PAUSE = "PAUSE";
+    static final String PLAY = "PLAY";
+    static final String ACTION = "ACTION";
+    static final String PLAYLIST = "PLAYLIST";
+    static final String CURRENT_AUDIO = "CURRENT_AUDIO";
+
+    private static final int NOTIFICATION_ID = 100;
+    private static final int NEXT_ID = 0;
+    private static final int PREVIOUS_ID = 1;
+    private static final int PLAY_ID = 2;
+    private static final int PAUSE_ID = 3;
+
     private NotificationManager notificationManager;
     private Context context;
     private String title;
@@ -34,7 +36,7 @@ public class JcNotificationPlayer implements JcPlayerService.JcPlayerServiceList
     private Notification notification;
     private NotificationCompat.Builder notificationCompat;
 
-    public JcNotificationPlayer(Context context){
+    public JcNotificationPlayerService(Context context){
         this.context = context;
     }
 

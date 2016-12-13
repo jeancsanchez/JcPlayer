@@ -15,11 +15,11 @@ import java.util.List;
  * Created by jean on 12/07/16.
  */
 
-public class JcAudioPlayer {
+class JcAudioPlayer {
     private JcPlayerService jcPlayerService;
-    private JcPlayerService.JcPlayerServiceListener listener;
-    private JcPlayerService.OnInvalidPathListener invalidPathListener;
-    private JcNotificationPlayer jcNotificationPlayer;
+    private JcPlayerView.JcPlayerViewServiceListener listener;
+    private JcPlayerView.OnInvalidPathListener invalidPathListener;
+    private JcNotificationPlayerService jcNotificationPlayer;
     private List<JcAudio> playlist;
     private JcAudio currentJcAudio;
     private int currentPositionList;
@@ -30,12 +30,12 @@ public class JcAudioPlayer {
     private boolean paused;
     private int position = 1;
 
-    public JcAudioPlayer(Context context, List<JcAudio> playlist, JcPlayerService.JcPlayerServiceListener listener) {
+    public JcAudioPlayer(Context context, List<JcAudio> playlist, JcPlayerView.JcPlayerViewServiceListener listener) {
         this.context = context;
         this.playlist = playlist;
         this.listener = listener;
         instance = JcAudioPlayer.this;
-        this.jcNotificationPlayer = new JcNotificationPlayer(context);
+        this.jcNotificationPlayer = new JcNotificationPlayerService(context);
 
         initService();
     }
@@ -44,21 +44,21 @@ public class JcAudioPlayer {
         this.instance = instance;
     }
 
-    public void registerNotificationListener(JcPlayerService.JcPlayerServiceListener notificationListener) {
+    public void registerNotificationListener(JcPlayerView.JcPlayerViewServiceListener notificationListener) {
         this.listener = notificationListener;
         if (jcNotificationPlayer != null) {
             jcPlayerService.registerNotificationListener(notificationListener);
         }
     }
 
-    public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener) {
+    public void registerInvalidPathListener(JcPlayerView.OnInvalidPathListener registerInvalidPathListener) {
         this.invalidPathListener = registerInvalidPathListener;
         if (jcPlayerService != null) {
             jcPlayerService.registerInvalidPathListener(invalidPathListener);
         }
     }
 
-    public void registerServiceListener(JcPlayerService.JcPlayerServiceListener jcPlayerServiceListener) {
+    public void registerServiceListener(JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener) {
         this.listener = jcPlayerServiceListener;
         if (jcPlayerService != null) {
             jcPlayerService.registerServicePlayerListener(jcPlayerServiceListener);
@@ -180,8 +180,8 @@ public class JcAudioPlayer {
     private synchronized void startJcPlayerService() {
         if (!mBound) {
             Intent intent = new Intent(context.getApplicationContext(), JcPlayerService.class);
-            intent.putExtra(JcNotificationPlayer.PLAYLIST, (Serializable) playlist);
-            intent.putExtra(JcNotificationPlayer.CURRENT_AUDIO, currentJcAudio);
+            intent.putExtra(JcNotificationPlayerService.PLAYLIST, (Serializable) playlist);
+            intent.putExtra(JcNotificationPlayerService.CURRENT_AUDIO, currentJcAudio);
             context.bindService(intent, mConnection, context.getApplicationContext().BIND_AUTO_CREATE);
         }
     }
@@ -209,11 +209,11 @@ public class JcAudioPlayer {
         }
     };
 
-    public boolean isPaused() {
+    boolean isPaused() {
         return paused;
     }
 
-    public boolean isPlaying() {
+    boolean isPlaying() {
         return playing;
     }
 
