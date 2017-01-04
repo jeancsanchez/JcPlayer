@@ -19,6 +19,7 @@ class JcAudioPlayer {
     private JcPlayerService jcPlayerService;
     private JcPlayerView.JcPlayerViewServiceListener listener;
     private JcPlayerView.OnInvalidPathListener invalidPathListener;
+    private JcPlayerView.JcPlayerViewStatusListener statusListener;
     private JcNotificationPlayerService jcNotificationPlayer;
     private List<JcAudio> playlist;
     private JcAudio currentJcAudio;
@@ -62,6 +63,13 @@ class JcAudioPlayer {
         this.listener = jcPlayerServiceListener;
         if (jcPlayerService != null) {
             jcPlayerService.registerServicePlayerListener(jcPlayerServiceListener);
+        }
+    }
+
+    public void registerStatusListener(JcPlayerView.JcPlayerViewStatusListener statusListener) {
+        this.statusListener = statusListener;
+        if (jcPlayerService != null) {
+            jcPlayerService.registerStatusListener(statusListener);
         }
     }
 
@@ -197,6 +205,9 @@ class JcAudioPlayer {
             }
             if (invalidPathListener != null) {
                 jcPlayerService.registerInvalidPathListener(invalidPathListener);
+            }
+            if (statusListener != null) {
+                jcPlayerService.registerStatusListener(statusListener);
             }
             mBound = true;
         }

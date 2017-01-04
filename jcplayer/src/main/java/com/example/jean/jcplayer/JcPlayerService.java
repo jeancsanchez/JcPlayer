@@ -33,8 +33,10 @@ public class JcPlayerService extends Service implements
     private int duration;
     private int currentTime;
     private JcAudio currentJcAudio;
+    private JcStatus jcStatus = new JcStatus();
     private List<JcPlayerView.JcPlayerViewServiceListener> jcPlayerServiceListeners;
     private List<JcPlayerView.OnInvalidPathListener> invalidPathListeners;
+    private List<JcPlayerView.JcPlayerViewStatusListener> jcPlayerStatusListeners;
     private JcPlayerView.JcPlayerViewServiceListener notificationListener;
     private AssetFileDescriptor assetFileDescriptor = null; // For Asset and Raw file.
 
@@ -63,8 +65,18 @@ public class JcPlayerService extends Service implements
             invalidPathListeners = new ArrayList<>();
         }
 
-        if (!invalidPathListeners.contains(invalidPathListeners)) {
+        if (!invalidPathListeners.contains(invalidPathListener)) {
             invalidPathListeners.add(invalidPathListener);
+        }
+    }
+
+    public void registerStatusListener(JcPlayerView.JcPlayerViewStatusListener statusListener) {
+        if (jcPlayerStatusListeners == null) {
+            jcPlayerStatusListeners = new ArrayList<>();
+        }
+
+        if (!jcPlayerStatusListeners.contains(statusListener)) {
+            jcPlayerStatusListeners.add(statusListener);
         }
     }
 
@@ -87,7 +99,7 @@ public class JcPlayerService extends Service implements
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public void pause(JcAudio JcAudio) {
+    public void pause(JcAudio jcAudio) {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
             duration = mediaPlayer.getDuration();
@@ -101,6 +113,14 @@ public class JcPlayerService extends Service implements
 
         if (notificationListener != null) {
             notificationListener.onPaused();
+        }
+
+        for (JcPlayerView.JcPlayerViewStatusListener jcPlayerStatusListener : jcPlayerStatusListeners) {
+            jcStatus.setJcAudio(jcAudio);
+            jcStatus.setDuration(duration);
+            jcStatus.setCurrentPosition(currentTime);
+            jcStatus.setPlayState(JcStatus.PlayState.PAUSE);
+            jcPlayerStatusListener.onPausedStatus(jcStatus);
         }
     }
 
@@ -165,6 +185,16 @@ public class JcPlayerService extends Service implements
                             jcPlayerServiceListener.onContinueAudio();
                         }
                     }
+
+                    if (jcPlayerStatusListeners != null) {
+                        for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                            jcStatus.setJcAudio(jcAudio);
+                            jcStatus.setPlayState(JcStatus.PlayState.PLAY);
+                            jcStatus.setDuration(mediaPlayer.getDuration());
+                            jcStatus.setCurrentPosition(mediaPlayer.getCurrentPosition());
+                            jcPlayerViewStatusListener.onContinueAudioStatus(jcStatus);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -174,6 +204,14 @@ public class JcPlayerService extends Service implements
 
             for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
                 jcPlayerServiceListener.onPlaying();
+            }
+
+            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                jcStatus.setJcAudio(jcAudio);
+                jcStatus.setPlayState(JcStatus.PlayState.PLAY);
+                jcStatus.setDuration(0);
+                jcStatus.setCurrentPosition(0);
+                jcPlayerViewStatusListener.onPlayingStatus(jcStatus);
             }
 
             if (notificationListener != null) notificationListener.onPlaying();
@@ -201,6 +239,15 @@ public class JcPlayerService extends Service implements
                         if (notificationListener != null) {
                             notificationListener.onTimeChanged(mediaPlayer.getCurrentPosition());
                         }
+
+                        if (jcPlayerStatusListeners != null) {
+                            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                                jcStatus.setPlayState(JcStatus.PlayState.PLAY);
+                                jcStatus.setDuration(mediaPlayer.getDuration());
+                                jcStatus.setCurrentPosition(mediaPlayer.getCurrentPosition());
+                                jcPlayerViewStatusListener.onTimeChangedStatus(jcStatus);
+                            }
+                        }
                         Thread.sleep(1000);
                     } catch (IllegalStateException | InterruptedException | NullPointerException e) {
                         e.printStackTrace();
@@ -222,7 +269,15 @@ public class JcPlayerService extends Service implements
                 jcPlayerServiceListener.onCompletedAudio();
             }
         }
-        if (notificationListener != null) notificationListener.onCompletedAudio();
+        if (notificationListener != null) {
+            notificationListener.onCompletedAudio();
+        }
+
+        if (jcPlayerStatusListeners != null) {
+            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                jcPlayerViewStatusListener.onCompletedAudioStatus(jcStatus);
+            }
+        }
     }
 
     private void throwError(String path, Origin origin) {
@@ -306,6 +361,16 @@ public class JcPlayerService extends Service implements
         if (notificationListener != null) {
             notificationListener.updateTitle(currentJcAudio.getTitle());
             notificationListener.onPreparedAudio(currentJcAudio.getTitle(), mediaPlayer.getDuration());
+        }
+
+        if (jcPlayerStatusListeners != null) {
+            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                jcStatus.setJcAudio(currentJcAudio);
+                jcStatus.setPlayState(JcStatus.PlayState.PLAY);
+                jcStatus.setDuration(duration);
+                jcStatus.setCurrentPosition(currentTime);
+                jcPlayerViewStatusListener.onPreparedAudioStatus(jcStatus);
+            }
         }
     }
 

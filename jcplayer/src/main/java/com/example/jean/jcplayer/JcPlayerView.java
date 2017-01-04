@@ -23,6 +23,8 @@ import java.util.List;
 public class JcPlayerView extends LinearLayout implements
         View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
+    private static final String TAG = JcPlayerView.class.getSimpleName();
+
     private static final int PULSE_ANIMATION_DURATION = 200;
     private static final int TITLE_ANIMATION_DURATION = 600;
 
@@ -129,8 +131,8 @@ public class JcPlayerView extends LinearLayout implements
         }
 
         @Override
-        public void updateTitle(String title) {
-            final String mTitle = title;
+        public void updateTitle(final String title) {
+//            final String mTitle = title;
 
             YoYo.with(Techniques.FadeInLeft)
                     .duration(TITLE_ANIMATION_DURATION)
@@ -139,14 +141,50 @@ public class JcPlayerView extends LinearLayout implements
             txtCurrentMusic.post(new Runnable() {
                 @Override
                 public void run() {
-                    txtCurrentMusic.setText(mTitle);
+                    txtCurrentMusic.setText(title);
                 }
             });
         }
     };
 
+    //JcPlayerViewStatusListener jcPlayerViewStatusListener = new JcPlayerViewStatusListener() {
+    //
+    //    @Override public void onPausedStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onContinueAudioStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onPlayingStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onTimeChangedStatus(JcStatus jcStatus) {
+    //        Log.d(TAG, "song id = " + jcStatus.getJcAudio().getId() + ", position = " + jcStatus.getCurrentPosition());
+    //    }
+    //
+    //    @Override public void onCompletedAudioStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onPreparedAudioStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //};
+
     public interface OnInvalidPathListener {
         void onPathError(JcAudio jcAudio);
+    }
+
+    public interface JcPlayerViewStatusListener {
+        void onPausedStatus(JcStatus jcStatus);
+        void onContinueAudioStatus(JcStatus jcStatus);
+        void onPlayingStatus(JcStatus jcStatus);
+        void onTimeChangedStatus(JcStatus jcStatus);
+        void onCompletedAudioStatus(JcStatus jcStatus);
+        void onPreparedAudioStatus(JcStatus jcStatus);
     }
 
     public interface JcPlayerViewServiceListener {
@@ -207,6 +245,7 @@ public class JcPlayerView extends LinearLayout implements
         }
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
         jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
@@ -220,6 +259,7 @@ public class JcPlayerView extends LinearLayout implements
         generateTitleAudio(playlist, getContext().getString(R.string.track_number));
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
         jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
@@ -234,13 +274,16 @@ public class JcPlayerView extends LinearLayout implements
         generateTitleAudio(playlist, title);
         jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
         jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
     /**
      * Add an audio for the playlist
      */
-    //TODO: Should we expose this to user? A: Yes, because the user can add files to playlist without creating a new List of JcAudio objects, just adding this files dynamically.
+    //TODO: Should we expose this to user?
+    // A: Yes, because the user can add files to playlist without creating a new List of JcAudio
+    // objects, just adding this files dynamically.
     public void addAudio(JcAudio jcAudio) {
         createJcAudioPlayer();
         List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
@@ -400,6 +443,7 @@ public class JcPlayerView extends LinearLayout implements
             jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
         }
         jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
@@ -421,7 +465,15 @@ public class JcPlayerView extends LinearLayout implements
      */
     private boolean isAlreadySorted(List<JcAudio> playlist) {
         // If there is position in the first audio, then playlist is already sorted.
-        return playlist != null && playlist.get(0).getPosition() != 0;
+        if (playlist != null) {
+            if (playlist.get(0).getPosition() != -1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     private void generateTitleAudio(List<JcAudio> playlist, String title) {
@@ -486,5 +538,10 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
+    public void registerStatusListener(JcPlayerViewStatusListener statusListener) {
+        if (jcAudioPlayer != null) {
+            jcAudioPlayer.registerStatusListener(statusListener);
+        }
+    }
 
 }
