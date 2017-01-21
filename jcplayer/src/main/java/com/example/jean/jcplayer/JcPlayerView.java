@@ -310,14 +310,19 @@ public class JcPlayerView extends LinearLayout implements
                 if (playlist.size() > 1) {
                     // play next audio when currently played audio is removed.
                     if (jcAudioPlayer.isPlaying()) {
-                        next();
+                        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
+                            next();
+                        }
+                        playlist.remove(jcAudio);
+                    } else {
+                        playlist.remove(jcAudio);
                     }
                 } else {
                     //TODO: Maybe we need jcAudioPlayer.stopPlay() for stopping the player
+                    playlist.remove(jcAudio);
                     pause();
                     resetPlayerInfo();
                 }
-                playlist.remove(jcAudio);
             }
         }
     }
@@ -337,6 +342,9 @@ public class JcPlayerView extends LinearLayout implements
     }
 
     public void next() {
+        if(jcAudioPlayer.getCurrentAudio() == null) {
+            return;
+        }
         resetPlayerInfo();
         showProgressBar();
 
@@ -431,6 +439,14 @@ public class JcPlayerView extends LinearLayout implements
 
     public List<JcAudio> getMyPlaylist() {
         return jcAudioPlayer.getPlaylist();
+    }
+
+    public boolean isPlaying() {
+        return jcAudioPlayer.isPlaying();
+    }
+
+    public boolean isPaused() {
+        return  jcAudioPlayer.isPaused();
     }
 
     public JcAudio getCurrentAudio() {

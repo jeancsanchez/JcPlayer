@@ -1,34 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginTop="15dp"
-    android:layout_weight="1"
-    android:layout_alignBottom="@+id/slider">
-    <TextView
-        android:id="@+id/audio_title"
-        android:paddingStart="10dp"
-        android:paddingLeft="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="textStart"
-        android:gravity="start"
-        android:layout_column="1"
-        android:textSize="18sp"
-        android:layout_weight="1"/>
-    <Button
-        android:id="@+id/btn_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:text="Delete"/>
+    >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:paddingStart="3dp"
-        android:paddingEnd="3dp"
-        android:background="@android:color/darker_gray"/>
-</LinearLayout>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_alignTop="@+id/audio_title"
+      android:layout_alignBottom="@+id/separator"
+      android:orientation="horizontal"
+      >
+
+    <View
+        android:id="@+id/song_progress_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:background="#b5e6c808"
+        />
+
+    <View
+        android:id="@+id/song_anti_progress_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+  </LinearLayout>
+
+  <TextView
+      android:id="@+id/audio_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="15dp"
+      android:gravity="start"
+      android:paddingLeft="10dp"
+      android:paddingStart="10dp"
+      android:text="SONG TITLE"
+      android:textAlignment="textStart"
+      android:textSize="18sp"
+      />
+
+  <Button
+      android:id="@+id/btn_delete"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentRight="true"
+      android:layout_below="@+id/audio_title"
+      android:layout_gravity="end"
+      android:text="Delete"
+      />
+
+  <TextView
+      android:id="@+id/separator"
+      android:layout_width="match_parent"
+      android:layout_height="1dp"
+      android:layout_below="@+id/btn_delete"
+      android:background="@android:color/darker_gray"
+      android:paddingEnd="3dp"
+      android:paddingStart="3dp"
+      />
+
+
+</RelativeLayout>

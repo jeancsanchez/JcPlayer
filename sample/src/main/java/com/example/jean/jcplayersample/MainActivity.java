@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,14 +32,14 @@ public class MainActivity extends AppCompatActivity
         player = (JcPlayerView) findViewById(R.id.jcplayer);
 
         ArrayList<JcAudio> jcAudios = new ArrayList<>();
-        jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
+        //jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
         jcAudios.add(JcAudio.createFromAssets("Asset audio 1", "49.v4.mid"));
         jcAudios.add(JcAudio.createFromAssets("Asset audio 2", "56.mid"));
         jcAudios.add(JcAudio.createFromAssets("Asset audio 3", "a_34.mp3"));
         jcAudios.add(JcAudio.createFromRaw("Raw audio 1", R.raw.a_34));
         jcAudios.add(JcAudio.createFromRaw("Raw audio 2", R.raw.a_203));
-        jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "CANTO DA GRAÚNA.mp3"));
-        jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
+        //jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "CANTO DA GRAÚNA.mp3"));
+        //jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
         player.initPlaylist(jcAudios);
 
 
@@ -68,12 +69,6 @@ public class MainActivity extends AppCompatActivity
         adapterSetup();
     }
 
-
-    public void playAudio(JcAudio jcAudio){
-        player.playAudio(jcAudio);
-        Toast.makeText(this, player.getCurrentAudio().getOrigin().toString(), Toast.LENGTH_SHORT).show();
-    }
-
     protected void adapterSetup() {
         audioAdapter = new AudioAdapter(player.getMyPlaylist());
         audioAdapter.setOnItemClickListener(new AudioAdapter.OnItemClickListener() {
@@ -96,6 +91,9 @@ public class MainActivity extends AppCompatActivity
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(audioAdapter);
+
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
     }
 
     @Override
@@ -118,13 +116,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void removeItem(int position) {
-//        jcAudios.remove(position);
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
+
+        //        jcAudios.remove(position);
         player.removeAudio(player.getMyPlaylist().get(position));
         audioAdapter.notifyItemRemoved(position);
-    }
 
-    private void test() {
-
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
     @Override public void onPausedStatus(JcStatus jcStatus) {
@@ -140,15 +138,29 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override public void onTimeChangedStatus(JcStatus jcStatus) {
-        Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()
-            + "\n song position = " + jcStatus.getCurrentPosition());
+        updateProgress(jcStatus);
     }
 
     @Override public void onCompletedAudioStatus(JcStatus jcStatus) {
-
+        updateProgress(jcStatus);
     }
 
     @Override public void onPreparedAudioStatus(JcStatus jcStatus) {
 
+    }
+
+    private void updateProgress(final JcStatus jcStatus) {
+        Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()
+            + "\n song position = " + jcStatus.getCurrentPosition());
+
+        runOnUiThread(new Runnable() {
+            @Override public void run() {
+                // calculate progress
+                float progress = (float) (jcStatus.getDuration() - jcStatus.getCurrentPosition())
+                    / (float) jcStatus.getDuration();
+                progress = 1.0f - progress;
+                audioAdapter.updateProgress(jcStatus.getJcAudio(), progress);
+            }
+        });
     }
 }

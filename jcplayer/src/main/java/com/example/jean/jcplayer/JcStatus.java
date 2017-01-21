@@ -5,9 +5,10 @@ package com.example.jean.jcplayer;
  */
 
 public class JcStatus {
-  enum PlayState{
+  enum PlayState {
     PLAY, PAUSE, STOP, UNINTIALIZED
-  };
+  }
+
   private JcAudio jcAudio;
   private long duration;
   private long currentPosition;

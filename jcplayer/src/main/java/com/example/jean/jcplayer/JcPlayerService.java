@@ -115,12 +115,14 @@ public class JcPlayerService extends Service implements
             notificationListener.onPaused();
         }
 
-        for (JcPlayerView.JcPlayerViewStatusListener jcPlayerStatusListener : jcPlayerStatusListeners) {
-            jcStatus.setJcAudio(jcAudio);
-            jcStatus.setDuration(duration);
-            jcStatus.setCurrentPosition(currentTime);
-            jcStatus.setPlayState(JcStatus.PlayState.PAUSE);
-            jcPlayerStatusListener.onPausedStatus(jcStatus);
+        if(jcPlayerStatusListeners != null) {
+            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerStatusListener : jcPlayerStatusListeners) {
+                jcStatus.setJcAudio(jcAudio);
+                jcStatus.setDuration(duration);
+                jcStatus.setCurrentPosition(currentTime);
+                jcStatus.setPlayState(JcStatus.PlayState.PAUSE);
+                jcPlayerStatusListener.onPausedStatus(jcStatus);
+            }
         }
     }
 
@@ -139,7 +141,9 @@ public class JcPlayerService extends Service implements
         isPlaying = false;
     }
 
+    private JcAudio tempJcAudio;
     public void play(JcAudio jcAudio) {
+        tempJcAudio = this.currentJcAudio;
         this.currentJcAudio = jcAudio;
 
         if (isAudioFileValid(jcAudio.getPath(), jcAudio.getOrigin())) {
@@ -172,27 +176,36 @@ public class JcPlayerService extends Service implements
                     mediaPlayer.setOnCompletionListener(this);
                     mediaPlayer.setOnErrorListener(this);
 
-                } else if (isPlaying) {
-                    stop();
-                    play(jcAudio);
-
+                //} else if (isPlaying) {
+                //    stop();
+                //    play(jcAudio);
                 } else {
-                    mediaPlayer.start();
-                    isPlaying = true;
+                    if (isPlaying) {
+                        stop();
+                        play(jcAudio);
+                    } else {
+                        if(tempJcAudio != jcAudio) {
+                            stop();
+                            play(jcAudio);
+                        } else {
+                            mediaPlayer.start();
+                            isPlaying = true;
 
-                    if (jcPlayerServiceListeners != null) {
-                        for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
-                            jcPlayerServiceListener.onContinueAudio();
-                        }
-                    }
+                            if (jcPlayerServiceListeners != null) {
+                                for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+                                    jcPlayerServiceListener.onContinueAudio();
+                                }
+                            }
 
-                    if (jcPlayerStatusListeners != null) {
-                        for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
-                            jcStatus.setJcAudio(jcAudio);
-                            jcStatus.setPlayState(JcStatus.PlayState.PLAY);
-                            jcStatus.setDuration(mediaPlayer.getDuration());
-                            jcStatus.setCurrentPosition(mediaPlayer.getCurrentPosition());
-                            jcPlayerViewStatusListener.onContinueAudioStatus(jcStatus);
+                            if (jcPlayerStatusListeners != null) {
+                                for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                                    jcStatus.setJcAudio(jcAudio);
+                                    jcStatus.setPlayState(JcStatus.PlayState.PLAY);
+                                    jcStatus.setDuration(mediaPlayer.getDuration());
+                                    jcStatus.setCurrentPosition(mediaPlayer.getCurrentPosition());
+                                    jcPlayerViewStatusListener.onContinueAudioStatus(jcStatus);
+                                }
+                            }
                         }
                     }
                 }
@@ -206,12 +219,14 @@ public class JcPlayerService extends Service implements
                 jcPlayerServiceListener.onPlaying();
             }
 
-            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
-                jcStatus.setJcAudio(jcAudio);
-                jcStatus.setPlayState(JcStatus.PlayState.PLAY);
-                jcStatus.setDuration(0);
-                jcStatus.setCurrentPosition(0);
-                jcPlayerViewStatusListener.onPlayingStatus(jcStatus);
+            if (jcPlayerStatusListeners != null) {
+                for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                    jcStatus.setJcAudio(jcAudio);
+                    jcStatus.setPlayState(JcStatus.PlayState.PLAY);
+                    jcStatus.setDuration(0);
+                    jcStatus.setCurrentPosition(0);
+                    jcPlayerViewStatusListener.onPlayingStatus(jcStatus);
+                }
             }
 
             if (notificationListener != null) notificationListener.onPlaying();
@@ -248,13 +263,14 @@ public class JcPlayerService extends Service implements
                                 jcPlayerViewStatusListener.onTimeChangedStatus(jcStatus);
                             }
                         }
-                        Thread.sleep(1000);
+                        Thread.sleep(100);
                     } catch (IllegalStateException | InterruptedException | NullPointerException e) {
                         e.printStackTrace();
                     }
                 }
             }
         }.start();
+
     }
 
     @Override
