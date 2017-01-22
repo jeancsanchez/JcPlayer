@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JcPlayerView extends LinearLayout implements
-        JcPlayerService.JcPlayerServiceListener,
-        View.OnClickListener, SeekBar.OnSeekBarChangeListener, JcPlayerService.OnInvalidPathListener {
+        View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+
+    private static final String TAG = JcPlayerView.class.getSimpleName();
 
     private static final int PULSE_ANIMATION_DURATION = 200;
     private static final int TITLE_ANIMATION_DURATION = 600;
@@ -37,6 +38,164 @@ public class JcPlayerView extends LinearLayout implements
     private SeekBar seekBar;
     private TextView txtCurrentDuration;
     private boolean isInitialized;
+
+    private OnInvalidPathListener onInvalidPathListener = new OnInvalidPathListener() {
+        @Override
+        public void onPathError(JcAudio jcAudio) {
+            dismissProgressBar();
+        }
+    };
+
+    JcPlayerViewServiceListener jcPlayerViewServiceListener = new JcPlayerViewServiceListener() {
+
+        @Override
+        public void onPreparedAudio(String audioName, int duration) {
+            dismissProgressBar();
+            resetPlayerInfo();
+
+            long aux = duration / 1000;
+            int minute = (int) (aux / 60);
+            int second = (int) (aux % 60);
+
+            final String sDuration = // Minutes
+                    (minute < 10 ? "0" + minute : minute + "")
+                            + ":" +
+                            // Seconds
+                            (second < 10 ? "0" + second : second + "");
+
+            seekBar.setMax(duration);
+
+            txtDuration.post(new Runnable() {
+                @Override
+                public void run() {
+                    txtDuration.setText(sDuration);
+                }
+            });
+        }
+
+        @Override
+        public void onCompletedAudio() {
+            resetPlayerInfo();
+
+            try {
+                jcAudioPlayer.nextAudio();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onPaused() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
+                        R.drawable.ic_play_black, null));
+            } else {
+                btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
+                        R.drawable.ic_play_black, null));
+            }
+            btnPlay.setTag(R.drawable.ic_play_black);
+        }
+
+        @Override
+        public void onContinueAudio() {
+            dismissProgressBar();
+        }
+
+        @Override
+        public void onPlaying() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
+                        R.drawable.ic_pause_black, null));
+            } else {
+                btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
+                        R.drawable.ic_pause_black, null));
+            }
+            btnPlay.setTag(R.drawable.ic_pause_black);
+        }
+
+        @Override
+        public void onTimeChanged(long currentPosition) {
+            long aux = currentPosition / 1000;
+            int minutes = (int) (aux / 60);
+            int seconds = (int) (aux % 60);
+            final String sMinutes = minutes < 10 ? "0" + minutes : minutes + "";
+            final String sSeconds = seconds < 10 ? "0" + seconds : seconds + "";
+
+            seekBar.setProgress((int) currentPosition);
+            txtCurrentDuration.post(new Runnable() {
+                @Override
+                public void run() {
+                    txtCurrentDuration.setText(String.valueOf(sMinutes + ":" + sSeconds));
+                }
+            });
+        }
+
+        @Override
+        public void updateTitle(final String title) {
+//            final String mTitle = title;
+
+            YoYo.with(Techniques.FadeInLeft)
+                    .duration(TITLE_ANIMATION_DURATION)
+                    .playOn(txtCurrentMusic);
+
+            txtCurrentMusic.post(new Runnable() {
+                @Override
+                public void run() {
+                    txtCurrentMusic.setText(title);
+                }
+            });
+        }
+    };
+
+    //JcPlayerViewStatusListener jcPlayerViewStatusListener = new JcPlayerViewStatusListener() {
+    //
+    //    @Override public void onPausedStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onContinueAudioStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onPlayingStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onTimeChangedStatus(JcStatus jcStatus) {
+    //        Log.d(TAG, "song id = " + jcStatus.getJcAudio().getId() + ", position = " + jcStatus.getCurrentPosition());
+    //    }
+    //
+    //    @Override public void onCompletedAudioStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //
+    //    @Override public void onPreparedAudioStatus(JcStatus jcStatus) {
+    //
+    //    }
+    //};
+
+    public interface OnInvalidPathListener {
+        void onPathError(JcAudio jcAudio);
+    }
+
+    public interface JcPlayerViewStatusListener {
+        void onPausedStatus(JcStatus jcStatus);
+        void onContinueAudioStatus(JcStatus jcStatus);
+        void onPlayingStatus(JcStatus jcStatus);
+        void onTimeChangedStatus(JcStatus jcStatus);
+        void onCompletedAudioStatus(JcStatus jcStatus);
+        void onPreparedAudioStatus(JcStatus jcStatus);
+    }
+
+    public interface JcPlayerViewServiceListener {
+        void onPreparedAudio(String audioName, int duration);
+        void onCompletedAudio();
+        void onPaused();
+        void onContinueAudio();
+        void onPlaying();
+        void onTimeChanged(long currentTime);
+        void updateTitle(String title);
+    }
 
     public JcPlayerView(Context context) {
         super(context);
@@ -84,8 +243,9 @@ public class JcPlayerView extends LinearLayout implements
         if (!isAlreadySorted(playlist)) {
             sortPlaylist(playlist);
         }
-        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        jcAudioPlayer.registerInvalidPathListener(this);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
+        jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
@@ -97,8 +257,9 @@ public class JcPlayerView extends LinearLayout implements
     public void initAnonPlaylist(List<JcAudio> playlist) {
         sortPlaylist(playlist);
         generateTitleAudio(playlist, getContext().getString(R.string.track_number));
-        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        jcAudioPlayer.registerInvalidPathListener(this);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
+        jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
@@ -111,15 +272,18 @@ public class JcPlayerView extends LinearLayout implements
     public void initWithTitlePlaylist(List<JcAudio> playlist, String title) {
         sortPlaylist(playlist);
         generateTitleAudio(playlist, title);
-        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
-        jcAudioPlayer.registerInvalidPathListener(this);
+        jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
+        jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
     /**
      * Add an audio for the playlist
      */
-    //TODO: Should we expose this to user? A: Yes, because the user can add files to playlist without creating a new List of JcAudio objects, just adding this files dynamically.
+    //TODO: Should we expose this to user?
+    // A: Yes, because the user can add files to playlist without creating a new List of JcAudio
+    // objects, just adding this files dynamically.
     public void addAudio(JcAudio jcAudio) {
         createJcAudioPlayer();
         List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
@@ -146,14 +310,19 @@ public class JcPlayerView extends LinearLayout implements
                 if (playlist.size() > 1) {
                     // play next audio when currently played audio is removed.
                     if (jcAudioPlayer.isPlaying()) {
-                        next();
+                        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
+                            next();
+                        }
+                        playlist.remove(jcAudio);
+                    } else {
+                        playlist.remove(jcAudio);
                     }
                 } else {
                     //TODO: Maybe we need jcAudioPlayer.stopPlay() for stopping the player
+                    playlist.remove(jcAudio);
                     pause();
                     resetPlayerInfo();
                 }
-                playlist.remove(jcAudio);
             }
         }
     }
@@ -173,6 +342,9 @@ public class JcPlayerView extends LinearLayout implements
     }
 
     public void next() {
+        if(jcAudioPlayer.getCurrentAudio() == null) {
+            return;
+        }
         resetPlayerInfo();
         showProgressBar();
 
@@ -269,6 +441,14 @@ public class JcPlayerView extends LinearLayout implements
         return jcAudioPlayer.getPlaylist();
     }
 
+    public boolean isPlaying() {
+        return jcAudioPlayer.isPlaying();
+    }
+
+    public boolean isPaused() {
+        return  jcAudioPlayer.isPaused();
+    }
+
     public JcAudio getCurrentAudio() {
         return jcAudioPlayer.getCurrentAudio();
     }
@@ -276,9 +456,10 @@ public class JcPlayerView extends LinearLayout implements
     private void createJcAudioPlayer() {
         if (jcAudioPlayer == null) {
             List<JcAudio> playlist = new ArrayList<>();
-            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, JcPlayerView.this);
+            jcAudioPlayer = new JcAudioPlayer(getContext(), playlist, jcPlayerViewServiceListener);
         }
-        jcAudioPlayer.registerInvalidPathListener(this);
+        jcAudioPlayer.registerInvalidPathListener(onInvalidPathListener);
+        //jcAudioPlayer.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true;
     }
 
@@ -300,7 +481,15 @@ public class JcPlayerView extends LinearLayout implements
      */
     private boolean isAlreadySorted(List<JcAudio> playlist) {
         // If there is position in the first audio, then playlist is already sorted.
-        return playlist != null && playlist.get(0).getPosition() != 0;
+        if (playlist != null) {
+            if (playlist.get(0).getPosition() != -1) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     private void generateTitleAudio(List<JcAudio> playlist, String title) {
@@ -327,111 +516,12 @@ public class JcPlayerView extends LinearLayout implements
         btnPrev.setClickable(true);
     }
 
-    @Override
-    public void onPreparedAudio(String audioName, int duration) {
-        dismissProgressBar();
-        resetPlayerInfo();
-
-        long aux = duration / 1000;
-        int minute = (int) (aux / 60);
-        int second = (int) (aux % 60);
-
-        final String sDuration = // Minutes
-                                (minute < 10 ? "0" + minute : minute + "")
-                                + ":" +
-                                // Seconds
-                                (second < 10 ? "0" + second : second + "");
-
-        seekBar.setMax(duration);
-
-        txtDuration.post(new Runnable() {
-            @Override
-            public void run() {
-                txtDuration.setText(sDuration);
-            }
-        });
-    }
-
-    @Override
-    public void onCompletedAudio() {
-        resetPlayerInfo();
-
-        try {
-            jcAudioPlayer.nextAudio();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void resetPlayerInfo() {
+    private void resetPlayerInfo() {
         seekBar.setProgress(0);
         txtCurrentMusic.setText("");
         txtCurrentDuration.setText(getContext().getString(R.string.play_initial_time));
         txtDuration.setText(getContext().getString(R.string.play_initial_time));
     }
-
-    @Override
-    public void onPaused() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
-                    R.drawable.ic_play_black, null));
-        } else {
-            btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
-                    R.drawable.ic_play_black, null));
-        }
-        btnPlay.setTag(R.drawable.ic_play_black);
-    }
-
-    @Override
-    public void onContinueAudio() {
-        dismissProgressBar();
-    }
-
-    @Override
-    public void onPlaying() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            btnPlay.setBackground(ResourcesCompat.getDrawable(getResources(),
-                    R.drawable.ic_pause_black, null));
-        } else {
-            btnPlay.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
-                    R.drawable.ic_pause_black, null));
-        }
-        btnPlay.setTag(R.drawable.ic_pause_black);
-    }
-
-    @Override
-    public void onTimeChanged(long currentPosition) {
-        long aux = currentPosition / 1000;
-        int minutes = (int) (aux / 60);
-        int seconds = (int) (aux % 60);
-        final String sMinutes = minutes < 10 ? "0" + minutes : minutes + "";
-        final String sSeconds = seconds < 10 ? "0" + seconds : seconds + "";
-
-        seekBar.setProgress((int) currentPosition);
-        txtCurrentDuration.post(new Runnable() {
-            @Override
-            public void run() {
-                txtCurrentDuration.setText(String.valueOf(sMinutes + ":" + sSeconds));
-            }
-        });
-    }
-
-    @Override
-    public void updateTitle(String title) {
-        final String mTitle = title;
-
-        YoYo.with(Techniques.FadeInLeft)
-                .duration(TITLE_ANIMATION_DURATION)
-                .playOn(txtCurrentMusic);
-
-        txtCurrentMusic.post(new Runnable() {
-            @Override
-            public void run() {
-                txtCurrentMusic.setText(mTitle);
-            }
-        });
-    }
-
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
@@ -448,7 +538,7 @@ public class JcPlayerView extends LinearLayout implements
         dismissProgressBar();
     }
 
-    public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener) {
+    public void registerInvalidPathListener(OnInvalidPathListener registerInvalidPathListener) {
         if (jcAudioPlayer != null) {
             jcAudioPlayer.registerInvalidPathListener(registerInvalidPathListener);
         }
@@ -458,14 +548,16 @@ public class JcPlayerView extends LinearLayout implements
         if (jcAudioPlayer != null) jcAudioPlayer.kill();
     }
 
-    @Override
-    public void onPathError(JcAudio jcAudio) {
-        dismissProgressBar();
-    }
-
-    public void registerServiceListener(JcPlayerService.JcPlayerServiceListener jcPlayerServiceListener) {
+    public void registerServiceListener(JcPlayerViewServiceListener jcPlayerServiceListener) {
         if (jcAudioPlayer != null) {
             jcAudioPlayer.registerServiceListener(jcPlayerServiceListener);
         }
     }
+
+    public void registerStatusListener(JcPlayerViewStatusListener statusListener) {
+        if (jcAudioPlayer != null) {
+            jcAudioPlayer.registerStatusListener(statusListener);
+        }
+    }
+
 }

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.jean.jcplayersample.MainActivity">
@@ -11,9 +10,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_weight="1"
+        android:layout_above="@+id/jcplayer"
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="0dp">
     </android.support.v7.widget.RecyclerView>
@@ -23,7 +22,8 @@
         tools:layout_editor_absoluteY="435dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:gravity="bottom"
         tools:layout_editor_absoluteX="8dp" />
 
-</LinearLayout>
+</RelativeLayout>

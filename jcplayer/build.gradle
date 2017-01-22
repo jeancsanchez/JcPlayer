@@ -1,4 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+// This is for local maven.
+group = 'io.github.jeancsanchez.jcplayer'
+version = '2.6.0-alpha'
 
 ext {
     bintrayRepo = 'maven'
@@ -13,7 +18,7 @@ ext {
     siteUrl = 'https://github.com/jeancsanchez/JCPlayer'
     gitUrl = 'https://github.com/jeancsanchez/JCPlayer.git'
 
-    libraryVersion = '2.0.3-alpha'
+    libraryVersion = '2.6.0-alpha'
 
     developerId = 'jeancsanchez'
     developerName = 'Jean Carlos'

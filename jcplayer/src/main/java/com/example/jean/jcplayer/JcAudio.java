@@ -20,11 +20,11 @@ public class JcAudio implements Serializable {
         // It looks bad
         //int randomNumber = path.length() + title.length();
 
-        // We init id 0 and position with 0. And let JcPlayerView define it.
+        // We init id  -1 and position with -1. And let JcPlayerView define it.
         // We need to do this because there is a possibility that the user reload previous playlist
         // from persistence storage like sharedPreference or SQLite.
-        this.id = 0;
-        this.position = 0;
+        this.id = -1;
+        this.position = -1;
         this.title = title;
         this.path = path;
         this.origin = origin;
