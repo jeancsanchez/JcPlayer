@@ -49,3 +49,6 @@ captures/
 
 ### Android Patch ###
 gen-external-apklibs
+
+# Linux files
+.directory
