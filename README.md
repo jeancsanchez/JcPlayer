@@ -51,8 +51,7 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
 <com.example.jean.jcplayer.JcPlayerView
     android:id="@+id/jcplayer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-</com.example.jean.jcplayer.JcPlayerView>
+    android:layout_height="match_parent"/>
 ```
 
 ## Code Setup
