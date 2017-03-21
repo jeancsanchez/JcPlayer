@@ -25,7 +25,7 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 - http://xxxx/abc.html
 - mms://xxxx
 
-##Maven
+## Maven
 ```Gradle
 allprojects {
     repositories {
@@ -36,7 +36,7 @@ allprojects {
     }
 }
 ```
-##Gradle Dependency
+## Gradle Dependency
 ```Gradle
 dependencies {
     // ... other dependencies
@@ -45,7 +45,7 @@ dependencies {
 ```
 
 
-##Getting Started
+## Getting Started
 You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls and everything else are created by the player view itself.
 ```xml
 <com.example.jean.jcplayer.JcPlayerView
@@ -55,13 +55,13 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
 </com.example.jean.jcplayer.JcPlayerView>
 ```
 
-##Code Setup
-####Find your JcPlayerView xml and...
+## Code Setup
+#### Find your JcPlayerView xml and...
 ```java
     jcplayerView = (JcPlayerView) findViewById(R.id.jcplayerView);
 ```
 
-###Option 1: Just init a playlist
+### Option 1: Just init a playlist
 ```java
     ArrayList<JcAudio> jcAudios = new ArrayList<>();
     jcAudios.add(JcAudio.createFromURL("url audio","http://xxx/audio.mp3"));
@@ -71,7 +71,7 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
     jcplayerView.initPlaylist(jcAudios);
 ```
 
-###Option 2: Initialize an anonymous playlist with a default title for all
+### Option 2: Initialize an anonymous playlist with a default title for all
 ```java
     jcplayerView.addAudio(JcAudio.createFromURL("url audio","http://xxx/audio.mp3"));
     jcplayerView.addAudio(JcAudio.createFromAssets("audio.mp3"));
@@ -80,12 +80,12 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
     jcplayerView.initAnonPlaylist(jcAudios);
 ```
 
-###Option 3: Initialize an playlist with a custom title for all
+### Option 3: Initialize an playlist with a custom title for all
 ```java    
     jcplayerView.initWithTitlePlaylist(urls, "Awesome music");
 ```
 
-###Call the notification player where you want.
+### Call the notification player where you want.
 ```java
     jcplayerView.createNotification(); // default icon
 ```
@@ -94,7 +94,7 @@ OR
     jcplayerView.createNotification(R.drawable.myIcon); // Your icon resource
 ```
 
-###How can I get callbacks of player status?
+### How can I get callbacks of player status?
 ```java
     MyActivity implements JcPlayerService.JcPlayerServiceListener {
         ....
@@ -102,7 +102,7 @@ OR
         // Just be happy :D
  }
 ```
-###Note
+### Note
 > - The list view is developer responsibilty
 
 ## TODO LIST##
