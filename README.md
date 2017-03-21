@@ -73,10 +73,6 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
 
 ### Option 2: Initialize an anonymous playlist with a default title for all
 ```java
-    jcplayerView.addAudio(JcAudio.createFromURL("url audio","http://xxx/audio.mp3"));
-    jcplayerView.addAudio(JcAudio.createFromAssets("audio.mp3"));
-    jcplayerView.addAudio(JcAudio.createFromRaw(R.raw.audio));
-
     jcplayerView.initAnonPlaylist(jcAudios);
 ```
 
