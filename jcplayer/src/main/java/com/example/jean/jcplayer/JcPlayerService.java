@@ -263,7 +263,7 @@ public class JcPlayerService extends Service implements
                                 jcPlayerViewStatusListener.onTimeChangedStatus(jcStatus);
                             }
                         }
-                        Thread.sleep(100);
+                        Thread.sleep(200);
                     } catch (IllegalStateException | InterruptedException | NullPointerException e) {
                         e.printStackTrace();
                     }

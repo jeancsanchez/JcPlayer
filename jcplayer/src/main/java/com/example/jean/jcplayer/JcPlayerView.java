@@ -278,13 +278,17 @@ public class JcPlayerView extends LinearLayout implements
         isInitialized = true;
     }
 
-    /**
-     * Add an audio for the playlist
-     */
     //TODO: Should we expose this to user?
     // A: Yes, because the user can add files to playlist without creating a new List of JcAudio
     // objects, just adding this files dynamically.
-    public void addAudio(JcAudio jcAudio) {
+    /**
+     * Add an audio for the playlist. We can track the JcAudio by
+     * its id. So here we returning its id after adding to list.
+     *
+     * @param jcAudio audio file generated from {@link JcAudio}
+     * @return id of jcAudio.
+     */
+    public long addAudio(JcAudio jcAudio) {
         createJcAudioPlayer();
         List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
         int lastPosition = playlist.size();
@@ -295,6 +299,7 @@ public class JcPlayerView extends LinearLayout implements
         if (!playlist.contains(jcAudio)) {
             playlist.add(lastPosition, jcAudio);
         }
+        return jcAudio.getId();
     }
 
     /**
@@ -307,22 +312,23 @@ public class JcPlayerView extends LinearLayout implements
             List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
 
             if (playlist != null && playlist.contains(jcAudio)) {
-                if (playlist.size() > 1) {
-                    // play next audio when currently played audio is removed.
-                    if (jcAudioPlayer.isPlaying()) {
-                        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
-                            next();
-                        }
-                        playlist.remove(jcAudio);
-                    } else {
-                        playlist.remove(jcAudio);
-                    }
-                } else {
+                //if (playlist.size() > 1) {
+                //    // play next audio when currently played audio is removed.
+                //    if (jcAudioPlayer.isPlaying()) {
+                //        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
+                //            next();
+                //        }
+                //        playlist.remove(jcAudio);
+                //    } else {
+                //        playlist.remove(jcAudio);
+                //    }
+                //    playlist.remove(jcAudio);
+                //} else {
                     //TODO: Maybe we need jcAudioPlayer.stopPlay() for stopping the player
                     playlist.remove(jcAudio);
                     pause();
                     resetPlayerInfo();
-                }
+                //}
             }
         }
     }

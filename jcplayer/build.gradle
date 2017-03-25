@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 // This is for local maven.
 group = 'io.github.jeancsanchez.jcplayer'
-version = '2.6.0-alpha'
+version = '2.6.1-alpha'
 
 ext {
     bintrayRepo = 'maven'
@@ -18,7 +18,7 @@ ext {
     siteUrl = 'https://github.com/jeancsanchez/JCPlayer'
     gitUrl = 'https://github.com/jeancsanchez/JCPlayer.git'
 
-    libraryVersion = '2.6.0-alpha'
+    libraryVersion = '2.6.1-alpha'
 
     developerId = 'jeancsanchez'
     developerName = 'Jean Carlos'
@@ -61,5 +61,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
