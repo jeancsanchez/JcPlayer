@@ -312,23 +312,25 @@ public class JcPlayerView extends LinearLayout implements
             List<JcAudio> playlist = jcAudioPlayer.getPlaylist();
 
             if (playlist != null && playlist.contains(jcAudio)) {
-                //if (playlist.size() > 1) {
-                //    // play next audio when currently played audio is removed.
-                //    if (jcAudioPlayer.isPlaying()) {
-                //        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
-                //            next();
-                //        }
-                //        playlist.remove(jcAudio);
-                //    } else {
-                //        playlist.remove(jcAudio);
-                //    }
-                //    playlist.remove(jcAudio);
-                //} else {
+                if (playlist.size() > 1) {
+                    // play next audio when currently played audio is removed.
+                    if (jcAudioPlayer.isPlaying()) {
+                        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
+                            playlist.remove(jcAudio);
+                            pause();
+                            resetPlayerInfo();
+                        } else {
+                            playlist.remove(jcAudio);
+                        }
+                    } else {
+                        playlist.remove(jcAudio);
+                    }
+                } else {
                     //TODO: Maybe we need jcAudioPlayer.stopPlay() for stopping the player
                     playlist.remove(jcAudio);
                     pause();
                     resetPlayerInfo();
-                //}
+                }
             }
         }
     }
