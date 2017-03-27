@@ -41,7 +41,7 @@ android {
     }
 }
 
-//noinspection SpellCheckingInspection
+// noinspection SpellCheckingInspection
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -51,9 +51,9 @@ dependencies {
     })
     androidTestCompile "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
     androidTestCompile "com.android.support.test.espresso:espresso-idling-resource:$rootProject.ext.espressoVersion"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
     androidTestCompile "com.android.support.test:runner:$rootProject.ext.espressoRulesVersion"
     androidTestCompile "com.android.support.test:rules:$rootProject.ext.espressoRulesVersion"
-    androidTestCompile "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
 
     // resolving espresso conflicts
     androidTestCompile "com.android.support:support-annotations:$rootProject.supportVersion"
