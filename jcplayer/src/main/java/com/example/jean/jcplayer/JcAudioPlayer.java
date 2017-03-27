@@ -15,61 +15,72 @@ import java.util.List;
  * Created by jean on 12/07/16.
  */
 
-public class JcAudioPlayer {
+class JcAudioPlayer {
     private JcPlayerService jcPlayerService;
-    private JcPlayerService.JcPlayerServiceListener listener;
-    private JcPlayerService.OnInvalidPathListener invalidPathListener;
-    private JcNotificationPlayer jcNotificationPlayer;
+    private JcPlayerView.JcPlayerViewServiceListener listener;
+    private JcPlayerView.OnInvalidPathListener invalidPathListener;
+    private JcPlayerView.JcPlayerViewStatusListener statusListener;
+    private JcNotificationPlayerService jcNotificationPlayer;
     private List<JcAudio> playlist;
     private JcAudio currentJcAudio;
     private int currentPositionList;
     private Context context;
     private static JcAudioPlayer instance = null;
-    public boolean mBound = false;
+    private boolean mBound = false;
     private boolean playing;
     private boolean paused;
     private int position = 1;
 
-    public JcAudioPlayer(Context context, List<JcAudio> playlist, JcPlayerService.JcPlayerServiceListener listener){
+    public JcAudioPlayer(Context context, List<JcAudio> playlist, JcPlayerView.JcPlayerViewServiceListener listener) {
         this.context = context;
         this.playlist = playlist;
         this.listener = listener;
         instance = JcAudioPlayer.this;
-        this.jcNotificationPlayer = new JcNotificationPlayer(context);
+        this.jcNotificationPlayer = new JcNotificationPlayerService(context);
 
         initService();
     }
 
-    public void setInstance(JcAudioPlayer instance){
+    public void setInstance(JcAudioPlayer instance) {
         this.instance = instance;
     }
 
-    public void registerNotificationListener(JcPlayerService.JcPlayerServiceListener notificationListener){
+    public void registerNotificationListener(JcPlayerView.JcPlayerViewServiceListener notificationListener) {
         this.listener = notificationListener;
-        if(jcNotificationPlayer != null)
+        if (jcNotificationPlayer != null) {
             jcPlayerService.registerNotificationListener(notificationListener);
+        }
     }
 
-    public void registerInvalidPathListener(JcPlayerService.OnInvalidPathListener registerInvalidPathListener){
+    public void registerInvalidPathListener(JcPlayerView.OnInvalidPathListener registerInvalidPathListener) {
         this.invalidPathListener = registerInvalidPathListener;
-        if(jcPlayerService != null)
+        if (jcPlayerService != null) {
             jcPlayerService.registerInvalidPathListener(invalidPathListener);
+        }
     }
 
-    public void registerServiceListener(JcPlayerService.JcPlayerServiceListener jcPlayerServiceListener) {
+    public void registerServiceListener(JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener) {
         this.listener = jcPlayerServiceListener;
-        if(jcPlayerService != null)
+        if (jcPlayerService != null) {
             jcPlayerService.registerServicePlayerListener(jcPlayerServiceListener);
+        }
     }
 
-    public static JcAudioPlayer getInstance(){
+    public void registerStatusListener(JcPlayerView.JcPlayerViewStatusListener statusListener) {
+        this.statusListener = statusListener;
+        if (jcPlayerService != null) {
+            jcPlayerService.registerStatusListener(statusListener);
+        }
+    }
+
+    public static JcAudioPlayer getInstance() {
         return instance;
     }
 
     public void playAudio(JcAudio JcAudio) throws AudioListNullPointerException {
-        if(playlist == null || playlist.size() == 0)
-            throw  new AudioListNullPointerException();
-
+        if (playlist == null || playlist.size() == 0) {
+            throw new AudioListNullPointerException();
+        }
         currentJcAudio = JcAudio;
         jcPlayerService.play(currentJcAudio);
         updatePositionAudioList();
@@ -77,19 +88,18 @@ public class JcAudioPlayer {
         paused = false;
     }
 
-
     private void initService(){
-        if (!mBound)
+        if (!mBound) {
             startJcPlayerService();
-        else
+        } else {
             mBound = true;
+        }
     }
 
     public void nextAudio() throws AudioListNullPointerException {
-        if(playlist == null || playlist.size() == 0)
+        if (playlist == null || playlist.size() == 0) {
             throw new AudioListNullPointerException();
-
-        else {
+        } else {
             if (currentJcAudio != null) {
                 try {
                     JcAudio nextJcAudio = playlist.get(currentPositionList + position);
@@ -110,10 +120,9 @@ public class JcAudioPlayer {
     }
 
     public void previousAudio() throws AudioListNullPointerException {
-        if(playlist == null || playlist.size() == 0)
+        if (playlist == null || playlist.size() == 0) {
             throw new AudioListNullPointerException();
-
-        else {
+        } else {
             if (currentJcAudio != null) {
                 try {
                     JcAudio previousJcAudio = playlist.get(currentPositionList - position);
@@ -140,45 +149,47 @@ public class JcAudioPlayer {
     }
 
     public void continueAudio() throws AudioListNullPointerException {
-        if(playlist == null || playlist.size() == 0)
+        if (playlist == null || playlist.size() == 0) {
             throw new AudioListNullPointerException();
-
-        else {
-            if (currentJcAudio == null)
+        } else {
+            if (currentJcAudio == null) {
                 currentJcAudio = playlist.get(0);
+            }
             playAudio(currentJcAudio);
             playing = true;
             paused = false;
         }
     }
 
-    public void createNewNotification(int iconResource){
-        if(currentJcAudio != null)
+    public void createNewNotification(int iconResource) {
+        if (currentJcAudio != null) {
             jcNotificationPlayer.createNotificationPlayer(currentJcAudio.getTitle(), iconResource);
-    }
-
-    public void updateNotification(){
-        jcNotificationPlayer.updateNotification();
-    }
-
-    public void seekTo(int time){
-        if(jcPlayerService != null)
-            jcPlayerService.seekTo(time);
-    }
-
-
-    private void updatePositionAudioList() {
-        for(int i = 0; i < playlist.size(); i ++){
-            if(playlist.get(i).getId() == currentJcAudio.getId())
-                this.currentPositionList = i;
         }
     }
 
-    private synchronized void startJcPlayerService(){
-        if(!mBound) {
+    public void updateNotification() {
+        jcNotificationPlayer.updateNotification();
+    }
+
+    public void seekTo(int time) {
+        if (jcPlayerService != null) {
+            jcPlayerService.seekTo(time);
+        }
+    }
+
+    private void updatePositionAudioList() {
+        for (int i = 0; i < playlist.size(); i++) {
+            if (playlist.get(i).getId() == currentJcAudio.getId()) {
+                this.currentPositionList = i;
+            }
+        }
+    }
+
+    private synchronized void startJcPlayerService() {
+        if (!mBound) {
             Intent intent = new Intent(context.getApplicationContext(), JcPlayerService.class);
-            intent.putExtra(JcNotificationPlayer.PLAYLIST, (Serializable) playlist);
-            intent.putExtra(JcNotificationPlayer.CURRENT_AUDIO, currentJcAudio);
+            intent.putExtra(JcNotificationPlayerService.PLAYLIST, (Serializable) playlist);
+            intent.putExtra(JcNotificationPlayerService.CURRENT_AUDIO, currentJcAudio);
             context.bindService(intent, mConnection, context.getApplicationContext().BIND_AUTO_CREATE);
         }
     }
@@ -189,12 +200,15 @@ public class JcAudioPlayer {
             JcPlayerService.JcPlayerServiceBinder binder = (JcPlayerService.JcPlayerServiceBinder) service;
             jcPlayerService = binder.getService();
 
-            if(listener != null)
+            if (listener != null) {
                 jcPlayerService.registerServicePlayerListener(listener);
-
-            if(invalidPathListener != null)
+            }
+            if (invalidPathListener != null) {
                 jcPlayerService.registerInvalidPathListener(invalidPathListener);
-
+            }
+            if (statusListener != null) {
+                jcPlayerService.registerStatusListener(statusListener);
+            }
             mBound = true;
         }
 
@@ -206,8 +220,12 @@ public class JcAudioPlayer {
         }
     };
 
-    public boolean isPaused(){
+    boolean isPaused() {
         return paused;
+    }
+
+    boolean isPlaying() {
+        return playing;
     }
 
     public void kill() {
@@ -219,7 +237,7 @@ public class JcAudioPlayer {
         if (mBound)
             try {
                 context.unbindService(mConnection);
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 //TODO: Add readable exception here
             }
 
@@ -227,7 +245,7 @@ public class JcAudioPlayer {
             jcNotificationPlayer.destroyNotificationIfExists();
         }
 
-        if(JcAudioPlayer.getInstance() != null)
+        if (JcAudioPlayer.getInstance() != null)
             JcAudioPlayer.getInstance().setInstance(null);
     }
 
