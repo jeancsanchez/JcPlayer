@@ -99,7 +99,7 @@ OR
 ```
 
 ## How to contribute
-Follow this guidelines, specially the commits style guide:
+Follow this guidelines, specially the commits style guide: </br>
 https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/code_guidelines.md
 ### Note
 > - The list view is developer responsibilty
