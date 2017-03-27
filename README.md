@@ -97,6 +97,10 @@ OR
         // Just be happy :D
  }
 ```
+
+## How to contribute
+Follow this guidelines, specially the commits style guide:
+![] https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/code_guidelines.md
 ### Note
 > - The list view is developer responsibilty
 
