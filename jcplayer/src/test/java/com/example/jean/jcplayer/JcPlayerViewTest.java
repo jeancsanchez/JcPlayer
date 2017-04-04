@@ -29,6 +29,8 @@ public class JcPlayerViewTest {
     @Before
     public void setUp(){
         MockitoAnnotations.initMocks(this);
+        
+        // TODO: Add a default constructor without Context dependencie for better test
         jcPlayerView = new JcPlayerView(context);
 
 
