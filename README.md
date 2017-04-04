@@ -107,7 +107,5 @@ https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/
 
 ## TODO LIST ##
 * [ ] Set custom layouts for player.
-* [ ] Support others audio formats.
-* [ ] Support and test others urls.
 * [ ] Add Instrumentation tests
 * [ ] Add unity tests.
