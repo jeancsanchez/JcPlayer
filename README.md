@@ -106,6 +106,8 @@ https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/
  The list view is developer responsibilty
 
 ## TODO LIST ##
-
+* [ ] Set custom layouts.
 * [ ] Support others audio formats.
 * [ ] Support and test others urls.
+* [ ] Add Instrumentation tests
+* [ ] Add unity tests.
