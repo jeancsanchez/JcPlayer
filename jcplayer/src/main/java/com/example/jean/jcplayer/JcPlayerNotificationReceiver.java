@@ -29,7 +29,7 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
                 }
                 break;
 
-            case JcNotificationPlayer.PAUSE:
+            case JcNotificationPlayerService.PAUSE:
                 try {
                     if(jcAudioPlayer != null) {
                         jcAudioPlayer.pauseAudio();
