@@ -40,7 +40,7 @@ allprojects {
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:2.6.0-alpha'
+    compile 'io.github.jeancsanchez.jcplayer:jcplayer:{version}'
 }
 ```
 
