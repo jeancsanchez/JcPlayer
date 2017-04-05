@@ -29,9 +29,15 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
                 }
                 break;
 
-            case JcNotificationPlayerService.PAUSE:
-                jcAudioPlayer.pauseAudio();
-                jcAudioPlayer.updateNotification();
+            case JcNotificationPlayer.PAUSE:
+                try {
+                    if(jcAudioPlayer != null) {
+                        jcAudioPlayer.pauseAudio();
+                        jcAudioPlayer.updateNotification();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
 
             case JcNotificationPlayerService.NEXT:

@@ -533,7 +533,7 @@ public class JcPlayerView extends LinearLayout implements
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-        if (fromUser) jcAudioPlayer.seekTo(i);
+        if(fromUser && jcAudioPlayer != null) jcAudioPlayer.seekTo(i);
     }
 
     @Override

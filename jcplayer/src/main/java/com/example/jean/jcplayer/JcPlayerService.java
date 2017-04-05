@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.jean.jcplayer.JcPlayerExceptions.AudioAssetsInvalidException;
 import com.example.jean.jcplayer.JcPlayerExceptions.AudioFilePathInvalidException;
@@ -236,8 +237,11 @@ public class JcPlayerService extends Service implements
         }
     }
 
-    public void seekTo(int time) {
-        mediaPlayer.seekTo(time);
+    public void seekTo(int time){
+        Log.d("time = ", Integer.toString(time));
+        if(mediaPlayer != null) {
+            mediaPlayer.seekTo(time);
+        }
     }
 
     private void updateTimeAudio() {
