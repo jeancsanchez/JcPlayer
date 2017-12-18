@@ -25,7 +25,7 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 - http://xxxx/abc.html
 - mms://xxxx
 
-## Maven
+## Gradle Dependency (Project level)
 ```Gradle
 allprojects {
     repositories {
@@ -36,7 +36,7 @@ allprojects {
     }
 }
 ```
-## Gradle Dependency
+## Gradle Dependency (Module level) 
 ```Gradle
 dependencies {
     // ... other dependencies
