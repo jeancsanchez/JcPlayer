@@ -10,8 +10,12 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
+import com.example.jean.jcplayer.view.JcAudioPlayer;
+
 /**
- * Created by jean on 12/07/16.
+ * @author Jean Carlos (Github: @jeancsanchez)
+ * @date 12/07/16.
+ * Jesus loves you.
  */
 class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceListener {
     static final String NEXT = "NEXT";
@@ -45,7 +49,7 @@ class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceLis
         this.iconResource = iconResourceResource;
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        JcAudioPlayer.getInstance().registerNotificationListener(this);
+        JcAudioPlayer.Companion.getInstance().registerNotificationListener(this);
 
         if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -81,7 +85,7 @@ class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceLis
     private RemoteViews createNotificationPlayerView() {
         RemoteViews remoteView;
 
-        if (JcAudioPlayer.getInstance().isPaused()) {
+        if (JcAudioPlayer.Companion.getInstance().isPaused()) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_play);
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID));
         } else {

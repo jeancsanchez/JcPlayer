@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayer.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,16 +10,25 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioAssetsInvalidException;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioFilePathInvalidException;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioRawInvalidException;
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioUrlInvalidException;
+import com.example.jean.jcplayer.JcAudio;
+import com.example.jean.jcplayer.general.errors.AudioAssetsInvalidException;
+import com.example.jean.jcplayer.general.errors.AudioFilePathInvalidException;
+import com.example.jean.jcplayer.general.errors.AudioRawInvalidException;
+import com.example.jean.jcplayer.general.errors.AudioUrlInvalidException;
+import com.example.jean.jcplayer.JcStatus;
+import com.example.jean.jcplayer.Origin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is an Android [Service].
+ * @author Jean Carlos (Github: @jeancsanchez)
+ * @date 2/07/16.
+ * Jesus loves you.
+ */
 public class JcPlayerService extends Service implements
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener,
@@ -35,10 +44,10 @@ public class JcPlayerService extends Service implements
     private int currentTime;
     private JcAudio currentJcAudio;
     private JcStatus jcStatus = new JcStatus();
-    private List<JcPlayerView.JcPlayerViewServiceListener> jcPlayerServiceListeners;
-    private List<JcPlayerView.OnInvalidPathListener> invalidPathListeners;
-    private List<JcPlayerView.JcPlayerViewStatusListener> jcPlayerStatusListeners;
-    private JcPlayerView.JcPlayerViewServiceListener notificationListener;
+    private List<PlayerListeners.JcPlayerViewServiceListener> jcPlayerServiceListeners;
+    private List<PlayerListeners.OnInvalidPathListener> invalidPathListeners;
+    private List<PlayerListeners.JcPlayerViewStatusListener> jcPlayerStatusListeners;
+    private PlayerListeners.JcPlayerViewServiceListener notificationListener;
     private AssetFileDescriptor assetFileDescriptor = null; // For Asset and Raw file.
 
     public class JcPlayerServiceBinder extends Binder {
@@ -47,11 +56,11 @@ public class JcPlayerService extends Service implements
         }
     }
 
-    public void registerNotificationListener(JcPlayerView.JcPlayerViewServiceListener notificationListener) {
+    public void registerNotificationListener(PlayerListeners.JcPlayerViewServiceListener notificationListener) {
         this.notificationListener = notificationListener;
     }
 
-    public void registerServicePlayerListener(JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener) {
+    public void registerServicePlayerListener(PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener) {
         if (jcPlayerServiceListeners == null) {
             jcPlayerServiceListeners = new ArrayList<>();
         }
@@ -61,7 +70,7 @@ public class JcPlayerService extends Service implements
         }
     }
 
-    public void registerInvalidPathListener(JcPlayerView.OnInvalidPathListener invalidPathListener) {
+    public void registerInvalidPathListener(PlayerListeners.OnInvalidPathListener invalidPathListener) {
         if (invalidPathListeners == null) {
             invalidPathListeners = new ArrayList<>();
         }
@@ -71,7 +80,7 @@ public class JcPlayerService extends Service implements
         }
     }
 
-    public void registerStatusListener(JcPlayerView.JcPlayerViewStatusListener statusListener) {
+    public void registerStatusListener(PlayerListeners.JcPlayerViewStatusListener statusListener) {
         if (jcPlayerStatusListeners == null) {
             jcPlayerStatusListeners = new ArrayList<>();
         }
@@ -108,7 +117,7 @@ public class JcPlayerService extends Service implements
             isPlaying = false;
         }
 
-        for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+        for (PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
             jcPlayerServiceListener.onPaused();
         }
 
@@ -117,7 +126,7 @@ public class JcPlayerService extends Service implements
         }
 
         if(jcPlayerStatusListeners != null) {
-            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerStatusListener : jcPlayerStatusListeners) {
+            for (PlayerListeners.JcPlayerViewStatusListener jcPlayerStatusListener : jcPlayerStatusListeners) {
                 jcStatus.setJcAudio(jcAudio);
                 jcStatus.setDuration(duration);
                 jcStatus.setCurrentPosition(currentTime);
@@ -193,13 +202,13 @@ public class JcPlayerService extends Service implements
                             isPlaying = true;
 
                             if (jcPlayerServiceListeners != null) {
-                                for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+                                for (PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
                                     jcPlayerServiceListener.onContinueAudio();
                                 }
                             }
 
                             if (jcPlayerStatusListeners != null) {
-                                for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                                for (PlayerListeners.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
                                     jcStatus.setJcAudio(jcAudio);
                                     jcStatus.setPlayState(JcStatus.PlayState.PLAY);
                                     jcStatus.setDuration(mediaPlayer.getDuration());
@@ -216,12 +225,12 @@ public class JcPlayerService extends Service implements
 
             updateTimeAudio();
 
-            for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+            for (PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
                 jcPlayerServiceListener.onPlaying();
             }
 
             if (jcPlayerStatusListeners != null) {
-                for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                for (PlayerListeners.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
                     jcStatus.setJcAudio(jcAudio);
                     jcStatus.setPlayState(JcStatus.PlayState.PLAY);
                     jcStatus.setDuration(0);
@@ -251,7 +260,7 @@ public class JcPlayerService extends Service implements
                     try {
 
                         if (jcPlayerServiceListeners != null) {
-                            for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+                            for (PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
                                 jcPlayerServiceListener.onTimeChanged(mediaPlayer.getCurrentPosition());
                             }
                         }
@@ -260,7 +269,7 @@ public class JcPlayerService extends Service implements
                         }
 
                         if (jcPlayerStatusListeners != null) {
-                            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+                            for (PlayerListeners.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
                                 jcStatus.setPlayState(JcStatus.PlayState.PLAY);
                                 jcStatus.setDuration(mediaPlayer.getDuration());
                                 jcStatus.setCurrentPosition(mediaPlayer.getCurrentPosition());
@@ -285,7 +294,7 @@ public class JcPlayerService extends Service implements
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         if (jcPlayerServiceListeners != null) {
-            for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+            for (PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
                 jcPlayerServiceListener.onCompletedAudio();
             }
         }
@@ -294,7 +303,7 @@ public class JcPlayerService extends Service implements
         }
 
         if (jcPlayerStatusListeners != null) {
-            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+            for (PlayerListeners.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
                 jcPlayerViewStatusListener.onCompletedAudioStatus(jcStatus);
             }
         }
@@ -324,7 +333,7 @@ public class JcPlayerService extends Service implements
         }
 
         if (invalidPathListeners != null) {
-            for (JcPlayerView.OnInvalidPathListener onInvalidPathListener : invalidPathListeners) {
+            for (PlayerListeners.OnInvalidPathListener onInvalidPathListener : invalidPathListeners) {
                 onInvalidPathListener.onPathError(currentJcAudio);
             }
         }
@@ -372,7 +381,7 @@ public class JcPlayerService extends Service implements
         updateTimeAudio();
 
         if (jcPlayerServiceListeners != null) {
-            for (JcPlayerView.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
+            for (PlayerListeners.JcPlayerViewServiceListener jcPlayerServiceListener : jcPlayerServiceListeners) {
                 jcPlayerServiceListener.updateTitle(currentJcAudio.getTitle());
                 jcPlayerServiceListener.onPreparedAudio(currentJcAudio.getTitle(), mediaPlayer.getDuration());
             }
@@ -384,7 +393,7 @@ public class JcPlayerService extends Service implements
         }
 
         if (jcPlayerStatusListeners != null) {
-            for (JcPlayerView.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
+            for (PlayerListeners.JcPlayerViewStatusListener jcPlayerViewStatusListener : jcPlayerStatusListeners) {
                 jcStatus.setJcAudio(currentJcAudio);
                 jcStatus.setPlayState(JcStatus.PlayState.PLAY);
                 jcStatus.setDuration(duration);

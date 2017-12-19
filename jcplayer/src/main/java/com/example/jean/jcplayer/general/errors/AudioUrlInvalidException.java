@@ -1,9 +1,10 @@
-package com.example.jean.jcplayer.JcPlayerExceptions;
+package com.example.jean.jcplayer.general.errors;
 
 /**
- * Created by jean on 01/09/16.
+ * @author Jean Carlos (Github: @jeancsanchez)
+ * @date 01/09/16.
+ * Jesus loves you.
  */
-
 public class AudioUrlInvalidException extends IllegalStateException {
     public AudioUrlInvalidException(String url) {
         super("The url does not appear valid: " + url);

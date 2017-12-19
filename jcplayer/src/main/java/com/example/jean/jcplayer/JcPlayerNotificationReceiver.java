@@ -4,7 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.jean.jcplayer.JcPlayerExceptions.AudioListNullPointerException;
+import com.example.jean.jcplayer.general.errors.AudioListNullPointerException;
+import com.example.jean.jcplayer.view.JcAudioPlayer;
 
 public class JcPlayerNotificationReceiver extends BroadcastReceiver {
     public JcPlayerNotificationReceiver() {

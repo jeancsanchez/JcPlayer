@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer.JcPlayerExceptions;
+package com.example.jean.jcplayer.general.errors;
 
 /**
  * Invalid audio file path exception.
