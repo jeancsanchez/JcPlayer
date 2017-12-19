@@ -8,14 +8,16 @@ import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.jean.jcplayer.JcAudio;
-import com.example.jean.jcplayer.JcPlayerView;
+import com.example.jean.jcplayer.general.JcStatus;
+import com.example.jean.jcplayer.general.errors.OnInvalidPathListener;
+import com.example.jean.jcplayer.model.JcAudio;
+import com.example.jean.jcplayer.view.JcPlayerView;
+import com.example.jean.jcplayer.view.JcpViewListener;
 
-import com.example.jean.jcplayer.JcStatus;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-    implements JcPlayerView.OnInvalidPathListener, JcPlayerView.JcPlayerViewStatusListener {
+        implements OnInvalidPathListener, JcpViewListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -32,7 +34,7 @@ public class MainActivity extends AppCompatActivity
         player = (JcPlayerView) findViewById(R.id.jcplayer);
 
         ArrayList<JcAudio> jcAudios = new ArrayList<>();
-        jcAudios.add(JcAudio.createFromURL("url audio","https://firebasestorage.googleapis.com/v0/b/musyc-f264f.appspot.com/o/Karone-Okarone-Minar-Rahman-Official-Music-Video-Eagle-Music.mp3?alt=media&token=a40ed28a-2970-4160-ac1d-33881e34253a"));
+        jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
         player.initPlaylist(jcAudios);
         player.playAudio(player.getMyPlaylist().get(0));
 
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         player.createNotification();
     }
@@ -130,39 +132,46 @@ public class MainActivity extends AppCompatActivity
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
-    @Override public void onPausedStatus(JcStatus jcStatus) {
+    @Override
+    public void onPausedStatus(JcStatus jcStatus) {
 
     }
 
-    @Override public void onContinueAudioStatus(JcStatus jcStatus) {
+    @Override
+    public void onContinueAudioStatus(JcStatus jcStatus) {
 
     }
 
-    @Override public void onPlayingStatus(JcStatus jcStatus) {
+    @Override
+    public void onPlayingStatus(JcStatus jcStatus) {
 
     }
 
-    @Override public void onTimeChangedStatus(JcStatus jcStatus) {
+    @Override
+    public void onTimeChangedStatus(JcStatus jcStatus) {
         updateProgress(jcStatus);
     }
 
-    @Override public void onCompletedAudioStatus(JcStatus jcStatus) {
+    @Override
+    public void onCompletedAudioStatus(JcStatus jcStatus) {
         updateProgress(jcStatus);
     }
 
-    @Override public void onPreparedAudioStatus(JcStatus jcStatus) {
+    @Override
+    public void onPreparedAudioStatus(JcStatus jcStatus) {
 
     }
 
     private void updateProgress(final JcStatus jcStatus) {
         Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()
-            + "\n song position = " + jcStatus.getCurrentPosition());
+                + "\n song position = " + jcStatus.getCurrentPosition());
 
         runOnUiThread(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 // calculate progress
                 float progress = (float) (jcStatus.getDuration() - jcStatus.getCurrentPosition())
-                    / (float) jcStatus.getDuration();
+                        / (float) jcStatus.getDuration();
                 progress = 1.0f - progress;
                 audioAdapter.updateProgress(jcStatus.getJcAudio(), progress);
             }
