@@ -2,18 +2,18 @@ apply plugin: 'com.android.library'
 
 ext {
     bintrayRepo = 'maven'
-    bintrayName = 'jcplayer'
+    bintrayName = 'JcPlayer'
 
     publishedGroupId = 'io.github.jeancsanchez.jcplayer'
     libraryName = 'JCPlayer'
-    artifact = 'jcplayer'
+    artifact = 'JcPlayer'
 
     libraryDescription = 'A simple way of make an audio player using custom playlists for Android applications.'
 
     siteUrl = 'https://github.com/jeancsanchez/JCPlayer'
     gitUrl = 'https://github.com/jeancsanchez/JCPlayer.git'
 
-    libraryVersion = '2.0.3-alpha'
+    libraryVersion = '2.6.8-alpha'
 
     developerId = 'jeancsanchez'
     developerName = 'Jean Carlos'
