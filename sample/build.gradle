@@ -25,7 +25,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
-    //    compile 'io.github.jeancsanchez.jcplayer:jcplayer:0.0.2'
+//    compile 'com.github.jeancsanchez:JcPlayer:2.6.10'
     testCompile 'junit:junit:4.12'
     compile project(path: ':jcplayer')
 }

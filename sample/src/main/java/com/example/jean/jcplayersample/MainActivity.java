@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
         //jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "CANTO DA GRAÚNA.mp3"));
         //jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
         player.initPlaylist(jcAudios);
+        player.playAudio(player.getMyPlaylist().get(1));
 
 
 //        jcAudios.add(JcAudio.createFromFilePath("test", this.getFilesDir() + "/" + "13.mid"));
@@ -146,7 +147,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override public void onPreparedAudioStatus(JcStatus jcStatus) {
-
     }
 
     private void updateProgress(final JcStatus jcStatus) {
