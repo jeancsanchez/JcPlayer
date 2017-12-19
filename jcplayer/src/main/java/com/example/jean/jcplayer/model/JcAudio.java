@@ -1,13 +1,18 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayer.model;
 
 import android.support.annotation.RawRes;
 
+import com.example.jean.jcplayer.general.Origin;
+
 import java.io.Serializable;
 
-/**
- * Created by jean on 27/06/16.
- */
 
+/**
+ * This class is a audio model .
+ * @author Jean Carlos (Github: @jeancsanchez)
+ * @date 27/06/16.
+ * Jesus loves you.
+ */
 public class JcAudio implements Serializable {
     private long id;
     private String title;

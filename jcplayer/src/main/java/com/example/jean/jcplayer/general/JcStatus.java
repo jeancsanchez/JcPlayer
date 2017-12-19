@@ -1,11 +1,12 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayer.general;
+
+import com.example.jean.jcplayer.model.JcAudio;
 
 /**
  * Created by rio on 02 January 2017.
  */
-
 public class JcStatus {
-  enum PlayState {
+  public enum PlayState {
     PLAY, PAUSE, STOP, UNINTIALIZED
   }
 

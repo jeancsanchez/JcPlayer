@@ -1,18 +1,20 @@
-package com.example.jean.jcplayer.view
+package com.example.jean.jcplayer
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.example.jean.jcplayer.JcAudio
-import com.example.jean.jcplayer.JcNotificationPlayerService
-import com.example.jean.jcplayer.general.OnInvalidPathListener
+import com.example.jean.jcplayer.model.JcAudio
+import com.example.jean.jcplayer.service.notification.JcNotificationService
+import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcpServiceListener
+import com.example.jean.jcplayer.view.JcpViewListener
 
 import java.io.Serializable
 
@@ -29,8 +31,8 @@ class JcAudioPlayer(
 ) {
     private var jcPlayerService: JcPlayerService? = null
     private var invalidPathListener: OnInvalidPathListener? = null
-    private var statusListener: JcpStatusListener? = null
-    private val jcNotificationPlayer: JcNotificationPlayerService?
+    private var viewListener: JcpViewListener? = null
+    private val jcNotificationPlayer: JcNotificationService?
     private var currentJcAudio: JcAudio? = null
     private var currentPositionList: Int = 0
     private var bound = false
@@ -47,7 +49,7 @@ class JcAudioPlayer(
             jcPlayerService = binder.service
 
             listener?.let { jcPlayerService?.registerServicePlayerListener(listener) }
-            statusListener?.let { jcPlayerService?.registerStatusListener(statusListener) }
+            viewListener?.let { jcPlayerService?.registerStatusListener(viewListener) }
             invalidPathListener?.let {
                 jcPlayerService?.registerInvalidPathListener(invalidPathListener)
             }
@@ -61,21 +63,32 @@ class JcAudioPlayer(
         }
     }
 
-    var instance: JcAudioPlayer? = this
     init {
-        instance = this // Just for be sure ;p
-        this.jcNotificationPlayer = JcNotificationPlayerService(context)
+        this.jcNotificationPlayer = JcNotificationService(context)
         initService()
     }
 
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        @Volatile
+        private var INSTANCE: JcAudioPlayer? = null
+
+        @JvmStatic
+        fun getInstance(
+                context: Context,
+                playlist: ArrayList<JcAudio>? = null,
+                listener: JcpServiceListener? = null
+        ): JcAudioPlayer = INSTANCE ?: JcAudioPlayer(context, playlist, listener)
+    }
+
     /**
-     * Registers a new [JcPlayerViewServiceListener] notification listener.
+     * Registers a new [JcNotificationService] notification listener.
      * @param notificationListener The listener.
      */
-    fun registerNotificationListener(notificationListener: JcPlayerViewServiceListener) {
+    fun registerNotificationListener(notificationListener: JcNotificationService) {
         this.listener = notificationListener
 
-        jcNotificationPlayer?.let {
+        jcNotificationPlayer.let {
             jcPlayerService?.registerNotificationListener(notificationListener)
         }
     }
@@ -90,21 +103,21 @@ class JcAudioPlayer(
     }
 
     /**
-     * Registers a new [JcPlayerViewServiceListener] service listener.
+     * Registers a new [JcpServiceListener] service listener.
      * @param jcPlayerServiceListener The listener.
      */
-    fun registerServiceListener(jcPlayerServiceListener: JcPlayerViewServiceListener) {
+    fun registerServiceListener(jcPlayerServiceListener: JcpServiceListener) {
         this.listener = jcPlayerServiceListener
         jcPlayerService?.registerServicePlayerListener(jcPlayerServiceListener)
     }
 
     /**
-     * Registers a  new [JcPlayerViewStatusListener] listener.
-     * @param statusListener The listener.
+     * Registers a  new [JcpViewListener] listener.
+     * @param viewListener The listener.
      */
-    fun registerStatusListener(statusListener: JcPlayerViewStatusListener) {
-        this.statusListener = statusListener
-        jcPlayerService?.registerStatusListener(statusListener)
+    fun registerStatusListener(viewListener: JcpViewListener) {
+        this.viewListener = viewListener
+        jcPlayerService?.registerStatusListener(viewListener)
     }
 
     /**
@@ -270,8 +283,8 @@ class JcAudioPlayer(
     @Synchronized private fun startJcPlayerService() {
         if (bound.not()) {
             val intent = Intent(context.applicationContext, JcPlayerService::class.java)
-            intent.putExtra(JcNotificationPlayerService.PLAYLIST, playlist as Serializable?)
-            intent.putExtra(JcNotificationPlayerService.CURRENT_AUDIO, currentJcAudio)
+            intent.putExtra(JcNotificationService.PLAYLIST, playlist as Serializable?)
+            intent.putExtra(JcNotificationService.CURRENT_AUDIO, currentJcAudio)
             context.bindService(intent, connection, BIND_AUTO_CREATE)
         }
     }
@@ -293,6 +306,6 @@ class JcAudioPlayer(
             }
 
         jcNotificationPlayer?.destroyNotificationIfExists()
-        instance = null
+        INSTANCE = null
     }
 }

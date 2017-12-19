@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayer.general;
 
 /**
  * This is the origin of Audio file.

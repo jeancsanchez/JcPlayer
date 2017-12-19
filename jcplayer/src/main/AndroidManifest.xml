@@ -14,7 +14,7 @@
             android:name=".service.JcPlayerService" />
 
         <receiver
-            android:name=".JcPlayerNotificationReceiver"
+            android:name=".service.notification.JcPlayerNotificationReceiver"
             android:enabled="true"
             android:exported="false" />
     </application>

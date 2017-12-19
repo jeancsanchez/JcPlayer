@@ -1,6 +1,6 @@
 package com.example.jean.jcplayer.view
 
-import com.example.jean.jcplayer.JcStatus
+import com.example.jean.jcplayer.general.JcStatus
 
 /**
  * This class represents all the [JcPlayerView] callbacks.
@@ -8,7 +8,7 @@ import com.example.jean.jcplayer.JcStatus
  * @date 18/12/17.
  * Jesus loves you.
  */
-interface JcpStatusListener {
+interface JcpViewListener {
 
     /**
      * Called when player is paused.

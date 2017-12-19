@@ -1,13 +1,13 @@
 package com.example.jean.jcplayer;
 
 import android.content.Context;
-import android.support.annotation.RawRes;
+
+import com.example.jean.jcplayer.model.JcAudio;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.util.MockUtil;
 
 import java.util.ArrayList;
 import java.util.List;

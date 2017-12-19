@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer
+package com.example.jean.jcplayer.view
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -9,12 +9,13 @@ import android.view.View
 import android.widget.*
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
-import com.example.jean.jcplayer.general.OnInvalidPathListener
+import com.example.jean.jcplayer.JcAudioPlayer
+import com.example.jean.jcplayer.R
+import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.UninitializedPlaylistException
+import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcpServiceListener
-import com.example.jean.jcplayer.view.JcAudioPlayer
-import com.example.jean.jcplayer.view.JcpStatusListener
 
 /**
  * This class is the JcAudio View. Handles user interactions and communicate with [JcAudioPlayer].
@@ -530,9 +531,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
 
     /**
-     * Registers a new [JcpStatusListener]
-     * @param statusListener The listener.
+     * Registers a new [JcpViewListener]
+     * @param viewListener The listener.
      */
-    fun registerStatusListener(statusListener: JcpStatusListener) =
-            jcPlayer?.registerStatusListener(statusListener)
+    fun registerStatusListener(viewListener: JcpViewListener) =
+            jcPlayer?.registerStatusListener(viewListener)
 }

@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer;
+package com.example.jean.jcplayer.service.notification;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,21 +10,25 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
-import com.example.jean.jcplayer.view.JcAudioPlayer;
+import com.example.jean.jcplayer.R;
+import com.example.jean.jcplayer.service.JcpServiceListener;
+import com.example.jean.jcplayer.JcAudioPlayer;
 
 /**
+ * This class is a Android [Service] that handles notification changes on background.
+ *
  * @author Jean Carlos (Github: @jeancsanchez)
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceListener {
-    static final String NEXT = "NEXT";
-    static final String PREVIOUS = "PREVIOUS";
-    static final String PAUSE = "PAUSE";
-    static final String PLAY = "PLAY";
-    static final String ACTION = "ACTION";
-    static final String PLAYLIST = "PLAYLIST";
-    static final String CURRENT_AUDIO = "CURRENT_AUDIO";
+public class JcNotificationService implements JcpServiceListener {
+    public static final String NEXT = "NEXT";
+    public static final String PREVIOUS = "PREVIOUS";
+    public static final String PAUSE = "PAUSE";
+    public static final String PLAY = "PLAY";
+    public static final String ACTION = "ACTION";
+    public static final String PLAYLIST = "PLAYLIST";
+    public static final String CURRENT_AUDIO = "CURRENT_AUDIO";
 
     private static final int NOTIFICATION_ID = 100;
     private static final int NEXT_ID = 0;
@@ -35,12 +39,12 @@ class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceLis
     private NotificationManager notificationManager;
     private Context context;
     private String title;
-    private String time  = "00:00";
+    private String time = "00:00";
     private int iconResource;
     private Notification notification;
     private NotificationCompat.Builder notificationCompat;
 
-    public JcNotificationPlayerService(Context context){
+    public JcNotificationService(Context context) {
         this.context = context;
     }
 
@@ -49,7 +53,7 @@ class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceLis
         this.iconResource = iconResourceResource;
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        JcAudioPlayer.Companion.getInstance().registerNotificationListener(this);
+        JcAudioPlayer.getInstance(context, null, null).registerNotificationListener(this);
 
         if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -85,7 +89,7 @@ class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceLis
     private RemoteViews createNotificationPlayerView() {
         RemoteViews remoteView;
 
-        if (JcAudioPlayer.Companion.getInstance().isPaused()) {
+        if (JcAudioPlayer.getInstance(context, null, null).isPaused()) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_play);
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID));
         } else {
@@ -147,7 +151,7 @@ class JcNotificationPlayerService implements JcPlayerView.JcPlayerViewServiceLis
     }
 
     @Override
-    public void updateTitle(String title) {
+    public void onUpdateTitle(String title) {
         this.title = title;
         createNotificationPlayer(title, iconResource);
     }

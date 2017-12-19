@@ -1,6 +1,6 @@
-package com.example.jean.jcplayer.general
+package com.example.jean.jcplayer.general.errors
 
-import com.example.jean.jcplayer.JcAudio
+import com.example.jean.jcplayer.model.JcAudio
 
 /**
  * @author Jean Carlos (Github: @jeancsanchez)
