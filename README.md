@@ -1,5 +1,5 @@
 # JcPlayer
-[ ![Download](https://api.bintray.com/packages/jeancsanchez/maven/JcPlayer/images/download.svg) ](https://bintray.com/jeancsanchez/maven/JcPlayer/_latestVersion)
+[![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
 </br>
 A simple audio player for Android that you can plugin to your apps quickly get audio playback working.
 </br></br>
