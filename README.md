@@ -28,19 +28,17 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ## Gradle Dependency (Project level)
 ```Gradle
 allprojects {
-    repositories {
-        jcenter()
-        maven {
-            url  "http://dl.bintray.com/jeancsanchez/maven"
-        }
-    }
-}
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
 ```
 ## Gradle Dependency (Module level) 
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:{version}'
+    compile 'com.github.jeancsanchez:JcPlayer:{version}'
 }
 ```
 
