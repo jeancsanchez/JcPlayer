@@ -1,6 +1,6 @@
-# JcPlayer
-[ ![Download](https://api.bintray.com/packages/jeancsanchez/maven/JcPlayer/images/download.svg) ](https://bintray.com/jeancsanchez/maven/JcPlayer/_latestVersion)
+[![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
 </br>
+# JcPlayer
 A simple audio player for Android that you can plugin to your apps quickly get audio playback working.
 </br></br>
 ![](https://github.com/jeancsanchez/JcPlayer/blob/master/sample/jcplayer-gif-definitive.gif)
@@ -28,19 +28,17 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ## Gradle Dependency (Project level)
 ```Gradle
 allprojects {
-    repositories {
-        jcenter()
-        maven {
-            url  "http://dl.bintray.com/jeancsanchez/maven"
-        }
-    }
-}
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
 ```
 ## Gradle Dependency (Module level) 
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:{version}'
+    compile 'com.github.jeancsanchez:JcPlayer:{version}'
 }
 ```
 
