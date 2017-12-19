@@ -180,20 +180,31 @@ public class JcPlayerView extends LinearLayout implements
 
     public interface JcPlayerViewStatusListener {
         void onPausedStatus(JcStatus jcStatus);
+
         void onContinueAudioStatus(JcStatus jcStatus);
+
         void onPlayingStatus(JcStatus jcStatus);
+
         void onTimeChangedStatus(JcStatus jcStatus);
+
         void onCompletedAudioStatus(JcStatus jcStatus);
+
         void onPreparedAudioStatus(JcStatus jcStatus);
     }
 
     public interface JcPlayerViewServiceListener {
         void onPreparedAudio(String audioName, int duration);
+
         void onCompletedAudio();
+
         void onPaused();
+
         void onContinueAudio();
+
         void onPlaying();
+
         void onTimeChanged(long currentTime);
+
         void updateTitle(String title);
     }
 
@@ -281,6 +292,7 @@ public class JcPlayerView extends LinearLayout implements
     //TODO: Should we expose this to user?
     // A: Yes, because the user can add files to playlist without creating a new List of JcAudio
     // objects, just adding this files dynamically.
+
     /**
      * Add an audio for the playlist. We can track the JcAudio by
      * its id. So here we returning its id after adding to list.
@@ -315,7 +327,7 @@ public class JcPlayerView extends LinearLayout implements
                 if (playlist.size() > 1) {
                     // play next audio when currently played audio is removed.
                     if (jcAudioPlayer.isPlaying()) {
-                        if(jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
+                        if (jcAudioPlayer.getCurrentAudio().equals(jcAudio)) {
                             playlist.remove(jcAudio);
                             pause();
                             resetPlayerInfo();
@@ -335,6 +347,7 @@ public class JcPlayerView extends LinearLayout implements
         }
     }
 
+
     public void playAudio(JcAudio jcAudio) {
         showProgressBar();
         createJcAudioPlayer();
@@ -343,14 +356,17 @@ public class JcPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.playAudio(jcAudio);
-        } catch (AudioListNullPointerException e) {
+        } catch (AudioListNullPointerException e1) {
             dismissProgressBar();
-            e.printStackTrace();
+            e1.printStackTrace();
+        } catch (NullPointerException e2) {
+            // Service is not bounded yet.
+            jcAudioPlayer.lazyPlayAudio(jcAudio);
         }
     }
 
     public void next() {
-        if(jcAudioPlayer.getCurrentAudio() == null) {
+        if (jcAudioPlayer.getCurrentAudio() == null) {
             return;
         }
         resetPlayerInfo();
@@ -454,7 +470,7 @@ public class JcPlayerView extends LinearLayout implements
     }
 
     public boolean isPaused() {
-        return  jcAudioPlayer.isPaused();
+        return jcAudioPlayer.isPaused();
     }
 
     public JcAudio getCurrentAudio() {
@@ -533,7 +549,7 @@ public class JcPlayerView extends LinearLayout implements
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
-        if(fromUser && jcAudioPlayer != null) jcAudioPlayer.seekTo(i);
+        if (fromUser && jcAudioPlayer != null) jcAudioPlayer.seekTo(i);
     }
 
     @Override

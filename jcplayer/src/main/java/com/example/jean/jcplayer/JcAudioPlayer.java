@@ -30,6 +30,12 @@ class JcAudioPlayer {
     private boolean playing;
     private boolean paused;
     private int position = 1;
+    private ConnectedListener connectedListener;
+
+    interface ConnectedListener {
+
+        void connected();
+    }
 
     public JcAudioPlayer(Context context, List<JcAudio> playlist, JcPlayerView.JcPlayerViewServiceListener listener) {
         this.context = context;
@@ -77,6 +83,15 @@ class JcAudioPlayer {
         return instance;
     }
 
+    public void lazyPlayAudio(final JcAudio audio) {
+        connectedListener = new ConnectedListener() {
+            @Override
+            public void connected() {
+                playAudio(audio);
+            }
+        };
+    }
+
     public void playAudio(JcAudio JcAudio) throws AudioListNullPointerException {
         if (playlist == null || playlist.size() == 0) {
             throw new AudioListNullPointerException();
@@ -88,7 +103,7 @@ class JcAudioPlayer {
         paused = false;
     }
 
-    private void initService(){
+    private void initService() {
         if (!mBound) {
             startJcPlayerService();
         } else {
@@ -209,6 +224,11 @@ class JcAudioPlayer {
             if (statusListener != null) {
                 jcPlayerService.registerStatusListener(statusListener);
             }
+
+            if (connectedListener != null) {
+                connectedListener.connected();
+            }
+
             mBound = true;
         }
 
@@ -256,4 +276,5 @@ class JcAudioPlayer {
     public JcAudio getCurrentAudio() {
         return jcPlayerService.getCurrentAudio();
     }
+
 }
