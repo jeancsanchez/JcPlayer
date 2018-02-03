@@ -374,7 +374,7 @@ public class JcPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.nextAudio();
-        } catch (AudioListNullPointerException e) {
+        } catch (Exception e) { //AudioListNullPointerException
             dismissProgressBar();
             e.printStackTrace();
         }
@@ -401,7 +401,7 @@ public class JcPlayerView extends LinearLayout implements
 
         try {
             jcAudioPlayer.previousAudio();
-        } catch (AudioListNullPointerException e) {
+        } catch (Exception e) { // changed AudioListNullPointerException to Exception
             dismissProgressBar();
             e.printStackTrace();
         }
