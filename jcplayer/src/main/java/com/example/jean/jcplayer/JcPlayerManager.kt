@@ -1,23 +1,16 @@
 package com.example.jean.jcplayer
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
-import android.content.Context.BIND_AUTO_CREATE
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
-import com.example.jean.jcplayer.model.JcAudio
-import com.example.jean.jcplayer.service.notification.JcNotificationService
-import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
-
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
+import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
+import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.JcpServiceListener
+import com.example.jean.jcplayer.service.notification.JcNotificationService
 import com.example.jean.jcplayer.view.JcpViewListener
-
-import java.io.Serializable
+import javax.inject.Inject
 
 /**
  * This class is the player manager. Handles all interactions and communicates with [JcPlayerService].
@@ -26,29 +19,40 @@ import java.io.Serializable
  * Jesus loves you.
  */
 class JcPlayerManager
-constructor(
-        private val context: Context,
-        val playlist: ArrayList<JcAudio>?,
-        private var listener: JcpServiceListener?
-) {
+@Inject constructor() {
     private var jcPlayerService: JcPlayerService? = null
+
     private var serviceConnection: JcServiceConnection? = null
+
     private var invalidPathListener: OnInvalidPathListener? = null
+
     private var viewListener: JcpViewListener? = null
-    private val jcNotificationPlayer: JcNotificationService?
+
+    private val jcNotificationPlayer: JcNotificationService? = null
+
     private var currentJcAudio: JcAudio? = null
+
     private var currentPositionList: Int = 0
+
     private var serviceBound = false
+
+    var playlist: ArrayList<JcAudio> = ArrayList()
+
+    var listener: JcpServiceListener? = null
+
     val currentAudio: JcAudio?
         get() = jcPlayerService?.currentAudio
+
     var isPlaying: Boolean = false
         private set
+
     var isPaused: Boolean = false
         private set
+
     private val position = 1
 
     init {
-        this.jcNotificationPlayer = JcNotificationService(context)
+//        this.jcNotificationPlayer = JcNotificationService()
         initService()
     }
 
@@ -62,7 +66,40 @@ constructor(
                 context: Context,
                 playlist: ArrayList<JcAudio>? = null,
                 listener: JcpServiceListener? = null
-        ): JcPlayerManager = INSTANCE ?: JcPlayerManager(context, playlist, listener)
+        ): JcPlayerManager =
+                INSTANCE ?: JcPlayerManager().also {
+                    it.playlist = playlist ?: ArrayList()
+                    it.listener = listener
+                }
+    }
+
+    /**
+     * Connects with audio service.
+     */
+    private fun initService(
+            onConnected: (() -> Unit)? = null,
+            onDisconnected: (() -> Unit)? = null
+    ) {
+        serviceConnection?.connect(
+                playlist = playlist,
+                onConnected = { binder ->
+                    jcPlayerService = binder?.service
+
+                    jcPlayerService?.let { service ->
+                        listener?.let { service.registerServicePlayerListener(it) }
+                        viewListener?.let { service.registerStatusListener(it) }
+                        invalidPathListener?.let { service.registerInvalidPathListener(it) }
+                        serviceBound = true
+                        onConnected?.invoke()
+                    } ?: onDisconnected?.invoke()
+                },
+                onDisconnected = {
+                    serviceBound = false
+                    isPlaying = false
+                    isPaused = true
+                    onDisconnected?.invoke()
+                }
+        )
     }
 
     /**
@@ -110,81 +147,48 @@ constructor(
      */
     @Throws(AudioListNullPointerException::class)
     fun playAudio(jcAudio: JcAudio) {
-        playlist?.let {
-            if (it.isEmpty()) {
-                throw AudioListNullPointerException()
-            } else {
-                currentJcAudio = jcAudio
+        if (playlist.isEmpty()) {
+            throw AudioListNullPointerException()
+        } else {
+            currentJcAudio = jcAudio
 
-                jcPlayerService?.let {
-                    jcPlayerService?.play(currentJcAudio!!)
-                    updatePositionAudioList()
-                    isPlaying = true
-                    isPaused = false
-                } ?: let {
-                    initService(onConnected = { playAudio(currentJcAudio!!) })
-                }
+            jcPlayerService?.let {
+                jcPlayerService?.play(currentJcAudio!!)
+                updatePositionAudioList()
+                isPlaying = true
+                isPaused = false
+            } ?: let {
+                initService(onConnected = { playAudio(currentJcAudio!!) })
             }
-        } ?: throw AudioListNullPointerException()
+        }
     }
 
-    /**
-     * Initializes the JcAudio Service.
-     */
-    private fun initService(onConnected: ((Unit) -> Unit)? = null) {
-        serviceConnection?.connect(playlist)
-                ?.doOnNext { binder ->
-                    binder?.let {
-                        jcPlayerService = it.service
-
-                        listener?.let { jcPlayerService?.registerServicePlayerListener(it) }
-                        viewListener?.let { jcPlayerService?.registerStatusListener(it) }
-                        invalidPathListener?.let {
-                            jcPlayerService?.registerInvalidPathListener(it)
-                        }
-                        serviceBound = true
-                        onConnected?.invoke(Unit)
-
-                    } ?: let {
-                        serviceBound = false
-                        isPlaying = false
-                        isPaused = true
-                    }
-                }
-                ?.doOnError {
-                    serviceBound = false
-                    isPlaying = false
-                    isPaused = true
-                }
-    }
 
     /**
      * Goes to next audio.
      */
     @Throws(AudioListNullPointerException::class)
     fun nextAudio() {
-        playlist?.let {
-            if (it.isEmpty()) {
-                throw AudioListNullPointerException()
-            } else {
-                currentAudio?.let {
-                    try {
-                        val nextJcAudio = playlist[currentPositionList + position]
-                        this.currentJcAudio = nextJcAudio
-                        jcPlayerService?.stop()
-                        jcPlayerService?.play(nextJcAudio)
+        if (playlist.isEmpty()) {
+            throw AudioListNullPointerException()
+        } else {
+            currentAudio?.let {
+                try {
+                    val nextJcAudio = playlist[currentPositionList + position]
+                    this.currentJcAudio = nextJcAudio
+                    jcPlayerService?.stop()
+                    jcPlayerService?.play(nextJcAudio)
 
-                    } catch (e: IndexOutOfBoundsException) {
-                        playAudio(playlist[0])
-                        e.printStackTrace()
-                    }
+                } catch (e: IndexOutOfBoundsException) {
+                    playAudio(playlist[0])
+                    e.printStackTrace()
                 }
-
-                updatePositionAudioList()
-                isPlaying = true
-                isPaused = false
             }
-        } ?: throw AudioListNullPointerException()
+
+            updatePositionAudioList()
+            isPlaying = true
+            isPaused = false
+        }
     }
 
     /**
@@ -192,28 +196,26 @@ constructor(
      */
     @Throws(AudioListNullPointerException::class)
     fun previousAudio() {
-        playlist?.let {
-            if (it.isEmpty()) {
-                throw AudioListNullPointerException()
-            } else {
-                currentJcAudio?.let {
-                    try {
-                        val previousJcAudio = playlist[currentPositionList - position]
-                        this.currentJcAudio = previousJcAudio
-                        jcPlayerService?.stop()
-                        jcPlayerService?.play(previousJcAudio)
+        if (playlist.isEmpty()) {
+            throw AudioListNullPointerException()
+        } else {
+            currentJcAudio?.let {
+                try {
+                    val previousJcAudio = playlist[currentPositionList - position]
+                    this.currentJcAudio = previousJcAudio
+                    jcPlayerService?.stop()
+                    jcPlayerService?.play(previousJcAudio)
 
-                    } catch (e: IndexOutOfBoundsException) {
-                        playAudio(playlist[0])
-                        e.printStackTrace()
-                    }
+                } catch (e: IndexOutOfBoundsException) {
+                    playAudio(playlist[0])
+                    e.printStackTrace()
                 }
-
-                updatePositionAudioList()
-                isPlaying = true
-                isPaused = false
             }
-        } ?: throw AudioListNullPointerException()
+
+            updatePositionAudioList()
+            isPlaying = true
+            isPaused = false
+        }
     }
 
     /**
@@ -234,18 +236,16 @@ constructor(
      */
     @Throws(AudioListNullPointerException::class)
     fun continueAudio() {
-        playlist?.let {
-            if (it.isEmpty()) {
-                throw AudioListNullPointerException()
-            } else {
-                currentJcAudio?.let {
-                    currentJcAudio = playlist[0]
-                    playAudio(it)
-                    isPlaying = true
-                    isPaused = false
-                }
+        if (playlist.isEmpty()) {
+            throw AudioListNullPointerException()
+        } else {
+            currentJcAudio?.let {
+                currentJcAudio = playlist[0]
+                playAudio(it)
+                isPlaying = true
+                isPaused = false
             }
-        } ?: throw AudioListNullPointerException()
+        }
     }
 
     /**
@@ -276,15 +276,13 @@ constructor(
      * Updates the current position of the audio list.
      */
     private fun updatePositionAudioList() {
-        playlist?.let {
-            for (i in it.indices) {
-                currentJcAudio?.let { currAudio ->
-                    if (it[i].id == currAudio.id) {
-                        this.currentPositionList = i
-                    }
+        for (i in playlist.indices) {
+            currentJcAudio?.let { currAudio ->
+                if (playlist[i].id == currAudio.id) {
+                    this.currentPositionList = i
                 }
             }
-        } ?: throw AudioListNullPointerException()
+        }
     }
 
     /**
@@ -296,13 +294,7 @@ constructor(
             it.destroy()
         }
 
-        if (serviceBound)
-            try {
-                context.unbindService(serviceConnection)
-            } catch (e: IllegalArgumentException) {
-                //TODO: Add readable exception here
-            }
-
+        serviceConnection?.disconnect()
         jcNotificationPlayer?.destroyNotificationIfExists()
         INSTANCE = null
     }

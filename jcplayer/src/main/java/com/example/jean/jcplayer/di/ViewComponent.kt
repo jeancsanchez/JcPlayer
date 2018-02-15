@@ -1,11 +1,12 @@
 package com.example.jean.jcplayer.di
 
+import android.view.View
 import com.example.jean.jcplayer.BaseApp
+import com.example.jean.jcplayer.view.JcPlayerView
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import javax.inject.Singleton
-
 
 /**
  * This class represents a Dagger application component.
@@ -19,8 +20,8 @@ import javax.inject.Singleton
     AndroidSupportInjectionModule::class,
     AppModule::class
 ])
-interface AppComponent : AndroidInjector<BaseApp> {
+interface ViewComponent : AndroidInjector<JcPlayerView> {
 
     @Component.Builder
-    abstract class Builder : AndroidInjector.Builder<BaseApp>()
+    abstract class Builder : AndroidInjector.Builder<JcPlayerView>()
 }

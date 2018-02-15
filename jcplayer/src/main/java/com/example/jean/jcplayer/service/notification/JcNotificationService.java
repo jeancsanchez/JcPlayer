@@ -14,6 +14,8 @@ import com.example.jean.jcplayer.R;
 import com.example.jean.jcplayer.service.JcpServiceListener;
 import com.example.jean.jcplayer.JcPlayerManager;
 
+import javax.inject.Inject;
+
 /**
  * This class is a Android [Service] that handles notification changes on background.
  *
@@ -44,6 +46,7 @@ public class JcNotificationService implements JcpServiceListener {
     private Notification notification;
     private NotificationCompat.Builder notificationCompat;
 
+    @Inject
     public JcNotificationService(Context context) {
         this.context = context;
     }

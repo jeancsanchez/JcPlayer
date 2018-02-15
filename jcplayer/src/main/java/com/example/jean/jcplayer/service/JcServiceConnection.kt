@@ -7,8 +7,8 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.notification.JcNotificationService
-import io.reactivex.Observable
 import java.io.Serializable
+import javax.inject.Inject
 
 /**
  * This class is an [ServiceConnection] for the [JcPlayerService] class.
@@ -17,22 +17,36 @@ import java.io.Serializable
  * Jesus loves you.
  */
 class JcServiceConnection
-constructor(
-        val context: Context
+@Inject constructor(
+        private val context: Context
 ) : ServiceConnection {
 
-    override fun onServiceDisconnected(name: ComponentName?) {
+    private var serviceBound = false
+    private var onConnected: ((JcPlayerService.JcPlayerServiceBinder?) -> Unit)? = null
+    private var onDisconnected: ((Unit) -> Unit)? = null
 
+    override fun onServiceDisconnected(name: ComponentName?) {
+        serviceBound = false
+        onDisconnected?.invoke(Unit)
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-
+        serviceBound = true
+        onConnected?.invoke(service as JcPlayerService.JcPlayerServiceBinder?)
     }
 
+    /**
+     * Connects with the [JcPlayerService].
+     */
     fun connect(
             playlist: ArrayList<JcAudio>? = null,
-            currentAudio: JcAudio? = null
-    ): Observable<JcPlayerService.JcPlayerServiceBinder?> {
+            currentAudio: JcAudio? = null,
+            onConnected: ((JcPlayerService.JcPlayerServiceBinder?) -> Unit)? = null,
+            onDisconnected: ((Unit) -> Unit)? = null
+    ) {
+        this.onConnected = onConnected
+        this.onDisconnected = onDisconnected
+
         if (serviceBound.not()) {
             val intent = Intent(context.applicationContext, JcPlayerService::class.java)
             intent.putExtra(JcNotificationService.PLAYLIST, playlist as Serializable?)
@@ -41,4 +55,15 @@ constructor(
         }
     }
 
+    /**
+     * Disconnects with the [JcPlayerService].
+     */
+    fun disconnect() {
+        if (serviceBound)
+            try {
+                context.unbindService(this)
+            } catch (e: IllegalArgumentException) {
+                //TODO: Add readable exception here
+            }
+    }
 }

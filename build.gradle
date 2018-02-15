@@ -48,4 +48,5 @@ ext {
     constraintLayoutVersion = '1.0.2'
     rxJavaVersion = '2.1.9'
     rxKotlinVersion = '2.2.0'
+    daggerVersion = '2.14.1'
 }

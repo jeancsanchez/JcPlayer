@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 
 ext {
@@ -52,6 +53,29 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
+
+    // support
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+    implementation "com.android.support:support-v4:$rootProject.ext.supportVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
+
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+
+    // Rx
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rootProject.ext.rxKotlinVersion"
+
+
+    // Dependency injection
+    implementation "com.google.dagger:dagger-android:$rootProject.ext.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$rootProject.ext.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.ext.daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+
+
     // espresso UI Testing
     androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -62,12 +86,14 @@ dependencies {
     androidTestImplementation "com.android.support.test:runner:$rootProject.ext.espressoRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$rootProject.ext.espressoRulesVersion"
 
+
     // resolving espresso conflicts
     androidTestImplementation "com.android.support:support-annotations:$rootProject.ext.supportVersion"
     androidTestImplementation "com.android.support:support-v4:$rootProject.ext.supportVersion"
     androidTestImplementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
     androidTestImplementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
     androidTestImplementation "com.android.support:design:$rootProject.ext.supportVersion"
+
 
     // dependencies for local unit tests
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
@@ -76,20 +102,12 @@ dependencies {
     testImplementation "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
     testImplementation "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
 
-    // support
-    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
-    implementation "com.android.support:support-v4:$rootProject.ext.supportVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
 
-    // others libraries
+    // Others libraries
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation 'com.daimajia.easing:library:2.0@aar'
     implementation 'com.daimajia.androidanimations:library:2.3@aar'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.ext.constraintLayoutVersion"
-    implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxJavaVersion"
-    implementation "io.reactivex.rxjava2:rxkotlin:$rootProject.ext.rxKotlinVersion"
-
 }
 
 apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'

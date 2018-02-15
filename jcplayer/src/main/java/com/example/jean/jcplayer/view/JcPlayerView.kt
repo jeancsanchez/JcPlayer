@@ -11,14 +11,18 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
+import com.example.jean.jcplayer.BaseApp
 import com.example.jean.jcplayer.JcPlayerManager
 import com.example.jean.jcplayer.R
+import com.example.jean.jcplayer.di.DaggerViewComponent
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.general.errors.UninitializedPlaylistException
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcpServiceListener
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
+import javax.inject.Inject
 
 /**
  * This class is the JcAudio View. Handles user interactions and communicate with [JcPlayerManager].
@@ -28,19 +32,22 @@ import kotlinx.android.synthetic.main.view_jcplayer.view.*
  */
 class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    private var jcPlayerManager: JcPlayerManager? = null
+    @Inject
+    lateinit var jcPlayerManager: JcPlayerManager
+
     private var isInitialized: Boolean = false
+
     val myPlaylist: List<JcAudio>?
-        get() = jcPlayerManager?.playlist
+        get() = jcPlayerManager.playlist
 
     val isPlaying: Boolean
-        get() = jcPlayerManager?.isPlaying ?: false
+        get() = jcPlayerManager.isPlaying
 
     val isPaused: Boolean
-        get() = jcPlayerManager?.isPaused ?: false
+        get() = jcPlayerManager.isPaused
 
     val currentAudio: JcAudio?
-        get() = jcPlayerManager?.currentAudio
+        get() = jcPlayerManager.currentAudio
 
     private val onInvalidPathListener = object : OnInvalidPathListener {
         override fun onPathError(jcAudio: JcAudio) {
@@ -72,7 +79,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             resetPlayerInfo()
 
             try {
-                jcPlayerManager?.nextAudio()
+                jcPlayerManager.nextAudio()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -144,6 +151,11 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPrev?.setOnClickListener(this)
         btnPlay?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
+
+        DaggerViewComponent.builder()
+                .create(this)
+                .inject(this)
+
     }
 
     /**
@@ -159,8 +171,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             sortPlaylist(playlist)
         }
 
-        jcPlayerManager = JcPlayerManager(context, playlist as ArrayList<JcAudio>, jcpServiceListener)
-                .also { it.registerInvalidPathListener(onInvalidPathListener) }
+        jcPlayerManager.playlist = playlist as ArrayList<JcAudio>
+        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
         //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true
     }
@@ -173,8 +185,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     fun initAnonPlaylist(playlist: List<JcAudio>) {
         sortPlaylist(playlist)
         generateTitleAudio(playlist, context.getString(R.string.track_number))
-        jcPlayerManager = JcPlayerManager(context, playlist as ArrayList<JcAudio>, jcpServiceListener)
-                .also { it.registerInvalidPathListener(onInvalidPathListener) }
+        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
         //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true
     }
@@ -188,8 +199,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     fun initWithTitlePlaylist(playlist: List<JcAudio>, title: String) {
         sortPlaylist(playlist)
         generateTitleAudio(playlist, title)
-        jcPlayerManager = JcPlayerManager(context, playlist as ArrayList<JcAudio>, jcpServiceListener)
-                .also { it.registerInvalidPathListener(onInvalidPathListener) }
+        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
         //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true
     }
@@ -204,7 +214,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     fun addAudio(jcAudio: JcAudio): Long {
         createJcAudioPlayer()
 
-        jcPlayerManager?.playlist?.let {
+        jcPlayerManager.playlist?.let {
             val lastPosition = it.size
 
             jcAudio.id = (lastPosition + 1).toLong()
@@ -223,7 +233,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param jcAudio JcAudio object
      */
     fun removeAudio(jcAudio: JcAudio) {
-        jcPlayerManager?.let { player ->
+        jcPlayerManager.let { player ->
             player.playlist?.let {
                 if (it.contains(jcAudio)) {
                     if (it.size > 1) {
@@ -258,18 +268,16 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         showProgressBar()
         createJcAudioPlayer()
 
-        jcPlayerManager?.let { player ->
-            player.playlist?.let {
-                if (it.contains(jcAudio).not()) {
-                    it.add(jcAudio)
-                }
-                try {
-                    player.playAudio(jcAudio)
-                } catch (e: AudioListNullPointerException) {
-                    dismissProgressBar()
-                    e.printStackTrace()
-                }
-            } ?: throw UninitializedPlaylistException()
+        jcPlayerManager.playlist.let {
+            if (it.contains(jcAudio).not()) {
+                it.add(jcAudio)
+            }
+            try {
+                jcPlayerManager.playAudio(jcAudio)
+            } catch (e: AudioListNullPointerException) {
+                dismissProgressBar()
+                e.printStackTrace()
+            }
         }
     }
 
@@ -277,7 +285,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Goes to next audio.
      */
     fun next() {
-        jcPlayerManager?.let { player ->
+        jcPlayerManager.let { player ->
             player.currentAudio?.let {
                 resetPlayerInfo()
                 showProgressBar()
@@ -299,7 +307,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         showProgressBar()
 
         try {
-            jcPlayerManager?.continueAudio()
+            jcPlayerManager.continueAudio()
         } catch (e: AudioListNullPointerException) {
             dismissProgressBar()
             e.printStackTrace()
@@ -310,7 +318,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Pauses the current audio.
      */
     fun pause() {
-        jcPlayerManager?.pauseAudio()
+        jcPlayerManager.pauseAudio()
     }
 
 
@@ -322,7 +330,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         showProgressBar()
 
         try {
-            jcPlayerManager?.previousAudio()
+            jcPlayerManager.previousAudio()
         } catch (e: AudioListNullPointerException) {
             dismissProgressBar()
             e.printStackTrace()
@@ -371,14 +379,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param iconResource icon path.
      */
     fun createNotification(iconResource: Int) {
-        jcPlayerManager?.createNewNotification(iconResource)
+        jcPlayerManager.createNewNotification(iconResource)
     }
 
     /**
      * Create a notification player with same playlist with a default icon
      */
     fun createNotification() {
-        jcPlayerManager?.let {
+        jcPlayerManager.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // For light theme
                 it.createNewNotification(R.drawable.ic_notification_default_black)
@@ -393,11 +401,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Creates a new JcAudio Player.
      */
     private fun createJcAudioPlayer() {
-        if (jcPlayerManager == null) {
-            val playlist = ArrayList<JcAudio>()
-            jcPlayerManager = JcPlayerManager(context, playlist, jcpServiceListener)
-        }
-        jcPlayerManager?.registerInvalidPathListener(onInvalidPathListener)
+        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
         //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true
     }
@@ -463,7 +467,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onProgressChanged(seekBar: SeekBar, i: Int, fromUser: Boolean) {
-        jcPlayerManager?.let {
+        jcPlayerManager.let {
             if (fromUser) {
                 it.seekTo(i)
             }
@@ -483,14 +487,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param invalidPathListener The listener.
      */
     fun registerInvalidPathListener(invalidPathListener: OnInvalidPathListener) {
-        jcPlayerManager?.registerInvalidPathListener(invalidPathListener)
+        jcPlayerManager.registerInvalidPathListener(invalidPathListener)
     }
 
     /**
      * Kills the player
      */
     fun kill() {
-        jcPlayerManager?.kill()
+        jcPlayerManager.kill()
     }
 
     /**
@@ -498,7 +502,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param jcpServiceListener1 the listener
      */
     fun registerServiceListener(jcpServiceListener1: JcpServiceListener) {
-        jcPlayerManager?.registerServiceListener(jcpServiceListener1)
+        jcPlayerManager.registerServiceListener(jcpServiceListener1)
     }
 
 
@@ -507,6 +511,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param viewListener The listener.
      */
     fun registerStatusListener(viewListener: JcpViewListener) {
-        jcPlayerManager?.registerStatusListener(viewListener)
+        jcPlayerManager.registerStatusListener(viewListener)
     }
 }
