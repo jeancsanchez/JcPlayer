@@ -19,13 +19,14 @@ android {
     }
 }
 
+// noinspection SpellCheckingInspection
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+
+    api project(path: ':jcplayer')
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
+    implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
+
     //    compile 'io.github.jeancsanchez.jcplayer:jcplayer:0.0.2'
-    testCompile 'junit:junit:4.12'
-    compile project(path: ':jcplayer')
+    testImplementation 'junit:junit:4.12'
 }

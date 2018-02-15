@@ -4,6 +4,7 @@ buildscript {
     ext.kotlin_version = '1.2.10'
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -20,6 +21,7 @@ allprojects {
         maven {
             url  "http://dl.bintray.com/jeancsanchez/maven"
         }
+        google()
     }
 }
 
@@ -29,14 +31,14 @@ task clean(type: Delete) {
 
 ext {
     // sdk and tools
-    compileSdkVersion = 25
-    minSdkVersion = 9
-    targetSdkVersion = 25
-    buildToolsVersion = '26.0.2'
+    compileSdkVersion = 27
+    minSdkVersion = 14
+    targetSdkVersion = 27
+    buildToolsVersion = '27.0.2'
 
 
     // libs versions
-    supportVersion = '25.0.1'
+    supportVersion = '27.0.2'
     junitVersion = '4.12'
     mockitoVersion = '1.10.19'
     hamcrestVersion = '1.3'
