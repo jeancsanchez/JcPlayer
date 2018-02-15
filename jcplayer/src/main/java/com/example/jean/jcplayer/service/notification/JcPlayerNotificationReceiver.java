@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException;
-import com.example.jean.jcplayer.JcAudioPlayer;
+import com.example.jean.jcplayer.JcPlayerManager;
 
 public class JcPlayerNotificationReceiver extends BroadcastReceiver {
     public JcPlayerNotificationReceiver() {
@@ -13,7 +13,7 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        JcAudioPlayer jcAudioPlayer = JcAudioPlayer.getInstance(context, null, null);
+        JcPlayerManager jcPlayerManager = JcPlayerManager.getInstance(context, null, null);
         String action = "";
 
         if (intent.hasExtra(JcNotificationService.ACTION)) {
@@ -23,8 +23,8 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
         switch (action) {
             case JcNotificationService.PLAY:
                 try {
-                    jcAudioPlayer.continueAudio();
-                    jcAudioPlayer.updateNotification();
+                    jcPlayerManager.continueAudio();
+                    jcPlayerManager.updateNotification();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -32,9 +32,9 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
 
             case JcNotificationService.PAUSE:
                 try {
-                    if(jcAudioPlayer != null) {
-                        jcAudioPlayer.pauseAudio();
-                        jcAudioPlayer.updateNotification();
+                    if(jcPlayerManager != null) {
+                        jcPlayerManager.pauseAudio();
+                        jcPlayerManager.updateNotification();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -43,10 +43,10 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
 
             case JcNotificationService.NEXT:
                 try {
-                    jcAudioPlayer.nextAudio();
+                    jcPlayerManager.nextAudio();
                 } catch (AudioListNullPointerException e) {
                     try {
-                        jcAudioPlayer.continueAudio();
+                        jcPlayerManager.continueAudio();
                     } catch (AudioListNullPointerException e1) {
                         e1.printStackTrace();
                     }
@@ -55,10 +55,10 @@ public class JcPlayerNotificationReceiver extends BroadcastReceiver {
 
             case JcNotificationService.PREVIOUS:
                 try {
-                    jcAudioPlayer.previousAudio();
+                    jcPlayerManager.previousAudio();
                 } catch (Exception e) {
                     try {
-                        jcAudioPlayer.continueAudio();
+                        jcPlayerManager.continueAudio();
                     } catch (AudioListNullPointerException e1) {
                         e1.printStackTrace();
                     }

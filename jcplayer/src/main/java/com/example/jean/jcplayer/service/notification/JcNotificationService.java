@@ -12,7 +12,7 @@ import android.widget.RemoteViews;
 
 import com.example.jean.jcplayer.R;
 import com.example.jean.jcplayer.service.JcpServiceListener;
-import com.example.jean.jcplayer.JcAudioPlayer;
+import com.example.jean.jcplayer.JcPlayerManager;
 
 /**
  * This class is a Android [Service] that handles notification changes on background.
@@ -53,7 +53,7 @@ public class JcNotificationService implements JcpServiceListener {
         this.iconResource = iconResourceResource;
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        JcAudioPlayer.getInstance(context, null, null).registerNotificationListener(this);
+        JcPlayerManager.getInstance(context, null, null).registerNotificationListener(this);
 
         if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -89,7 +89,7 @@ public class JcNotificationService implements JcpServiceListener {
     private RemoteViews createNotificationPlayerView() {
         RemoteViews remoteView;
 
-        if (JcAudioPlayer.getInstance(context, null, null).isPaused()) {
+        if (JcPlayerManager.getInstance(context, null, null).isPaused()) {
             remoteView = new RemoteViews(context.getPackageName(), R.layout.notification_play);
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID));
         } else {

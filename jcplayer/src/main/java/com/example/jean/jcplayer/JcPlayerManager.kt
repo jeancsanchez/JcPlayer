@@ -13,29 +13,32 @@ import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.service.JcPlayerService
+import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.JcpServiceListener
 import com.example.jean.jcplayer.view.JcpViewListener
 
 import java.io.Serializable
 
 /**
- * This class is the JcAudio manager. Handles all interactions and communicates with [JcPlayerService].
+ * This class is the player manager. Handles all interactions and communicates with [JcPlayerService].
  * @author Jean Carlos (Github: @jeancsanchez)
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcAudioPlayer(
+class JcPlayerManager
+constructor(
         private val context: Context,
         val playlist: ArrayList<JcAudio>?,
         private var listener: JcpServiceListener?
 ) {
     private var jcPlayerService: JcPlayerService? = null
+    private var serviceConnection: JcServiceConnection? = null
     private var invalidPathListener: OnInvalidPathListener? = null
     private var viewListener: JcpViewListener? = null
     private val jcNotificationPlayer: JcNotificationService?
     private var currentJcAudio: JcAudio? = null
     private var currentPositionList: Int = 0
-    private var bound = false
+    private var serviceBound = false
     val currentAudio: JcAudio?
         get() = jcPlayerService?.currentAudio
     var isPlaying: Boolean = false
@@ -43,25 +46,6 @@ class JcAudioPlayer(
     var isPaused: Boolean = false
         private set
     private val position = 1
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(componentName: ComponentName, service: IBinder) {
-            val binder = service as JcPlayerService.JcPlayerServiceBinder
-            jcPlayerService = binder.service
-
-            listener?.let { jcPlayerService?.registerServicePlayerListener(listener) }
-            viewListener?.let { jcPlayerService?.registerStatusListener(viewListener) }
-            invalidPathListener?.let {
-                jcPlayerService?.registerInvalidPathListener(invalidPathListener)
-            }
-            bound = true
-        }
-
-        override fun onServiceDisconnected(componentName: ComponentName) {
-            bound = false
-            isPlaying = false
-            isPaused = true
-        }
-    }
 
     init {
         this.jcNotificationPlayer = JcNotificationService(context)
@@ -71,14 +55,14 @@ class JcAudioPlayer(
     companion object {
         @SuppressLint("StaticFieldLeak")
         @Volatile
-        private var INSTANCE: JcAudioPlayer? = null
+        private var INSTANCE: JcPlayerManager? = null
 
         @JvmStatic
         fun getInstance(
                 context: Context,
                 playlist: ArrayList<JcAudio>? = null,
                 listener: JcpServiceListener? = null
-        ): JcAudioPlayer = INSTANCE ?: JcAudioPlayer(context, playlist, listener)
+        ): JcPlayerManager = INSTANCE ?: JcPlayerManager(context, playlist, listener)
     }
 
     /**
@@ -131,10 +115,15 @@ class JcAudioPlayer(
                 throw AudioListNullPointerException()
             } else {
                 currentJcAudio = jcAudio
-                jcPlayerService?.play(currentJcAudio)
-                updatePositionAudioList()
-                isPlaying = true
-                isPaused = false
+
+                jcPlayerService?.let {
+                    jcPlayerService?.play(currentJcAudio!!)
+                    updatePositionAudioList()
+                    isPlaying = true
+                    isPaused = false
+                } ?: let {
+                    initService(onConnected = { playAudio(currentJcAudio!!) })
+                }
             }
         } ?: throw AudioListNullPointerException()
     }
@@ -142,12 +131,31 @@ class JcAudioPlayer(
     /**
      * Initializes the JcAudio Service.
      */
-    private fun initService() {
-        if (bound.not()) {
-            startJcPlayerService()
-        } else {
-            bound = true
-        }
+    private fun initService(onConnected: ((Unit) -> Unit)? = null) {
+        serviceConnection?.connect(playlist)
+                ?.doOnNext { binder ->
+                    binder?.let {
+                        jcPlayerService = it.service
+
+                        listener?.let { jcPlayerService?.registerServicePlayerListener(it) }
+                        viewListener?.let { jcPlayerService?.registerStatusListener(it) }
+                        invalidPathListener?.let {
+                            jcPlayerService?.registerInvalidPathListener(it)
+                        }
+                        serviceBound = true
+                        onConnected?.invoke(Unit)
+
+                    } ?: let {
+                        serviceBound = false
+                        isPlaying = false
+                        isPaused = true
+                    }
+                }
+                ?.doOnError {
+                    serviceBound = false
+                    isPlaying = false
+                    isPaused = true
+                }
     }
 
     /**
@@ -212,10 +220,12 @@ class JcAudioPlayer(
      * Pauses the current audio.
      */
     fun pauseAudio() {
-        jcPlayerService?.let {
-            it.pause(currentJcAudio)
-            isPaused = true
-            isPlaying = false
+        jcPlayerService?.let { service ->
+            currentAudio?.let {
+                service.pause(it)
+                isPaused = true
+                isPlaying = false
+            }
         }
     }
 
@@ -278,18 +288,6 @@ class JcAudioPlayer(
     }
 
     /**
-     * Starts the JcPlayer service. This is a synchronized operation.
-     */
-    @Synchronized private fun startJcPlayerService() {
-        if (bound.not()) {
-            val intent = Intent(context.applicationContext, JcPlayerService::class.java)
-            intent.putExtra(JcNotificationService.PLAYLIST, playlist as Serializable?)
-            intent.putExtra(JcNotificationService.CURRENT_AUDIO, currentJcAudio)
-            context.bindService(intent, connection, BIND_AUTO_CREATE)
-        }
-    }
-
-    /**
      * Kills the JcPlayer, including Notification and service.
      */
     fun kill() {
@@ -298,9 +296,9 @@ class JcAudioPlayer(
             it.destroy()
         }
 
-        if (bound)
+        if (serviceBound)
             try {
-                context.unbindService(connection)
+                context.unbindService(serviceConnection)
             } catch (e: IllegalArgumentException) {
                 //TODO: Add readable exception here
             }
