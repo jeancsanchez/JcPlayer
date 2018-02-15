@@ -1,6 +1,7 @@
 package com.example.jean.jcplayersample;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 //        jcAudios.add(JcAudio.createFromRaw("Raw audio 2", R.raw.a_203));
         //jcAudios.add(JcAudio.createFromFilePath("File directory audio", this.getFilesDir() + "/" + "CANTO DA GRAÚNA.mp3"));
         //jcAudios.add(JcAudio.createFromAssets("I am invalid audio", "aaa.mid")); // invalid assets file
-        player.initPlaylist(jcAudios);
+//        player.initPlaylist(jcAudios);
 
 
 //        jcAudios.add(JcAudio.createFromFilePath("test", this.getFilesDir() + "/" + "13.mid"));
@@ -133,32 +134,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPausedStatus(JcStatus jcStatus) {
+    public void onPausedStatus(@NonNull JcStatus jcStatus) {
 
     }
 
     @Override
-    public void onContinueAudioStatus(JcStatus jcStatus) {
+    public void onContinueAudioStatus(@NonNull JcStatus jcStatus) {
 
     }
 
     @Override
-    public void onPlayingStatus(JcStatus jcStatus) {
+    public void onPlayingStatus(@NonNull JcStatus jcStatus) {
 
     }
 
     @Override
-    public void onTimeChangedStatus(JcStatus jcStatus) {
+    public void onTimeChangedStatus(@NonNull JcStatus jcStatus) {
         updateProgress(jcStatus);
     }
 
     @Override
-    public void onCompletedAudioStatus(JcStatus jcStatus) {
+    public void onCompletedAudioStatus(@NonNull JcStatus jcStatus) {
         updateProgress(jcStatus);
     }
 
     @Override
-    public void onPreparedAudioStatus(JcStatus jcStatus) {
+    public void onPreparedAudioStatus(@NonNull JcStatus jcStatus) {
 
     }
 

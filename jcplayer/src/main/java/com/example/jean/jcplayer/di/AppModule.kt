@@ -1,8 +1,8 @@
 package com.example.jean.jcplayer.di
 
 import android.content.Context
-import com.example.jean.jcplayer.BaseApp
 import com.example.jean.jcplayer.JcPlayerManager
+import com.example.jean.jcplayer.service.JcServiceConnection
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -15,16 +15,23 @@ import javax.inject.Singleton
  */
 
 @Module
-class AppModule {
+class AppModule
+constructor(val context: Context) {
+
 
     @Provides
     @Singleton
-    fun providesContext(baseApp: BaseApp): Context = baseApp.applicationContext
+    fun providesContext(): Context = context
 
     @Provides
     @Singleton
-    fun providesJcPlayerManager(): JcPlayerManager {
-        return JcPlayerManager()
+    fun providesJcPlayerManager(jcServiceConnection: JcServiceConnection): JcPlayerManager {
+        return JcPlayerManager(jcServiceConnection)
     }
 
+    @Provides
+    @Singleton
+    fun providesJcServiceConnection(context: Context): JcServiceConnection {
+        return JcServiceConnection(context)
+    }
 }

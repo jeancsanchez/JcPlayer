@@ -19,10 +19,10 @@ import javax.inject.Inject
  * Jesus loves you.
  */
 class JcPlayerManager
-@Inject constructor() {
+@Inject constructor(
+        private val serviceConnection: JcServiceConnection
+) {
     private var jcPlayerService: JcPlayerService? = null
-
-    private var serviceConnection: JcServiceConnection? = null
 
     private var invalidPathListener: OnInvalidPathListener? = null
 
@@ -67,7 +67,10 @@ class JcPlayerManager
                 playlist: ArrayList<JcAudio>? = null,
                 listener: JcpServiceListener? = null
         ): JcPlayerManager =
-                INSTANCE ?: JcPlayerManager().also {
+                INSTANCE ?: JcPlayerManager(
+                        // TODO: FIXME URGENT!!!!!!
+                        JcServiceConnection(context)
+                ).also {
                     it.playlist = playlist ?: ArrayList()
                     it.listener = listener
                 }
@@ -80,7 +83,7 @@ class JcPlayerManager
             onConnected: (() -> Unit)? = null,
             onDisconnected: (() -> Unit)? = null
     ) {
-        serviceConnection?.connect(
+        serviceConnection.connect(
                 playlist = playlist,
                 onConnected = { binder ->
                     jcPlayerService = binder?.service
@@ -294,7 +297,7 @@ class JcPlayerManager
             it.destroy()
         }
 
-        serviceConnection?.disconnect()
+        serviceConnection.disconnect()
         jcNotificationPlayer?.destroyNotificationIfExists()
         INSTANCE = null
     }

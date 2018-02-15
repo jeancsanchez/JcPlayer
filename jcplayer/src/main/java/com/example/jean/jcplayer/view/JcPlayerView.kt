@@ -11,16 +11,14 @@ import android.widget.ProgressBar
 import android.widget.SeekBar
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
-import com.example.jean.jcplayer.BaseApp
 import com.example.jean.jcplayer.JcPlayerManager
 import com.example.jean.jcplayer.R
-import com.example.jean.jcplayer.di.DaggerViewComponent
+import com.example.jean.jcplayer.di.AppModule
+import com.example.jean.jcplayer.di.DaggerAppComponent
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
-import com.example.jean.jcplayer.general.errors.UninitializedPlaylistException
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcpServiceListener
-import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
 import javax.inject.Inject
 
@@ -152,10 +150,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPlay?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
 
-        DaggerViewComponent.builder()
-                .create(this)
+        DaggerAppComponent.builder()
+                .appModule(AppModule(context = context))
+                .build()
                 .inject(this)
-
     }
 
     /**
@@ -183,11 +181,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param playlist List of urls strings
      */
     fun initAnonPlaylist(playlist: List<JcAudio>) {
-        sortPlaylist(playlist)
         generateTitleAudio(playlist, context.getString(R.string.track_number))
-        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
-        //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
-        isInitialized = true
+        initPlaylist(playlist)
     }
 
     /**
@@ -197,11 +192,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param title    Default title for all audios
      */
     fun initWithTitlePlaylist(playlist: List<JcAudio>, title: String) {
-        sortPlaylist(playlist)
         generateTitleAudio(playlist, title)
-        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
-        //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
-        isInitialized = true
+        initPlaylist(playlist)
     }
 
     /**
@@ -214,7 +206,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     fun addAudio(jcAudio: JcAudio): Long {
         createJcAudioPlayer()
 
-        jcPlayerManager.playlist?.let {
+        jcPlayerManager.playlist.let {
             val lastPosition = it.size
 
             jcAudio.id = (lastPosition + 1).toLong()
@@ -224,7 +216,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 it.add(lastPosition, jcAudio)
             }
             return jcAudio.id
-        } ?: throw UninitializedPlaylistException()
+        }
     }
 
     /**
@@ -233,30 +225,28 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param jcAudio JcAudio object
      */
     fun removeAudio(jcAudio: JcAudio) {
-        jcPlayerManager.let { player ->
-            player.playlist?.let {
-                if (it.contains(jcAudio)) {
-                    if (it.size > 1) {
-                        // play next audio when currently played audio is removed.
-                        if (player.isPlaying) {
-                            if (player.currentAudio == jcAudio) {
-                                it.remove(jcAudio)
-                                pause()
-                                resetPlayerInfo()
-                            } else {
-                                it.remove(jcAudio)
-                            }
+        jcPlayerManager.playlist.let {
+            if (it.contains(jcAudio)) {
+                if (it.size > 1) {
+                    // play next audio when currently played audio is removed.
+                    if (jcPlayerManager.isPlaying) {
+                        if (jcPlayerManager.currentAudio == jcAudio) {
+                            it.remove(jcAudio)
+                            pause()
+                            resetPlayerInfo()
                         } else {
                             it.remove(jcAudio)
                         }
                     } else {
-                        //TODO: Maybe we need jcPlayerManager.stopPlay() for stopping the player
                         it.remove(jcAudio)
-                        pause()
-                        resetPlayerInfo()
                     }
+                } else {
+                    //TODO: Maybe we need jcPlayerManager.stopPlay() for stopping the player
+                    it.remove(jcAudio)
+                    pause()
+                    resetPlayerInfo()
                 }
-            } ?: throw UninitializedPlaylistException()
+            }
         }
     }
 
@@ -427,7 +417,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      */
     private fun isAlreadySorted(playlist: List<JcAudio>?): Boolean {
         // If there is position in the first audio, then playlist is already sorted.
-        return playlist?.let { it[0].position != -1 } ?: false
+        return playlist?.let { it[0].position != -1 } == true
     }
 
     /**
