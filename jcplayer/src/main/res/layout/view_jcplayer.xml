@@ -1,121 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_player_white"
-    tools:context="com.example.jean.jcplayer.JcPlayerView"
-    >
-
-  <TextView
-      android:id="@+id/txt_current_music"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentTop="true"
-      android:layout_centerHorizontal="true"
-      android:layout_marginTop="5dp"
-      android:ellipsize="marquee"
-      android:focusable="true"
-      android:focusableInTouchMode="true"
-      android:gravity="center"
-      android:marqueeRepeatLimit="marquee_forever"
-      android:maxLines="2"
-      android:scrollHorizontally="true"
-      android:textAlignment="center"
-      android:textColor="@android:color/black"
-      android:textSize="16sp"
-      />
-
-  <LinearLayout
-      android:id="@+id/linearLayout"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="30dp"
-      android:orientation="horizontal"
-      android:paddingEnd="16dp"
-      android:paddingStart="16dp"
-      >
+    tools:context="com.example.jean.jcplayer.view.JcPlayerView">
 
     <TextView
-        android:id="@+id/txt_current_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:id="@+id/txtCurrentMusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:maxLines="2"
+        android:scrollHorizontally="true"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp">
+
+        <TextView
+            android:id="@+id/txtCurrentDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:text="@string/start_minutes"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/txtDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:text="@string/end_minutes"
+            android:textAlignment="center"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/text_size" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnPlay"
+        android:layout_width="@dimen/touch_default"
+        android:layout_height="@dimen/touch_default"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:gravity="center_vertical"
-        android:text="00:00"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/text_size"
-        />
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/ic_play_black"
+        android:contentDescription="@string/play_button_description" />
 
-    <SeekBar
-        android:id="@+id/seek_bar"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        />
+    <ImageButton
+        android:id="@+id/btnNext"
+        android:layout_width="@dimen/touch_default"
+        android:layout_height="@dimen/touch_default"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/ic_next_black"
+        android:contentDescription="@string/next_button_description" />
 
-    <TextView
-        android:id="@+id/txt_total_duration"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:text="00:00"
-        android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/text_size"
-        />
-  </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progressBarPlayer"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone" />
 
-  <ImageButton
-      android:id="@+id/btn_play"
-      android:layout_width="@dimen/touch_default"
-      android:layout_height="@dimen/touch_default"
-      android:layout_below="@+id/linearLayout"
-      android:layout_centerHorizontal="true"
-      android:layout_gravity="center"
-      android:layout_marginBottom="5dp"
-      android:background="@drawable/ic_play_black"
-      />
-
-  <ImageButton
-      android:id="@+id/btn_next"
-      android:layout_width="@dimen/touch_default"
-      android:layout_height="@dimen/touch_default"
-      android:layout_alignParentEnd="true"
-      android:layout_alignParentRight="true"
-      android:layout_below="@+id/linearLayout"
-      android:layout_marginBottom="5dp"
-      android:layout_marginEnd="16dp"
-      android:layout_marginRight="16dp"
-      android:background="@drawable/ic_next_black"
-      />
-
-  <ProgressBar
-      android:id="@+id/progress_bar_player"
-      android:layout_width="23dp"
-      android:layout_height="23dp"
-      android:layout_below="@+id/linearLayout"
-      android:layout_centerHorizontal="true"
-      android:layout_marginBottom="10dp"
-      android:visibility="gone"
-      style="?android:attr/progressBarStyleSmall"
-      />
-
-  <ImageButton
-      android:id="@+id/btn_prev"
-      android:layout_width="@dimen/touch_default"
-      android:layout_height="@dimen/touch_default"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentStart="true"
-      android:layout_below="@+id/linearLayout"
-      android:layout_marginBottom="5dp"
-      android:layout_marginLeft="16dp"
-      android:layout_marginStart="16dp"
-      android:background="@drawable/ic_previous_black"
-      />
+    <ImageButton
+        android:id="@+id/btnPrev"
+        android:layout_width="@dimen/touch_default"
+        android:layout_height="@dimen/touch_default"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/ic_previous_black"
+        android:contentDescription="@string/previous_button_description" />
 
 </RelativeLayout>

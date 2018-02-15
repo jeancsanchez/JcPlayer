@@ -3,19 +3,22 @@ package com.example.jean.jcplayer.view
 import android.annotation.TargetApi
 import android.content.Context
 import android.os.Build
-import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.SeekBar
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.example.jean.jcplayer.JcAudioPlayer
 import com.example.jean.jcplayer.R
-import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
+import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.general.errors.UninitializedPlaylistException
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcpServiceListener
+import kotlinx.android.synthetic.main.view_jcplayer.view.*
 
 /**
  * This class is the JcAudio View. Handles user interactions and communicate with [JcAudioPlayer].
@@ -25,15 +28,7 @@ import com.example.jean.jcplayer.service.JcpServiceListener
  */
 class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    private var txtCurrentMusic: TextView? = null
-    private var btnPrev: ImageButton? = null
-    private var btnPlay: ImageButton? = null
-    private var progressBarPlayer: ProgressBar? = null
     private var jcPlayer: JcAudioPlayer? = null
-    private var txtDuration: TextView? = null
-    private var btnNext: ImageButton? = null
-    private var seekBar: SeekBar? = null
-    private var txtCurrentDuration: TextView? = null
     private var isInitialized: Boolean = false
     val myPlaylist: List<JcAudio>?
         get() = jcPlayer?.playlist
@@ -85,14 +80,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
 
         override fun onPaused() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                btnPlay?.background = ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_play_black, null
-                )
-            } else {
-                btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
-            }
+            btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
             btnPlay?.tag = R.drawable.ic_play_black
         }
 
@@ -103,14 +91,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
 
         override fun onPlaying() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                btnPlay?.background = ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_pause_black, null
-                )
-            } else {
-                btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
-            }
+            btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
             btnPlay?.tag = R.drawable.ic_pause_black
         }
 
@@ -157,16 +138,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun init() {
         View.inflate(context, R.layout.view_jcplayer, this)
 
-        this.progressBarPlayer = findViewById(R.id.progress_bar_player)
-        this.btnNext = findViewById(R.id.btn_next)
-        this.btnPrev = findViewById(R.id.btn_prev)
-        this.btnPlay = findViewById(R.id.btn_play)
-        this.txtDuration = findViewById(R.id.txt_total_duration)
-        this.txtCurrentDuration = findViewById(R.id.txt_current_duration)
-        this.txtCurrentMusic = findViewById(R.id.txt_current_music)
-        this.seekBar = findViewById(R.id.seek_bar)
-        this.btnPlay?.tag = R.drawable.ic_play_black
-
+        btnPlay?.tag = R.drawable.ic_play_black
         btnNext?.setOnClickListener(this)
         btnPrev?.setOnClickListener(this)
         btnPlay?.setOnClickListener(this)
@@ -359,7 +331,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
     override fun onClick(view: View) {
         if (isInitialized) {
-            if (view.id == R.id.btn_play) {
+            if (view.id == R.id.btnPlay) {
                 btnPlay?.let {
                     YoYo.with(Techniques.Pulse)
                             .duration(PULSE_ANIMATION_DURATION.toLong())
@@ -373,7 +345,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 }
             }
         }
-        if (view.id == R.id.btn_next) {
+        if (view.id == R.id.btnNext) {
             btnNext?.let {
                 YoYo.with(Techniques.Pulse)
                         .duration(PULSE_ANIMATION_DURATION.toLong())
@@ -382,7 +354,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             }
         }
 
-        if (view.id == R.id.btn_prev) {
+        if (view.id == R.id.btnPrev) {
             btnPrev?.let {
                 YoYo.with(Techniques.Pulse)
                         .duration(PULSE_ANIMATION_DURATION.toLong())
