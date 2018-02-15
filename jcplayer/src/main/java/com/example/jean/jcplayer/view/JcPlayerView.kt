@@ -91,12 +91,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                         R.drawable.ic_play_black, null
                 )
             } else {
-                btnPlay?.setBackgroundDrawable(
-                        ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.ic_play_black, null
-                        )
-                )
+                btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
             }
             btnPlay?.tag = R.drawable.ic_play_black
         }
@@ -114,12 +109,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                         R.drawable.ic_pause_black, null
                 )
             } else {
-                btnPlay?.setBackgroundDrawable(
-                        ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.ic_pause_black, null
-                        )
-                )
+                btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
             }
             btnPlay?.tag = R.drawable.ic_pause_black
         }
@@ -167,14 +157,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun init() {
         View.inflate(context, R.layout.view_jcplayer, this)
 
-        this.progressBarPlayer = findViewById(R.id.progress_bar_player) as ProgressBar
-        this.btnNext = findViewById(R.id.btn_next) as ImageButton
-        this.btnPrev = findViewById(R.id.btn_prev) as ImageButton
-        this.btnPlay = findViewById(R.id.btn_play) as ImageButton
-        this.txtDuration = findViewById(R.id.txt_total_duration) as TextView
-        this.txtCurrentDuration = findViewById(R.id.txt_current_duration) as TextView
-        this.txtCurrentMusic = findViewById(R.id.txt_current_music) as TextView
-        this.seekBar = findViewById(R.id.seek_bar) as SeekBar
+        this.progressBarPlayer = findViewById(R.id.progress_bar_player)
+        this.btnNext = findViewById(R.id.btn_next)
+        this.btnPrev = findViewById(R.id.btn_prev)
+        this.btnPlay = findViewById(R.id.btn_play)
+        this.txtDuration = findViewById(R.id.txt_total_duration)
+        this.txtCurrentDuration = findViewById(R.id.txt_current_duration)
+        this.txtCurrentMusic = findViewById(R.id.txt_current_music)
+        this.seekBar = findViewById(R.id.seek_bar)
         this.btnPlay?.tag = R.drawable.ic_play_black
 
         btnNext?.setOnClickListener(this)
@@ -458,9 +448,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param playlist list of JcAudio
      * @return true if sorted, false if not.
      */
-    private fun isAlreadySorted(playlist: List<JcAudio>?) =
-            // If there is position in the first audio, then playlist is already sorted.
-            playlist?.let { it[0].position != -1 } ?: false
+    private fun isAlreadySorted(playlist: List<JcAudio>?): Boolean {
+        // If there is position in the first audio, then playlist is already sorted.
+        return playlist?.let { it[0].position != -1 } ?: false
+    }
 
     /**
      * Generates a default audio title for each audio on list.
@@ -506,34 +497,43 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
     }
 
-    override fun onStartTrackingTouch(seekBar: SeekBar) = showProgressBar()
+    override fun onStartTrackingTouch(seekBar: SeekBar) {
+        showProgressBar()
+    }
 
-    override fun onStopTrackingTouch(seekBar: SeekBar) = dismissProgressBar()
+    override fun onStopTrackingTouch(seekBar: SeekBar) {
+        dismissProgressBar()
+    }
 
     /**
      * Registers a new [OnInvalidPathListener]
      * @param invalidPathListener The listener.
      */
-    fun registerInvalidPathListener(invalidPathListener: OnInvalidPathListener) =
-            jcPlayer?.registerInvalidPathListener(invalidPathListener)
+    fun registerInvalidPathListener(invalidPathListener: OnInvalidPathListener) {
+        jcPlayer?.registerInvalidPathListener(invalidPathListener)
+    }
 
     /**
      * Kills the player
      */
-    fun kill() = jcPlayer?.kill()
+    fun kill() {
+        jcPlayer?.kill()
+    }
 
     /**
      * Registers a new [JcpServiceListener]
      * @param jcpServiceListener1 the listener
      */
-    fun registerServiceListener(jcpServiceListener1: JcpServiceListener) =
-            jcPlayer?.registerServiceListener(jcpServiceListener1)
+    fun registerServiceListener(jcpServiceListener1: JcpServiceListener) {
+        jcPlayer?.registerServiceListener(jcpServiceListener1)
+    }
 
 
     /**
      * Registers a new [JcpViewListener]
      * @param viewListener The listener.
      */
-    fun registerStatusListener(viewListener: JcpViewListener) =
-            jcPlayer?.registerStatusListener(viewListener)
+    fun registerStatusListener(viewListener: JcpViewListener) {
+        jcPlayer?.registerStatusListener(viewListener)
+    }
 }
