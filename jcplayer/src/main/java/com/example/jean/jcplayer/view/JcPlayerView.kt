@@ -110,6 +110,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
         override fun onUpdateTitle(title: String) {
             txtCurrentMusic?.let {
+                it.visibility = View.VISIBLE
                 YoYo.with(Techniques.FadeInLeft)
                         .duration(TITLE_ANIMATION_DURATION.toLong())
                         .playOn(it)

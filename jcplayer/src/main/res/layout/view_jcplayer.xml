@@ -43,7 +43,7 @@
         android:layout_marginLeft="@dimen/spacing_large"
         android:layout_marginStart="@dimen/spacing_large"
         android:layout_marginTop="@dimen/spacing_normal"
-        android:text="@string/start_minutes"
+        android:text="@string/play_initial_time"
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_size"
@@ -59,7 +59,7 @@
         android:layout_marginLeft="@dimen/spacing_normal"
         android:layout_marginRight="@dimen/spacing_normal"
         android:layout_marginStart="@dimen/spacing_normal"
-        android:layout_marginTop="@dimen/spacing_normal"
+        android:layout_marginTop="6dp"
         app:layout_constraintEnd_toStartOf="@id/txtDuration"
         app:layout_constraintStart_toEndOf="@id/txtCurrentDuration"
         app:layout_constraintTop_toBottomOf="@+id/txtCurrentMusic"
@@ -72,7 +72,7 @@
         android:layout_marginEnd="@dimen/spacing_large"
         android:layout_marginRight="@dimen/spacing_large"
         android:layout_marginTop="@dimen/spacing_normal"
-        android:text="@string/end_minutes"
+        android:text="@string/play_initial_time"
         android:textAlignment="center"
         android:textColor="@android:color/black"
         android:textSize="@dimen/text_size"
@@ -128,10 +128,11 @@
         android:layout_marginLeft="@dimen/spacing_large"
         android:layout_marginStart="@dimen/spacing_large"
         android:layout_marginTop="@dimen/spacing_normal"
-        android:background="@drawable/ic_previous_black"
         android:contentDescription="@string/previous_button_description"
+        android:cropToPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar" />
+        app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        app:srcCompat="@drawable/ic_previous_black" />
 
 </android.support.constraint.ConstraintLayout>
