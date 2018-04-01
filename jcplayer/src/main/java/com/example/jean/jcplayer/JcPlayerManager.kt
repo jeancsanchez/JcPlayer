@@ -1,6 +1,7 @@
 package com.example.jean.jcplayer
 
 import android.content.Context
+import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
@@ -9,6 +10,7 @@ import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.JcpServiceListener
 import com.example.jean.jcplayer.service.notification.JcNotificationService
 import com.example.jean.jcplayer.view.JcpViewListener
+import io.reactivex.Observable
 import javax.inject.Inject
 
 /**
@@ -87,10 +89,7 @@ class JcPlayerManager
                 onConnected = { binder ->
                     jcPlayerService = binder?.service
 
-                    jcPlayerService?.let { service ->
-                        listener?.let { service.registerServicePlayerListener(it) }
-                        viewListener?.let { service.registerStatusListener(it) }
-                        invalidPathListener?.let { service.registerInvalidPathListener(it) }
+                    jcPlayerService?.let {
                         serviceBound = true
                         onConnected?.invoke()
                     } ?: onDisconnected?.invoke()
@@ -105,65 +104,26 @@ class JcPlayerManager
     }
 
     /**
-     * Registers a new [JcNotificationService] notification listener.
-     * @param notificationListener The listener.
-     */
-    fun registerNotificationListener(notificationListener: JcNotificationService) {
-        this.listener = notificationListener
-
-        jcNotificationPlayer.let {
-            jcPlayerService?.registerNotificationListener(notificationListener)
-        }
-    }
-
-    /**
-     * Registers a new [OnInvalidPathListener] listener.
-     * @param registerInvalidPathListener The listener.
-     */
-    fun registerInvalidPathListener(registerInvalidPathListener: OnInvalidPathListener) {
-        this.invalidPathListener = registerInvalidPathListener
-        jcPlayerService?.registerInvalidPathListener(registerInvalidPathListener)
-    }
-
-    /**
-     * Registers a new [JcpServiceListener] service listener.
-     * @param jcPlayerServiceListener The listener.
-     */
-    fun registerServiceListener(jcPlayerServiceListener: JcpServiceListener) {
-        this.listener = jcPlayerServiceListener
-        jcPlayerService?.registerServicePlayerListener(jcPlayerServiceListener)
-    }
-
-    /**
-     * Registers a  new [JcpViewListener] listener.
-     * @param viewListener The listener.
-     */
-    fun registerStatusListener(viewListener: JcpViewListener) {
-        this.viewListener = viewListener
-        jcPlayerService?.registerStatusListener(viewListener)
-    }
-
-    /**
      * Plays the given [JcAudio].
      * @param jcAudio The audio to be played.
      */
     @Throws(AudioListNullPointerException::class)
-    fun playAudio(jcAudio: JcAudio) {
-        if (playlist.isEmpty()) {
-            throw AudioListNullPointerException()
-        } else {
-            currentJcAudio = jcAudio
-
-            jcPlayerService?.let {
-                jcPlayerService?.play(currentJcAudio!!)
-                updatePositionAudioList()
-                isPlaying = true
-                isPaused = false
-            } ?: let {
-                initService(onConnected = { playAudio(currentJcAudio!!) })
-            }
-        }
-    }
+    fun playAudio(jcAudio: JcAudio): Observable<JcStatus> =
+            Observable.fromCallable {
+                if (playlist.isEmpty()) {
+                    throw AudioListNullPointerException()
+                } else {
+                    if (jcPlayerService == null) {
+                        initService(onConnected = { playAudio(currentJcAudio!!) })
+                    }
+                }
+            }.flatMap {
+                        currentJcAudio = jcAudio
+                        updatePositionAudioList()
+                        isPlaying = true
+                        isPaused = false
+                        jcPlayerService?.play(currentJcAudio!!)
+                    }
 
 
     /**
