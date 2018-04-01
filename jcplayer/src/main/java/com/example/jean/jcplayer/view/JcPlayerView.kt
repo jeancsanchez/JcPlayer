@@ -47,6 +47,11 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     val currentAudio: JcAudio?
         get() = jcPlayerManager.currentAudio
 
+    companion object {
+        private const val PULSE_ANIMATION_DURATION = 200
+        private const val TITLE_ANIMATION_DURATION = 600
+    }
+
     private val onInvalidPathListener = object : OnInvalidPathListener {
         override fun onPathError(jcAudio: JcAudio) {
             dismissProgressBar()
@@ -125,10 +130,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
     }
 
-    companion object {
-        private const val PULSE_ANIMATION_DURATION = 200
-        private const val TITLE_ANIMATION_DURATION = 600
-    }
 
     constructor(context: Context) : super(context) {
         init()
@@ -160,8 +161,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Initialize the playlist and controls.
      *
      * @param playlist List of JcAudio objects that you want play
+     * @param statusListener The view status listener (optional)
      */
-    fun initPlaylist(playlist: List<JcAudio>) {
+    fun initPlaylist(playlist: List<JcAudio>, statusListener: JcpServiceListener? = null) {
         // Don't sort if the playlist have position number.
         // We need to do this because there is a possibility that the user reload previous playlist
         // from persistence storage like sharedPreference or SQLite.
@@ -171,7 +173,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
         jcPlayerManager.playlist = playlist as ArrayList<JcAudio>
         jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
-        //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
+
+        statusListener?.let { registerServiceListener(it) }
+                ?: registerServiceListener(jcpServiceListener)
         isInitialized = true
     }
 
@@ -495,12 +499,11 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         jcPlayerManager.registerServiceListener(jcpServiceListener1)
     }
 
-
     /**
      * Registers a new [JcpViewListener]
      * @param viewListener The listener.
      */
-    fun registerStatusListener(viewListener: JcpViewListener) {
+    private fun registerStatusListener(viewListener: JcpViewListener) {
         jcPlayerManager.registerStatusListener(viewListener)
     }
 }

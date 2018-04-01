@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<JcAudio> jcAudios = new ArrayList<>();
         jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
-        player.initPlaylist(jcAudios);
+        player.initPlaylist(jcAudios, null);
         player.playAudio(player.getMyPlaylist().get(0));
 
 //        ArrayList<JcAudio> jcAudios = new ArrayList<>();
@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity
 //        player.addAudio(JcAudio.createFromFilePath(this.getFilesDir() + "/" + "121212.mmid"));
 
         player.registerInvalidPathListener(this);
-        player.registerStatusListener(this);
         adapterSetup();
     }
 
@@ -145,7 +144,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPlayingStatus(@NonNull JcStatus jcStatus) {
-
     }
 
     @Override

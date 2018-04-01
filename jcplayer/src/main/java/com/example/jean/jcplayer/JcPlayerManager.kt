@@ -1,6 +1,5 @@
 package com.example.jean.jcplayer
 
-import android.annotation.SuppressLint
 import android.content.Context
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
@@ -57,7 +56,7 @@ class JcPlayerManager
     }
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
+
         @Volatile
         private var INSTANCE: JcPlayerManager? = null
 

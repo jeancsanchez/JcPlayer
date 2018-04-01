@@ -56,7 +56,7 @@ class JcServiceConnection
     }
 
     /**
-     * Disconnects with the [JcPlayerService].
+     * Disconnects from the [JcPlayerService].
      */
     fun disconnect() {
         if (serviceBound)

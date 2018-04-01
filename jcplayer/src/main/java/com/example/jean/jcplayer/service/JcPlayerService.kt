@@ -26,7 +26,6 @@ import java.util.*
 class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnErrorListener {
 
-
     private val binder = JcPlayerServiceBinder()
 
     private var mediaPlayer: MediaPlayer? = null
