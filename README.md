@@ -100,8 +100,9 @@ OR
 Follow this guidelines, specially the commits style guide: </br>
 https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/code_guidelines.md
 
-## Note
- The list view is developer responsibilty
+## Notes
+- The JcpService is only started when some audio is played.
+- The list view is developer responsibilty
 
 ## TODO LIST ##
 * [ ] Set custom layouts for player.
