@@ -60,21 +60,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
     private var jcpServiceListener: JcpServiceListener = object : JcpServiceListener {
         override fun onPreparedAudio(audioName: String, duration: Int) {
-            dismissProgressBar()
-            resetPlayerInfo()
 
-            val aux = (duration / 1000).toLong()
-            val minute = (aux / 60).toInt()
-            val second = (aux % 60).toInt()
-
-            val sDuration = // Minutes
-                    ((if (minute < 10) "0" + minute else minute.toString() + "")
-                            + ":" +
-                            // Seconds
-                            if (second < 10) "0" + second else second.toString() + "")
-
-            seekBar?.max = duration
-            txtDuration?.post { txtDuration?.text = sDuration }
         }
 
 
@@ -101,8 +87,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
 
         override fun onPlaying() {
-            btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
-            btnPlay?.tag = R.drawable.ic_pause_black
+
         }
 
 
@@ -172,10 +157,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
 
         jcPlayerManager.playlist = playlist as ArrayList<JcAudio>
-        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
-
-        statusListener?.let { registerServiceListener(it) }
-                ?: registerServiceListener(jcpServiceListener)
+//        statusListener?.let { registerServiceListener(it) }
+//                ?: registerServiceListener(jcpServiceListener)
         isInitialized = true
     }
 
@@ -266,14 +249,39 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             if (it.contains(jcAudio).not()) {
                 it.add(jcAudio)
             }
-            try {
-                jcPlayerManager.playAudio(jcAudio)
-            } catch (e: AudioListNullPointerException) {
-                dismissProgressBar()
-                e.printStackTrace()
-            }
+
+            jcPlayerManager.playAudio(jcAudio)
+                    .doOnNext {
+                        showPauseButton()
+                        dismissProgressBar()
+                        resetPlayerInfo()
+
+                        val aux = (it.duration / 1000)
+                        val minute = (aux / 60).toInt()
+                        val second = (aux % 60).toInt()
+
+                        val sDuration = // Minutes
+                                ((if (minute < 10) "0" + minute else minute.toString() + "")
+                                        + ":" +
+                                        // Seconds
+                                        if (second < 10) "0" + second else second.toString() + "")
+
+                        seekBar?.max = it.duration.toInt()
+                        txtDuration?.post { txtDuration?.text = sDuration }
+                    }
+                    .doOnError { dismissProgressBar() }
+                    .subscribe()
         }
     }
+
+    /**
+     * Shows the pause button on player.
+     */
+    private fun showPauseButton() {
+        btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
+        btnPlay?.tag = R.drawable.ic_pause_black
+    }
+
 
     /**
      * Goes to next audio.
@@ -395,7 +403,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Creates a new JcAudio Player.
      */
     private fun createJcAudioPlayer() {
-        jcPlayerManager.registerInvalidPathListener(onInvalidPathListener)
         //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
         isInitialized = true
     }
@@ -481,7 +488,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param invalidPathListener The listener.
      */
     fun registerInvalidPathListener(invalidPathListener: OnInvalidPathListener) {
-        jcPlayerManager.registerInvalidPathListener(invalidPathListener)
+//        jcPlayerManager.registerInvalidPathListener(invalidPathListener)
     }
 
     /**
@@ -496,7 +503,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param jcpServiceListener1 the listener
      */
     fun registerServiceListener(jcpServiceListener1: JcpServiceListener) {
-        jcPlayerManager.registerServiceListener(jcpServiceListener1)
+//        jcPlayerManager.registerServiceListener(jcpServiceListener1)
     }
 
     /**
@@ -504,6 +511,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param viewListener The listener.
      */
     private fun registerStatusListener(viewListener: JcpViewListener) {
-        jcPlayerManager.registerStatusListener(viewListener)
+//        jcPlayerManager.registerStatusListener(viewListener)
     }
 }

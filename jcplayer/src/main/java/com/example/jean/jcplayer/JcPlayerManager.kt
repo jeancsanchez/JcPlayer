@@ -3,6 +3,7 @@ package com.example.jean.jcplayer
 import android.content.Context
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
+import com.example.jean.jcplayer.general.errors.JcpServiceDisconnectedError
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcPlayerService
@@ -80,28 +81,27 @@ class JcPlayerManager
     /**
      * Connects with audio service.
      */
-    private fun initService(
-            onConnected: (() -> Unit)? = null,
-            onDisconnected: (() -> Unit)? = null
-    ) {
-        serviceConnection.connect(
-                playlist = playlist,
-                onConnected = { binder ->
-                    jcPlayerService = binder?.service
+    private fun initService(): Observable<Unit> =
+            Observable.create { subscriber ->
+                serviceConnection.connect(
+                        playlist = playlist,
+                        onConnected = { binder ->
+                            jcPlayerService = binder?.service
 
-                    jcPlayerService?.let {
-                        serviceBound = true
-                        onConnected?.invoke()
-                    } ?: onDisconnected?.invoke()
-                },
-                onDisconnected = {
-                    serviceBound = false
-                    isPlaying = false
-                    isPaused = true
-                    onDisconnected?.invoke()
-                }
-        )
-    }
+                            jcPlayerService?.let {
+                                serviceBound = true
+                                subscriber.onNext(Unit)
+                                subscriber.onComplete()
+                            } ?: subscriber.onError(JcpServiceDisconnectedError)
+                        },
+                        onDisconnected = {
+                            serviceBound = false
+                            isPlaying = false
+                            isPaused = true
+                            subscriber.onError(JcpServiceDisconnectedError)
+                        }
+                )
+            }
 
     /**
      * Plays the given [JcAudio].
@@ -109,21 +109,28 @@ class JcPlayerManager
      */
     @Throws(AudioListNullPointerException::class)
     fun playAudio(jcAudio: JcAudio): Observable<JcStatus> =
-            Observable.fromCallable {
+            Observable.create<JcStatus> { subscriber ->
                 if (playlist.isEmpty()) {
-                    throw AudioListNullPointerException()
+                    subscriber.onError(AudioListNullPointerException())
                 } else {
-                    if (jcPlayerService == null) {
-                        initService(onConnected = { playAudio(currentJcAudio!!) })
-                    }
-                }
-            }.flatMap {
+                    jcPlayerService?.let {
                         currentJcAudio = jcAudio
                         updatePositionAudioList()
                         isPlaying = true
                         isPaused = false
-                        jcPlayerService?.play(currentJcAudio!!)
+                        subscriber.onNext(it.play(currentJcAudio!!).blockingFirst())
+                        subscriber.onComplete()
+                    } ?: let {
+                        initService()
+                                .doOnNext {
+                                    subscriber.onNext(playAudio(jcAudio).blockingFirst())
+                                    subscriber.onComplete()
+                                }
+                                .doOnError { subscriber.onError(it) }
+                                .subscribe()
                     }
+                }
+            }
 
 
     /**

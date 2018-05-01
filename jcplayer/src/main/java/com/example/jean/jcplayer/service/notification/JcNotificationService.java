@@ -10,9 +10,9 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
+import com.example.jean.jcplayer.JcPlayerManager;
 import com.example.jean.jcplayer.R;
 import com.example.jean.jcplayer.service.JcpServiceListener;
-import com.example.jean.jcplayer.JcPlayerManager;
 
 import javax.inject.Inject;
 
@@ -56,7 +56,7 @@ public class JcNotificationService implements JcpServiceListener {
         this.iconResource = iconResourceResource;
         Intent openUi = new Intent(context, context.getClass());
         openUi.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        JcPlayerManager.getInstance(context, null, null).registerNotificationListener(this);
+//        JcPlayerManager.getInstance(context, null, null).registerNotificationListener(this);
 
         if (notificationManager == null) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
