@@ -218,6 +218,11 @@ class JcPlayerManager
     }
 
     /**
+     * Notifies when audio is prepared.
+     */
+    fun onPreparedAudio(): Observable<JcStatus>? = jcPlayerService?.onPrepared()
+
+    /**
      * Creates a new notification with icon resource.
      * @param iconResource The icon resource path.
      */

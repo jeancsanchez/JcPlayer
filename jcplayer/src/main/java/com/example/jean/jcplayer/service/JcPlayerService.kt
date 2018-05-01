@@ -55,22 +55,16 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     override fun onBind(intent: Intent): IBinder? = binder
 
-    fun pause(jcAudio: JcAudio): Observable<JcStatus> {
-        return Observable.fromCallable {
-            updateStatus(jcAudio, JcStatus.PlayState.PAUSE)
-        }
-    }
+    fun pause(jcAudio: JcAudio): Observable<JcStatus> =
+            Observable.fromCallable { updateStatus(jcAudio, JcStatus.PlayState.PAUSE) }
 
     fun destroy() {
         stop()
         stopSelf()
     }
 
-    fun stop(): Observable<JcStatus> {
-        return Observable.fromCallable {
-            updateStatus(status = JcStatus.PlayState.STOP)
-        }
-    }
+    fun stop(): Observable<JcStatus> =
+            Observable.fromCallable { updateStatus(status = JcStatus.PlayState.STOP) }
 
     private fun updateStatus(jcAudio: JcAudio? = null, status: JcStatus.PlayState): JcStatus {
         jcStatus.jcAudio = jcAudio
@@ -80,8 +74,11 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
         when (status) {
             JcStatus.PlayState.PLAY -> {
-                jcStatus.duration = 0
-                jcStatus.currentPosition = 0
+                mediaPlayer?.start() ?: let {
+                    jcStatus.duration = 0
+                    jcStatus.currentPosition = 0
+                }
+
                 isPlaying = true
             }
 
@@ -105,7 +102,11 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 isPlaying = false
             }
 
-            JcStatus.PlayState.CONTINUE -> {
+            JcStatus.PlayState.UNINTIALIZED -> {
+                isPlaying = false
+            }
+
+            else -> { // CONTINUE case
                 mediaPlayer?.let {
                     jcStatus.jcAudio = currentAudio
                     jcStatus.duration = it.duration.toLong()
@@ -128,12 +129,12 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 try {
                     mediaPlayer?.let {
                         if (isPlaying) {
-                            stop()
-                            play(jcAudio)
+                            stop().blockingFirst()
+                            play(jcAudio).blockingFirst()
                         } else {
                             if (tempJcAudio !== jcAudio) {
-                                stop()
-                                play(jcAudio)
+                                stop().blockingFirst()
+                                play(jcAudio).blockingFirst()
                             } else {
                                 it.start()
                                 isPlaying = true
@@ -182,14 +183,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                             it.setOnBufferingUpdateListener(this)
                             it.setOnCompletionListener(this)
                             it.setOnErrorListener(this)
-
-                            //} else if (isPlaying) {
-                            //    stop();
-                            //    play(jcAudio);
-
-                            //} else if (isPlaying) {
-                            //    stop();
-                            //    play(jcAudio);
                         }
                     }
                 } catch (e: IOException) {
@@ -280,16 +273,16 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     }
 
     override fun onPrepared(mediaPlayer: MediaPlayer) {
-        onPrepared().subscribe()
+        onPrepared(fromService = true).blockingFirst()
     }
 
-    fun onPrepared(): Observable<JcStatus> {
+    fun onPrepared(fromService: Boolean = false): Observable<JcStatus> {
         return Observable.fromCallable {
-            mediaPlayer?.start()
-            this.duration = mediaPlayer?.duration ?: 0
-            this.currentTime = mediaPlayer?.currentPosition ?: 0
-
-            updateStatus(currentAudio, JcStatus.PlayState.PLAY)
+            if (fromService) {
+                updateStatus(currentAudio, JcStatus.PlayState.PLAY)
+            } else {
+                updateStatus(currentAudio, JcStatus.PlayState.UNINTIALIZED)
+            }
         }
     }
 }

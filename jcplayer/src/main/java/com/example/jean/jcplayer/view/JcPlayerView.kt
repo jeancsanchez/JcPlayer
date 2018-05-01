@@ -15,10 +15,13 @@ import com.example.jean.jcplayer.JcPlayerManager
 import com.example.jean.jcplayer.R
 import com.example.jean.jcplayer.di.AppModule
 import com.example.jean.jcplayer.di.DaggerAppComponent
+import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcpServiceListener
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
 import javax.inject.Inject
 
@@ -157,9 +160,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
 
         jcPlayerManager.playlist = playlist as ArrayList<JcAudio>
-//        statusListener?.let { registerServiceListener(it) }
-//                ?: registerServiceListener(jcpServiceListener)
-        isInitialized = true
     }
 
     /**
@@ -191,8 +191,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @return id of jcAudio.
      */
     fun addAudio(jcAudio: JcAudio): Long {
-        createJcAudioPlayer()
-
         jcPlayerManager.playlist.let {
             val lastPosition = it.size
 
@@ -243,33 +241,22 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      */
     fun playAudio(jcAudio: JcAudio) {
         showProgressBar()
-        createJcAudioPlayer()
 
         jcPlayerManager.playlist.let {
             if (it.contains(jcAudio).not()) {
                 it.add(jcAudio)
             }
 
-            jcPlayerManager.playAudio(jcAudio)
+            jcPlayerManager
+                    .playAudio(jcAudio)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext {
-                        showPauseButton()
-                        dismissProgressBar()
-                        resetPlayerInfo()
-
-                        val aux = (it.duration / 1000)
-                        val minute = (aux / 60).toInt()
-                        val second = (aux % 60).toInt()
-
-                        val sDuration = // Minutes
-                                ((if (minute < 10) "0" + minute else minute.toString() + "")
-                                        + ":" +
-                                        // Seconds
-                                        if (second < 10) "0" + second else second.toString() + "")
-
-                        seekBar?.max = it.duration.toInt()
-                        txtDuration?.post { txtDuration?.text = sDuration }
+                        if (isInitialized.not()) {
+                            initializeJcAudioPlayer()
+                        }
                     }
-                    .doOnError { dismissProgressBar() }
+                    .doOnError { throw it }
                     .subscribe()
         }
     }
@@ -402,9 +389,34 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     /**
      * Creates a new JcAudio Player.
      */
-    private fun createJcAudioPlayer() {
-        //jcPlayerManager.registerStatusListener(jcPlayerViewStatusListener);
+    private fun initializeJcAudioPlayer() {
         isInitialized = true
+
+        jcPlayerManager
+                .onPreparedAudio()
+                ?.doOnNext {
+                    CORRIGIR AQUI, POIS N ESTA CHAMANDO QUANDO O AUDIO ESTA PREPARADO
+                    if (it.playState == JcStatus.PlayState.PLAY) {
+                        showPauseButton()
+                        dismissProgressBar()
+                        resetPlayerInfo()
+
+                        val aux = (it.duration / 1000)
+                        val minute = (aux / 60).toInt()
+                        val second = (aux % 60).toInt()
+
+                        val sDuration = // Minutes
+                                ((if (minute < 10) "0" + minute else minute.toString() + "")
+                                        + ":" +
+                                        // Seconds
+                                        if (second < 10) "0" + second else second.toString() + "")
+
+                        seekBar?.max = it.duration.toInt()
+                        txtDuration?.post { txtDuration?.text = sDuration }
+                    }
+                }
+                ?.doOnError { throw it }
+                ?.subscribe()
     }
 
     /**

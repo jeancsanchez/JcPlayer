@@ -36,11 +36,11 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<JcAudio> jcAudios = new ArrayList<>();
         jcAudios.add(JcAudio.createFromURL("url audio","http://www.villopim.com.br/android/Music_01.mp3"));
+        jcAudios.add(JcAudio.createFromURL("url audio", "https://firebasestorage.googleapis.com/v0/b/musyc-f264f.appspot.com/o/Karone-Okarone-Minar-Rahman-Official-Music-Video-Eagle-Music.mp3?alt=media&token=a40ed28a-2970-4160-ac1d-33881e34253a"));
         player.initPlaylist(jcAudios, null);
-        player.playAudio(player.getMyPlaylist().get(0));
+//        player.playAudio(player.getMyPlaylist().get(0));
 
 //        ArrayList<JcAudio> jcAudios = new ArrayList<>();
-//        jcAudios.add(JcAudio.createFromURL("url audio","https://firebasestorage.googleapis.com/v0/b/musyc-f264f.appspot.com/o/Karone-Okarone-Minar-Rahman-Official-Music-Video-Eagle-Music.mp3?alt=media&token=a40ed28a-2970-4160-ac1d-33881e34253a"));
 //        jcAudios.add(JcAudio.createFromAssets("Asset audio 1", "49.v4.mid"));
 //        jcAudios.add(JcAudio.createFromAssets("Asset audio 2", "56.mid"));
 //        jcAudios.add(JcAudio.createFromAssets("Asset audio 3", "a_34.mp3"));
