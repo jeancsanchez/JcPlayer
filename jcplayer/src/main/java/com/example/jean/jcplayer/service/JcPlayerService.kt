@@ -37,9 +37,11 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var currentTime: Int = 0
 
-    private var onPreparedListener: ((JcStatus) -> Unit)? = null
+    var onPreparedListener: ((JcStatus) -> Unit)? = null
 
-    private var onTimeChangedListener: ((JcStatus) -> Unit)? = null
+    var onTimeChangedListener: ((JcStatus) -> Unit)? = null
+
+    var onCompletedListener: (() -> Unit)? = null
 
     var currentAudio: JcAudio? = null
         private set
@@ -186,6 +188,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             throwError(jcAudio.path, jcAudio.origin)
         }
 
+        onTimeChange()
         return updateStatus(jcAudio, JcStatus.PlayState.PLAY)
     }
 
@@ -194,9 +197,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         mediaPlayer?.seekTo(time)
     }
 
-    fun setOnTimeChangedListener(onTimeChangedListener: ((JcStatus) -> Unit)? = null) {
-        this.onTimeChangedListener = onTimeChangedListener
-
+    private fun onTimeChange() {
         object : Thread() {
             override fun run() {
                 while (isPlaying) {
@@ -219,7 +220,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
 
-    override fun onCompletion(mediaPlayer: MediaPlayer) {}
+    override fun onCompletion(mediaPlayer: MediaPlayer) {
+        onCompletedListener?.invoke()
+    }
 
     private fun throwError(path: String, origin: Origin) {
         when (origin) {
@@ -285,9 +288,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         onPreparedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.PLAY))
     }
 
-    fun setOnPreparedListener(onPreparedListener: ((JcStatus) -> Unit)? = null) {
-        this.onPreparedListener = onPreparedListener
-    }
 
     fun destroy() {
         stop()

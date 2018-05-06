@@ -15,7 +15,7 @@ interface JcPlayerManagerListener {
      * @param audioName The audio name.
      * @param duration The audio duration.
      */
-    fun onPreparedAudio(audioName: String, duration: Int)
+    fun onPreparedAudio(status: JcStatus)
 
     /**
      * The audio ends.
@@ -25,12 +25,12 @@ interface JcPlayerManagerListener {
     /**
      * The audio is paused.
      */
-    fun onPaused()
+    fun onPaused(status: JcStatus)
 
     /**
      * The audio was paused and user hits play again.
      */
-    fun onContinueAudio()
+    fun onContinueAudio(status: JcStatus)
 
     /**
      *  Called when there is an audio playing.
@@ -41,12 +41,6 @@ interface JcPlayerManagerListener {
      * Called when the time of the audio changed.
      */
     fun onTimeChanged(status: JcStatus)
-
-    /**
-     * Updates the tile of the current audio.
-     * @param title The audio title.
-     */
-    fun onUpdateTitle(title: String)
 
     /**
      * Notifies some error.

@@ -19,9 +19,7 @@ import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
-import com.example.jean.jcplayer.service.JcpServiceListener
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
 import javax.inject.Inject
 
@@ -31,7 +29,7 @@ import javax.inject.Inject
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener, JcPlayerManagerListener {
 
     @Inject
     lateinit var jcPlayerManager: JcPlayerManager
@@ -60,64 +58,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             dismissProgressBar()
         }
     }
-
-    private var jcpServiceListener: JcpServiceListener = object : JcpServiceListener {
-        override fun onPreparedAudio(audioName: String, duration: Int) {
-
-        }
-
-
-        override fun onCompletedAudio() {
-            resetPlayerInfo()
-
-            try {
-                jcPlayerManager.nextAudio()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-
-        override fun onPaused() {
-            btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
-            btnPlay?.tag = R.drawable.ic_play_black
-        }
-
-
-        override fun onContinueAudio() {
-            dismissProgressBar()
-        }
-
-
-        override fun onPlaying() {
-
-        }
-
-
-        override fun onTimeChanged(currentTime: Long) {
-            val aux = currentTime / 1000
-            val minutes = (aux / 60).toInt()
-            val seconds = (aux % 60).toInt()
-            val sMinutes = if (minutes < 10) "0" + minutes else minutes.toString() + ""
-            val sSeconds = if (seconds < 10) "0" + seconds else seconds.toString() + ""
-
-            seekBar?.progress = currentTime.toInt()
-            txtCurrentDuration?.let { it.post { it.text = (sMinutes + ":" + sSeconds) } }
-        }
-
-
-        override fun onUpdateTitle(title: String) {
-            txtCurrentMusic?.let {
-                it.visibility = View.VISIBLE
-                YoYo.with(Techniques.FadeInLeft)
-                        .duration(TITLE_ANIMATION_DURATION.toLong())
-                        .playOn(it)
-
-                it.post { it.text = title }
-            }
-        }
-    }
-
 
     constructor(context: Context) : super(context) {
         init()
@@ -149,17 +89,19 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Initialize the playlist and controls.
      *
      * @param playlist List of JcAudio objects that you want play
-     * @param statusListener The view status listener (optional)
+     * @param jcPlayerManagerListener The view status jcPlayerManagerListener (optional)
      */
-    fun initPlaylist(playlist: List<JcAudio>, statusListener: JcpServiceListener? = null) {
-        // Don't sort if the playlist have position number.
-        // We need to do this because there is a possibility that the user reload previous playlist
-        // from persistence storage like sharedPreference or SQLite.
+    fun initPlaylist(playlist: List<JcAudio>, jcPlayerManagerListener: JcPlayerManagerListener? = null) {
+        /*Don't sort if the playlist have position number.
+        We need to do this because there is a possibility that the user reload previous playlist
+        from persistence storage like sharedPreference or SQLite.*/
         if (isAlreadySorted(playlist).not()) {
             sortPlaylist(playlist)
         }
 
         jcPlayerManager.playlist = playlist as ArrayList<JcAudio>
+        jcPlayerManager.jcPlayerManagerListener = jcPlayerManagerListener
+        jcPlayerManager.jcPlayerManagerListener = this
     }
 
     /**
@@ -247,17 +189,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 it.add(jcAudio)
             }
 
-            jcPlayerManager
-                    .playAudio(jcAudio)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext {
-                        if (isInitialized.not()) {
-                            initializeJcAudioPlayer()
-                        }
-                    }
-                    .doOnError { throw it }
-                    .subscribe()
+
+            jcPlayerManager.playAudio(jcAudio)
         }
     }
 
@@ -387,39 +320,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     /**
-     * Creates a new JcAudio Player.
-     */
-    private fun initializeJcAudioPlayer() {
-        isInitialized = true
-
-        jcPlayerManager
-                .onPreparedAudio()
-                ?.doOnNext {
-                    CORRIGIR AQUI, POIS N ESTA CHAMANDO QUANDO O AUDIO ESTA PREPARADO
-                    if (it.playState == JcStatus.PlayState.PLAY) {
-                        showPauseButton()
-                        dismissProgressBar()
-                        resetPlayerInfo()
-
-                        val aux = (it.duration / 1000)
-                        val minute = (aux / 60).toInt()
-                        val second = (aux % 60).toInt()
-
-                        val sDuration = // Minutes
-                                ((if (minute < 10) "0" + minute else minute.toString() + "")
-                                        + ":" +
-                                        // Seconds
-                                        if (second < 10) "0" + second else second.toString() + "")
-
-                        seekBar?.max = it.duration.toInt()
-                        txtDuration?.post { txtDuration?.text = sDuration }
-                    }
-                }
-                ?.doOnError { throw it }
-                ?.subscribe()
-    }
-
-    /**
      * Sorts the playlist.
      */
     private fun sortPlaylist(playlist: List<JcAudio>) {
@@ -487,6 +387,76 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
     }
 
+    override fun onPreparedAudio(status: JcStatus) {
+        dismissProgressBar()
+        resetPlayerInfo()
+        onUpdateTitle(status.jcAudio.title)
+
+        val aux = (status.duration / 1000)
+        val minute = (aux / 60).toInt()
+        val second = (aux % 60).toInt()
+
+        val sDuration = // Minutes
+                ((if (minute < 10) "0" + minute else minute.toString() + "")
+                        + ":" +
+                        // Seconds
+                        if (second < 10) "0" + second else second.toString() + "")
+
+        seekBar?.max = status.duration.toInt()
+        txtDuration?.post { txtDuration?.text = sDuration }
+    }
+
+    override fun onCompletedAudio() {
+        resetPlayerInfo()
+
+        try {
+            jcPlayerManager.nextAudio()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onPaused(status: JcStatus) {
+        btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
+        btnPlay?.tag = R.drawable.ic_play_black
+    }
+
+    override fun onContinueAudio(status: JcStatus) {
+        dismissProgressBar()
+    }
+
+    override fun onPlaying(status: JcStatus) {
+        dismissProgressBar()
+        btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
+        btnPlay?.tag = R.drawable.ic_pause_black
+    }
+
+    override fun onTimeChanged(status: JcStatus) {
+        val aux = status.currentPosition / 1000
+        val minutes = (aux / 60).toInt()
+        val seconds = (aux % 60).toInt()
+        val sMinutes = if (minutes < 10) "0" + minutes else minutes.toString() + ""
+        val sSeconds = if (seconds < 10) "0" + seconds else seconds.toString() + ""
+
+        seekBar?.progress = status.currentPosition.toInt()
+        txtCurrentDuration?.let { it.post { it.text = (sMinutes + ":" + sSeconds) } }
+    }
+
+    private fun onUpdateTitle(title: String) {
+        txtCurrentMusic?.let {
+            it.visibility = View.VISIBLE
+            YoYo.with(Techniques.FadeInLeft)
+                    .duration(TITLE_ANIMATION_DURATION.toLong())
+                    .playOn(it)
+
+            it.post { it.text = title }
+        }
+    }
+
+    override fun onJcpError(throwable: Throwable) {
+        throw  throwable
+    }
+
     override fun onStartTrackingTouch(seekBar: SeekBar) {
         showProgressBar()
     }
@@ -496,33 +466,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     /**
-     * Registers a new [OnInvalidPathListener]
-     * @param invalidPathListener The listener.
-     */
-    fun registerInvalidPathListener(invalidPathListener: OnInvalidPathListener) {
-//        jcPlayerManager.registerInvalidPathListener(invalidPathListener)
-    }
-
-    /**
      * Kills the player
      */
     fun kill() {
         jcPlayerManager.kill()
-    }
-
-    /**
-     * Registers a new [JcpServiceListener]
-     * @param jcpServiceListener1 the listener
-     */
-    fun registerServiceListener(jcpServiceListener1: JcpServiceListener) {
-//        jcPlayerManager.registerServiceListener(jcpServiceListener1)
-    }
-
-    /**
-     * Registers a new [JcpViewListener]
-     * @param viewListener The listener.
-     */
-    private fun registerStatusListener(viewListener: JcpViewListener) {
-//        jcPlayerManager.registerStatusListener(viewListener)
     }
 }

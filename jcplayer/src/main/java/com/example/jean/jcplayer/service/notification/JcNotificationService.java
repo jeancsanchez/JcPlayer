@@ -7,12 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 import com.example.jean.jcplayer.JcPlayerManager;
 import com.example.jean.jcplayer.R;
-import com.example.jean.jcplayer.service.JcpServiceListener;
+import com.example.jean.jcplayer.general.JcStatus;
+import com.example.jean.jcplayer.service.JcPlayerManagerListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
@@ -23,7 +27,7 @@ import javax.inject.Inject;
  * @date 12/07/16.
  * Jesus loves you.
  */
-public class JcNotificationService implements JcpServiceListener {
+public class JcNotificationService implements JcPlayerManagerListener {
     public static final String NEXT = "NEXT";
     public static final String PREVIOUS = "PREVIOUS";
     public static final String PAUSE = "PAUSE";
@@ -117,7 +121,7 @@ public class JcNotificationService implements JcpServiceListener {
     }
 
     @Override
-    public void onPreparedAudio(String audioName, int duration) {
+    public void onPreparedAudio(JcStatus status) {
 
     }
 
@@ -127,37 +131,32 @@ public class JcNotificationService implements JcpServiceListener {
     }
 
     @Override
-    public void onPaused() {
+    public void onPaused(JcStatus status) {
         createNotificationPlayer(title, iconResource);
     }
 
     @Override
-    public void onContinueAudio() {
-
+    public void onContinueAudio(JcStatus status) {
     }
 
     @Override
-    public void onPlaying() {
+    public void onPlaying(@NonNull JcStatus status) {
         createNotificationPlayer(title, iconResource);
     }
 
     @Override
-    public void onTimeChanged(long currentTime) {
-        long aux = currentTime / 1000;
+    public void onTimeChanged(@NonNull JcStatus status) {
+        long aux = status.getCurrentPosition() / 1000;
         int minutes = (int) (aux / 60);
         int seconds = (int) (aux % 60);
         final String sMinutes = minutes < 10 ? "0" + minutes : minutes + "";
         final String sSeconds = seconds < 10 ? "0" + seconds : seconds + "";
         this.time = sMinutes + ":" + sSeconds;
 
-        createNotificationPlayer(title, iconResource);
-    }
-
-    @Override
-    public void onUpdateTitle(String title) {
         this.title = title;
         createNotificationPlayer(title, iconResource);
     }
+
 
     public void destroyNotificationIfExists() {
         if (notificationManager != null) {
@@ -167,5 +166,10 @@ public class JcNotificationService implements JcpServiceListener {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onJcpError(@NotNull Throwable throwable) {
+
     }
 }

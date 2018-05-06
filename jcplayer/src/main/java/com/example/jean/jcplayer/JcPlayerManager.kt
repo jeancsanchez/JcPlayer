@@ -105,12 +105,12 @@ class JcPlayerManager
     /**
      * Notifies on paused for the service listeners
      */
-    private fun notifyOnPaused() {
+    private fun notifyOnPaused(status: JcStatus) {
         isPlaying = false
         isPaused = true
 
         for (listener in managerListeners) {
-            listener.onPaused()
+            listener.onPaused(status)
         }
     }
 
@@ -126,12 +126,12 @@ class JcPlayerManager
     /**
      * Notifies on continue for the service listeners
      */
-    private fun notifyOnContinue() {
+    private fun notifyOnContinue(status: JcStatus) {
         isPlaying = true
         isPaused = false
 
         for (listener in managerListeners) {
-            listener.onContinueAudio()
+            listener.onContinueAudio(status)
         }
     }
 
@@ -140,7 +140,7 @@ class JcPlayerManager
      */
     private fun notifyOnPrepared(status: JcStatus) {
         for (listener in managerListeners) {
-            listener.onPreparedAudio(status.jcAudio.title, status.duration.toInt())
+            listener.onPreparedAudio(status)
         }
     }
 
@@ -150,15 +150,6 @@ class JcPlayerManager
     private fun notifyOnTimeChanged(status: JcStatus) {
         for (listener in managerListeners) {
             listener.onTimeChanged(status)
-        }
-    }
-
-    /**
-     * Notifies on updated title for the service listeners
-     */
-    private fun notifyOnUpdatedTitle(newTitle: String) {
-        for (listener in managerListeners) {
-            listener.onUpdateTitle(newTitle)
         }
     }
 
@@ -176,7 +167,6 @@ class JcPlayerManager
                     },
                     onDisconnected = {
                         serviceBound = false
-                        notifyOnPaused()
                         throw  JcpServiceDisconnectedError
                     }
             )
@@ -195,8 +185,9 @@ class JcPlayerManager
                 updatePositionAudioList()
 
                 notifyOnPlaying(service.play(currentJcAudio!!))
-                jcPlayerService?.setOnPreparedListener { notifyOnPrepared(it) }
-                jcPlayerService?.setOnTimeChangedListener { notifyOnTimeChanged(it) }
+                service.onPreparedListener = { notifyOnPrepared(it) }
+                service.onTimeChangedListener = { notifyOnTimeChanged(it) }
+                service.onCompletedListener = { notifyOnCompleted() }
 
             } ?: let {
                 initService { playAudio(jcAudio) }
@@ -217,8 +208,11 @@ class JcPlayerManager
                 try {
                     val nextJcAudio = playlist[currentPositionList + position]
                     this.currentJcAudio = nextJcAudio
-                    jcPlayerService?.stop()
-                    jcPlayerService?.play(nextJcAudio)
+
+                    jcPlayerService?.let { service ->
+                        service.stop()
+                        notifyOnPlaying(service.play(nextJcAudio))
+                    }
 
                 } catch (e: IndexOutOfBoundsException) {
                     playAudio(playlist[0])
@@ -227,8 +221,6 @@ class JcPlayerManager
             }
 
             updatePositionAudioList()
-            isPlaying = true
-            isPaused = false
         }
     }
 
@@ -244,8 +236,11 @@ class JcPlayerManager
                 try {
                     val previousJcAudio = playlist[currentPositionList - position]
                     this.currentJcAudio = previousJcAudio
-                    jcPlayerService?.stop()
-                    jcPlayerService?.play(previousJcAudio)
+
+                    jcPlayerService?.let { service ->
+                        service.stop()
+                        notifyOnPlaying(service.play(previousJcAudio))
+                    }
 
                 } catch (e: IndexOutOfBoundsException) {
                     playAudio(playlist[0])
@@ -254,8 +249,6 @@ class JcPlayerManager
             }
 
             updatePositionAudioList()
-            isPlaying = true
-            isPaused = false
         }
     }
 
@@ -265,8 +258,7 @@ class JcPlayerManager
     fun pauseAudio() {
         jcPlayerService?.let { service ->
             currentAudio?.let {
-                service.pause(it)
-                notifyOnPaused()
+                notifyOnPaused(service.pause(it))
             }
         }
     }
@@ -282,7 +274,6 @@ class JcPlayerManager
             currentJcAudio?.let {
                 currentJcAudio = playlist[0]
                 playAudio(it)
-                notifyOnContinue()
             }
         }
     }

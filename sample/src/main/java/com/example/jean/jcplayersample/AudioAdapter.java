@@ -20,26 +20,18 @@ import java.util.List;
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> {
     public static final String TAG = AudioAdapter.class.getSimpleName();
-
+    private static OnItemClickListener mListener;
     private List<JcAudio> jcAudioList;
     private SparseArray<Float> progressMap = new SparseArray<>();
-
-    private static OnItemClickListener mListener;
-
-    // Define the mListener interface
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-        void onSongItemDeleteClicked(int position);
-    }
-
-    // Define the method that allows the parent activity or fragment to define the listener
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mListener = listener;
-    }
 
     public AudioAdapter(List<JcAudio> jcAudioList) {
         this.jcAudioList = jcAudioList;
         setHasStableIds(true);
+    }
+
+    // Define the method that allows the parent activity or fragment to define the jcPlayerManagerListener
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mListener = listener;
     }
 
     @Override
@@ -102,6 +94,13 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
             }
         }
         notifyItemChanged(position);
+    }
+
+    // Define the mListener interface
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+
+        void onSongItemDeleteClicked(int position);
     }
 
     static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{
