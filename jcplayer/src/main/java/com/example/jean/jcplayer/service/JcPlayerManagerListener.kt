@@ -1,12 +1,14 @@
 package com.example.jean.jcplayer.service
 
+import com.example.jean.jcplayer.general.JcStatus
+
 /**
  * This class represents all the [JcPlayerService] callbacks.
  * @author Jean Carlos (Github: @jeancsanchez)
  * @date 18/12/17.
  * Jesus loves you.
  */
-interface JcpServiceListener {
+interface JcPlayerManagerListener {
 
     /**
      * Prepares the new audio.
@@ -33,17 +35,22 @@ interface JcpServiceListener {
     /**
      *  Called when there is an audio playing.
      */
-    fun onPlaying()
+    fun onPlaying(status: JcStatus)
 
     /**
      * Called when the time of the audio changed.
-     * @param currentTime The current time of the audio.
      */
-    fun onTimeChanged(currentTime: Long)
+    fun onTimeChanged(status: JcStatus)
 
     /**
      * Updates the tile of the current audio.
      * @param title The audio title.
      */
     fun onUpdateTitle(title: String)
+
+    /**
+     * Notifies some error.
+     * @param throwable The error.
+     */
+    fun onJcpError(throwable: Throwable)
 }

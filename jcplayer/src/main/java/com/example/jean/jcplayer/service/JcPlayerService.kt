@@ -15,10 +15,8 @@ import com.example.jean.jcplayer.general.errors.AudioFilePathInvalidException
 import com.example.jean.jcplayer.general.errors.AudioRawInvalidException
 import com.example.jean.jcplayer.general.errors.AudioUrlInvalidException
 import com.example.jean.jcplayer.model.JcAudio
-import io.reactivex.Observable
 import java.io.File
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 /**
  * This class is an Android [Service] that handles all player changes on background.
@@ -39,6 +37,10 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var currentTime: Int = 0
 
+    private var onPreparedListener: ((JcStatus) -> Unit)? = null
+
+    private var onTimeChangedListener: ((JcStatus) -> Unit)? = null
+
     var currentAudio: JcAudio? = null
         private set
 
@@ -55,16 +57,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     override fun onBind(intent: Intent): IBinder? = binder
 
-    fun pause(jcAudio: JcAudio): Observable<JcStatus> =
-            Observable.fromCallable { updateStatus(jcAudio, JcStatus.PlayState.PAUSE) }
+    fun pause(jcAudio: JcAudio): JcStatus = updateStatus(jcAudio, JcStatus.PlayState.PAUSE)
 
-    fun destroy() {
-        stop()
-        stopSelf()
-    }
-
-    fun stop(): Observable<JcStatus> =
-            Observable.fromCallable { updateStatus(status = JcStatus.PlayState.STOP) }
+    fun stop(): JcStatus = updateStatus(status = JcStatus.PlayState.STOP)
 
     private fun updateStatus(jcAudio: JcAudio? = null, status: JcStatus.PlayState): JcStatus {
         jcStatus.jcAudio = jcAudio
@@ -120,80 +115,78 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         return jcStatus
     }
 
-    fun play(jcAudio: JcAudio): Observable<JcStatus> {
-        return Observable.fromCallable {
-            tempJcAudio = currentAudio
-            currentAudio = jcAudio
+    fun play(jcAudio: JcAudio): JcStatus {
+        tempJcAudio = currentAudio
+        currentAudio = jcAudio
 
-            if (isAudioFileValid(jcAudio.path, jcAudio.origin)) {
-                try {
-                    mediaPlayer?.let {
-                        if (isPlaying) {
-                            stop().blockingFirst()
-                            play(jcAudio).blockingFirst()
+        if (isAudioFileValid(jcAudio.path, jcAudio.origin)) {
+            try {
+                mediaPlayer?.let {
+                    if (isPlaying) {
+                        stop()
+                        play(jcAudio)
+                    } else {
+                        if (tempJcAudio !== jcAudio) {
+                            stop()
+                            play(jcAudio)
                         } else {
-                            if (tempJcAudio !== jcAudio) {
-                                stop().blockingFirst()
-                                play(jcAudio).blockingFirst()
-                            } else {
-                                it.start()
-                                isPlaying = true
+                            it.start()
+                            isPlaying = true
 
-                                updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
-                            }
+                            updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
                         }
-                    } ?: let {
-                        mediaPlayer = MediaPlayer().also {
-                            when {
-                                jcAudio.origin == Origin.URL -> it.setDataSource(jcAudio.path)
-                                jcAudio.origin == Origin.RAW -> assetFileDescriptor =
-                                        applicationContext.resources.openRawResourceFd(
-                                                Integer.parseInt(jcAudio.path)
-                                        ).also { descriptor ->
+                    }
+                } ?: let {
+                    mediaPlayer = MediaPlayer().also {
+                        when {
+                            jcAudio.origin == Origin.URL -> it.setDataSource(jcAudio.path)
+                            jcAudio.origin == Origin.RAW -> assetFileDescriptor =
+                                    applicationContext.resources.openRawResourceFd(
+                                            Integer.parseInt(jcAudio.path)
+                                    ).also { descriptor ->
+                                        it.setDataSource(
+                                                descriptor.fileDescriptor,
+                                                descriptor.startOffset,
+                                                descriptor.length
+                                        )
+                                        descriptor.close()
+                                        assetFileDescriptor = null
+                                    }
+
+
+                            jcAudio.origin == Origin.ASSETS -> {
+                                assetFileDescriptor = applicationContext.assets.openFd(jcAudio.path)
+                                        .also { descriptor ->
                                             it.setDataSource(
                                                     descriptor.fileDescriptor,
                                                     descriptor.startOffset,
                                                     descriptor.length
                                             )
+
                                             descriptor.close()
                                             assetFileDescriptor = null
                                         }
-
-
-                                jcAudio.origin == Origin.ASSETS -> {
-                                    assetFileDescriptor = applicationContext.assets.openFd(jcAudio.path)
-                                            .also { descriptor ->
-                                                it.setDataSource(
-                                                        descriptor.fileDescriptor,
-                                                        descriptor.startOffset,
-                                                        descriptor.length
-                                                )
-
-                                                descriptor.close()
-                                                assetFileDescriptor = null
-                                            }
-                                }
-
-                                jcAudio.origin == Origin.FILE_PATH ->
-                                    it.setDataSource(applicationContext, Uri.parse(jcAudio.path))
                             }
 
-                            it.prepareAsync()
-                            it.setOnPreparedListener(this)
-                            it.setOnBufferingUpdateListener(this)
-                            it.setOnCompletionListener(this)
-                            it.setOnErrorListener(this)
+                            jcAudio.origin == Origin.FILE_PATH ->
+                                it.setDataSource(applicationContext, Uri.parse(jcAudio.path))
                         }
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            } else {
-                throwError(jcAudio.path, jcAudio.origin)
-            }
 
-            updateStatus(jcAudio, JcStatus.PlayState.PLAY)
+                        it.prepareAsync()
+                        it.setOnPreparedListener(this)
+                        it.setOnBufferingUpdateListener(this)
+                        it.setOnCompletionListener(this)
+                        it.setOnErrorListener(this)
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        } else {
+            throwError(jcAudio.path, jcAudio.origin)
         }
+
+        return updateStatus(jcAudio, JcStatus.PlayState.PLAY)
     }
 
     fun seekTo(time: Int) {
@@ -201,16 +194,32 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         mediaPlayer?.seekTo(time)
     }
 
-    fun onTimeChange(): Observable<JcStatus> =
-            Observable.interval(200, TimeUnit.MILLISECONDS)
-                    .timeInterval()
-                    .map { updateStatus(currentAudio, JcStatus.PlayState.CONTINUE) }
+    fun setOnTimeChangedListener(onTimeChangedListener: ((JcStatus) -> Unit)? = null) {
+        this.onTimeChangedListener = onTimeChangedListener
+
+        object : Thread() {
+            override fun run() {
+                while (isPlaying) {
+                    try {
+                        onTimeChangedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
+                        Thread.sleep(200)
+                    } catch (e: IllegalStateException) {
+                        e.printStackTrace()
+                    } catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    } catch (e: NullPointerException) {
+                        e.printStackTrace()
+                    }
+
+                }
+            }
+        }.start()
+    }
 
 
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
 
-    override fun onCompletion(mediaPlayer: MediaPlayer) {
-    }
+    override fun onCompletion(mediaPlayer: MediaPlayer) {}
 
     private fun throwError(path: String, origin: Origin) {
         when (origin) {
@@ -273,16 +282,15 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     }
 
     override fun onPrepared(mediaPlayer: MediaPlayer) {
-        onPrepared(fromService = true).blockingFirst()
+        onPreparedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.PLAY))
     }
 
-    fun onPrepared(fromService: Boolean = false): Observable<JcStatus> {
-        return Observable.fromCallable {
-            if (fromService) {
-                updateStatus(currentAudio, JcStatus.PlayState.PLAY)
-            } else {
-                updateStatus(currentAudio, JcStatus.PlayState.UNINTIALIZED)
-            }
-        }
+    fun setOnPreparedListener(onPreparedListener: ((JcStatus) -> Unit)? = null) {
+        this.onPreparedListener = onPreparedListener
+    }
+
+    fun destroy() {
+        stop()
+        stopSelf()
     }
 }

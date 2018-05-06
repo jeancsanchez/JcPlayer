@@ -6,12 +6,11 @@ import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.JcpServiceDisconnectedError
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
+import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
-import com.example.jean.jcplayer.service.JcpServiceListener
 import com.example.jean.jcplayer.service.notification.JcNotificationService
 import com.example.jean.jcplayer.view.JcpViewListener
-import io.reactivex.Observable
 import javax.inject.Inject
 
 /**
@@ -21,10 +20,7 @@ import javax.inject.Inject
  * Jesus loves you.
  */
 class JcPlayerManager
-@Inject constructor(
-        private val serviceConnection: JcServiceConnection
-) {
-    private var jcPlayerService: JcPlayerService? = null
+@Inject constructor(private val serviceConnection: JcServiceConnection) {
 
     private var invalidPathListener: OnInvalidPathListener? = null
 
@@ -36,11 +32,18 @@ class JcPlayerManager
 
     private var currentPositionList: Int = 0
 
-    private var serviceBound = false
-
     var playlist: ArrayList<JcAudio> = ArrayList()
 
-    var listener: JcpServiceListener? = null
+    private var serviceBound = false
+
+    private var jcPlayerService: JcPlayerService? = null
+
+    private val managerListeners: ArrayList<JcPlayerManagerListener> = ArrayList()
+
+    var jcPlayerManagerListener: JcPlayerManagerListener? = null
+        set(value) {
+            value?.let { managerListeners.add(it) }
+        }
 
     val currentAudio: JcAudio?
         get() = jcPlayerService?.currentAudio
@@ -54,7 +57,6 @@ class JcPlayerManager
     private val position = 1
 
     init {
-//        this.jcNotificationPlayer = JcNotificationService()
         initService()
     }
 
@@ -67,70 +69,140 @@ class JcPlayerManager
         fun getInstance(
                 context: Context,
                 playlist: ArrayList<JcAudio>? = null,
-                listener: JcpServiceListener? = null
+                listener: JcPlayerManagerListener? = null
         ): JcPlayerManager =
                 INSTANCE ?: JcPlayerManager(
                         // TODO: FIXME URGENT!!!!!!
                         JcServiceConnection(context)
                 ).also {
                     it.playlist = playlist ?: ArrayList()
-                    it.listener = listener
+                    it.jcPlayerManagerListener = listener
                 }
+    }
+
+    /**
+     * Notifies errors for the service listeners
+     */
+    private fun notifyError(throwable: Throwable) {
+        for (listener in managerListeners) {
+            listener.onJcpError(throwable)
+        }
+    }
+
+    /**
+     * Notifies on playing for the service listeners
+     * @param status The current player status.
+     */
+    private fun notifyOnPlaying(status: JcStatus) {
+        isPlaying = true
+        isPaused = false
+
+        for (listener in managerListeners) {
+            listener.onPlaying(status)
+        }
+    }
+
+    /**
+     * Notifies on paused for the service listeners
+     */
+    private fun notifyOnPaused() {
+        isPlaying = false
+        isPaused = true
+
+        for (listener in managerListeners) {
+            listener.onPaused()
+        }
+    }
+
+    /**
+     * Notifies on completed audio for the service listeners
+     */
+    private fun notifyOnCompleted() {
+        for (listener in managerListeners) {
+            listener.onCompletedAudio()
+        }
+    }
+
+    /**
+     * Notifies on continue for the service listeners
+     */
+    private fun notifyOnContinue() {
+        isPlaying = true
+        isPaused = false
+
+        for (listener in managerListeners) {
+            listener.onContinueAudio()
+        }
+    }
+
+    /**
+     * Notifies on prepared aduio for the service listeners
+     */
+    private fun notifyOnPrepared(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onPreparedAudio(status.jcAudio.title, status.duration.toInt())
+        }
+    }
+
+    /**
+     * Notifies on time changed for the service listeners
+     */
+    private fun notifyOnTimeChanged(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onTimeChanged(status)
+        }
+    }
+
+    /**
+     * Notifies on updated title for the service listeners
+     */
+    private fun notifyOnUpdatedTitle(newTitle: String) {
+        for (listener in managerListeners) {
+            listener.onUpdateTitle(newTitle)
+        }
     }
 
     /**
      * Connects with audio service.
      */
-    private fun initService(): Observable<Unit> =
-            Observable.create { subscriber ->
-                serviceConnection.connect(
-                        playlist = playlist,
-                        onConnected = { binder ->
-                            jcPlayerService = binder?.service
-
-                            jcPlayerService?.let {
-                                serviceBound = true
-                                subscriber.onNext(Unit)
-                                subscriber.onComplete()
-                            } ?: subscriber.onError(JcpServiceDisconnectedError)
-                        },
-                        onDisconnected = {
-                            serviceBound = false
-                            isPlaying = false
-                            isPaused = true
-                            subscriber.onError(JcpServiceDisconnectedError)
-                        }
-                )
-            }
+    private fun initService(connectionListener: (() -> Unit)? = null) =
+            serviceConnection.connect(
+                    playlist = playlist,
+                    onConnected = { binder ->
+                        jcPlayerService = binder?.service.also {
+                            serviceBound = true
+                            connectionListener?.invoke()
+                        } ?: throw JcpServiceDisconnectedError
+                    },
+                    onDisconnected = {
+                        serviceBound = false
+                        notifyOnPaused()
+                        throw  JcpServiceDisconnectedError
+                    }
+            )
 
     /**
      * Plays the given [JcAudio].
      * @param jcAudio The audio to be played.
      */
-    @Throws(AudioListNullPointerException::class)
-    fun playAudio(jcAudio: JcAudio): Observable<JcStatus> =
-            Observable.create<JcStatus> { subscriber ->
-                if (playlist.isEmpty()) {
-                    subscriber.onError(AudioListNullPointerException())
-                } else {
-                    jcPlayerService?.let {
-                        currentJcAudio = jcAudio
-                        updatePositionAudioList()
-                        isPlaying = true
-                        isPaused = false
-                        subscriber.onNext(it.play(currentJcAudio!!).blockingFirst())
-                        subscriber.onComplete()
-                    } ?: let {
-                        initService()
-                                .doOnNext {
-                                    subscriber.onNext(playAudio(jcAudio).blockingFirst())
-                                    subscriber.onComplete()
-                                }
-                                .doOnError { subscriber.onError(it) }
-                                .subscribe()
-                    }
-                }
+    @Throws(AudioListNullPointerException::class, JcpServiceDisconnectedError::class)
+    fun playAudio(jcAudio: JcAudio) {
+        if (playlist.isEmpty()) {
+            notifyError(AudioListNullPointerException())
+        } else {
+            jcPlayerService?.let { service ->
+                currentJcAudio = jcAudio
+                updatePositionAudioList()
+
+                notifyOnPlaying(service.play(currentJcAudio!!))
+                jcPlayerService?.setOnPreparedListener { notifyOnPrepared(it) }
+                jcPlayerService?.setOnTimeChangedListener { notifyOnTimeChanged(it) }
+
+            } ?: let {
+                initService { playAudio(jcAudio) }
             }
+        }
+    }
 
 
     /**
@@ -194,8 +266,7 @@ class JcPlayerManager
         jcPlayerService?.let { service ->
             currentAudio?.let {
                 service.pause(it)
-                isPaused = true
-                isPlaying = false
+                notifyOnPaused()
             }
         }
     }
@@ -211,16 +282,10 @@ class JcPlayerManager
             currentJcAudio?.let {
                 currentJcAudio = playlist[0]
                 playAudio(it)
-                isPlaying = true
-                isPaused = false
+                notifyOnContinue()
             }
         }
     }
-
-    /**
-     * Notifies when audio is prepared.
-     */
-    fun onPreparedAudio(): Observable<JcStatus>? = jcPlayerService?.onPrepared()
 
     /**
      * Creates a new notification with icon resource.
@@ -270,6 +335,7 @@ class JcPlayerManager
 
         serviceConnection.disconnect()
         jcNotificationPlayer?.destroyNotificationIfExists()
+        managerListeners.clear()
         INSTANCE = null
     }
 }
