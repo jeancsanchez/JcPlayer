@@ -156,13 +156,13 @@ class JcPlayerManager
     /**
      * Connects with audio service.
      */
-    private fun initService(connectionListener: (() -> Unit)? = null) =
+    private fun initService(connectionListener: ((service: JcPlayerService?) -> Unit)? = null) =
             serviceConnection.connect(
                     playlist = playlist,
                     onConnected = { binder ->
-                        jcPlayerService = binder?.service.also {
+                        jcPlayerService = binder?.service.also { service ->
                             serviceBound = true
-                            connectionListener?.invoke()
+                            connectionListener?.invoke(service)
                         } ?: throw JcpServiceDisconnectedError
                     },
                     onDisconnected = {
@@ -190,7 +190,10 @@ class JcPlayerManager
                 service.onCompletedListener = { notifyOnCompleted() }
 
             } ?: let {
-                initService { playAudio(jcAudio) }
+                initService {
+                    jcPlayerService = it
+                    playAudio(jcAudio)
+                }
             }
         }
     }
