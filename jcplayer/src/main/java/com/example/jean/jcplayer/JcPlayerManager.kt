@@ -70,14 +70,13 @@ class JcPlayerManager
                 context: Context,
                 playlist: ArrayList<JcAudio>? = null,
                 listener: JcPlayerManagerListener? = null
-        ): JcPlayerManager =
-                INSTANCE ?: JcPlayerManager(
-                        // TODO: FIXME URGENT!!!!!!
-                        JcServiceConnection(context)
-                ).also {
-                    it.playlist = playlist ?: ArrayList()
-                    it.jcPlayerManagerListener = listener
-                }
+        ): JcPlayerManager = INSTANCE ?: let {
+            INSTANCE = JcPlayerManager(JcServiceConnection(context)).also {
+                it.playlist = playlist ?: ArrayList()
+                it.jcPlayerManagerListener = listener
+            }
+            INSTANCE!!
+        }
     }
 
     /**
