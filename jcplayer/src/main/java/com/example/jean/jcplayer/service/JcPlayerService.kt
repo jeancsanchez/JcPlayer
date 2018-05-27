@@ -125,7 +125,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     fun play(jcAudio: JcAudio): JcStatus {
         tempJcAudio = currentAudio
         currentAudio = jcAudio
-        var status = updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
+        var status = JcStatus()
 
         if (isAudioFileValid(jcAudio.path, jcAudio.origin)) {
             try {
@@ -184,6 +184,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                         it.setOnBufferingUpdateListener(this)
                         it.setOnCompletionListener(this)
                         it.setOnErrorListener(this)
+
+                        status = updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
                     }
                 }
             } catch (e: IOException) {
