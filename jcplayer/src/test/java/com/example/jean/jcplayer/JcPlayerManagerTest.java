@@ -1,21 +1,22 @@
 package com.example.jean.jcplayer;
 
-import android.content.Context;
-import android.content.ServiceConnection;
-
+import com.example.jean.jcplayer.general.Origin;
+import com.example.jean.jcplayer.general.errors.EmptyPlaylistException;
 import com.example.jean.jcplayer.model.JcAudio;
+import com.example.jean.jcplayer.service.JcPlayerManagerListener;
 import com.example.jean.jcplayer.service.JcServiceConnection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
@@ -23,22 +24,44 @@ import static org.mockito.MockitoAnnotations.initMocks;
  * @date 27/05/18.
  * Jesus loves you.
  */
+
+@RunWith(JUnit4.class)
 public class JcPlayerManagerTest {
 
     @Mock
-    private JcServiceConnection serviceConnection;
+    private JcServiceConnection jcServiceConnection;
 
-    @InjectMocks
+    @Mock
+    private JcPlayerManagerListener managerListener;
+
     private JcPlayerManager jcPlayerManager;
+
+    private JcAudio jcAudio;
+
+    private ArrayList<JcAudio> playlist;
 
     @Before
     public void setUp() {
         initMocks(this);
+
+        jcPlayerManager = JcPlayerManager.getInstance(jcServiceConnection, null, null);
+        jcPlayerManager.setJcPlayerManagerListener(managerListener);
+
+        jcAudio = new JcAudio("Fake audio", "FakePath", Origin.URL);
+        playlist = new ArrayList<>();
+        playlist.add(jcAudio);
+
     }
 
 
     @Test
-    public void given_not_items_on_playlist__When_play_Then_no_play() {
+    public void given_no_items_on_playlist__When_play__Then_notify_error() {
+        playlist.clear();
+        jcPlayerManager.setPlaylist(playlist);
 
+        jcPlayerManager.playAudio(jcAudio);
+
+        verify(managerListener).onJcpError(any(EmptyPlaylistException.class));
+        verifyNoMoreInteractions(managerListener);
     }
 }
