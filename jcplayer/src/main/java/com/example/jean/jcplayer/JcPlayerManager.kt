@@ -9,7 +9,6 @@ import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.notification.JcNotificationService
-import javax.inject.Inject
 
 /**
  * This class is the player manager. Handles all interactions and communicates with [JcPlayerService].
@@ -17,8 +16,7 @@ import javax.inject.Inject
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcPlayerManager
-@Inject constructor(private val serviceConnection: JcServiceConnection) {
+class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
 
     private val jcNotificationPlayer: JcNotificationService? = null
 

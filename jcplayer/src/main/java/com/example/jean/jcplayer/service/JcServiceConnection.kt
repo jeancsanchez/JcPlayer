@@ -8,7 +8,6 @@ import android.os.IBinder
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.notification.JcNotificationService
 import java.io.Serializable
-import javax.inject.Inject
 
 /**
  * This class is an [ServiceConnection] for the [JcPlayerService] class.
@@ -16,10 +15,7 @@ import javax.inject.Inject
  * @date 15/02/18.
  * Jesus loves you.
  */
-class JcServiceConnection
-@Inject constructor(
-        private val context: Context
-) : ServiceConnection {
+class JcServiceConnection(private val context: Context) : ServiceConnection {
 
     private var serviceBound = false
     private var onConnected: ((JcPlayerService.JcPlayerServiceBinder?) -> Unit)? = null
