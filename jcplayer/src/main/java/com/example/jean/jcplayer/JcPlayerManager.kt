@@ -4,13 +4,11 @@ import android.content.Context
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.JcpServiceDisconnectedError
-import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.notification.JcNotificationService
-import com.example.jean.jcplayer.view.JcpViewListener
 import javax.inject.Inject
 
 /**
@@ -22,13 +20,7 @@ import javax.inject.Inject
 class JcPlayerManager
 @Inject constructor(private val serviceConnection: JcServiceConnection) {
 
-    private var invalidPathListener: OnInvalidPathListener? = null
-
-    private var viewListener: JcpViewListener? = null
-
     private val jcNotificationPlayer: JcNotificationService? = null
-
-    private var currentJcAudio: JcAudio? = null
 
     private var currentPositionList: Int = 0
 
@@ -180,10 +172,9 @@ class JcPlayerManager
             notifyError(AudioListNullPointerException())
         } else {
             jcPlayerService?.let { service ->
-                currentJcAudio = jcAudio
+                notifyOnPlaying(service.play(jcAudio))
                 updatePositionAudioList()
 
-                notifyOnPlaying(service.play(currentJcAudio!!))
                 service.onPreparedListener = { notifyOnPrepared(it) }
                 service.onTimeChangedListener = { notifyOnTimeChanged(it) }
                 service.onCompletedListener = { notifyOnCompleted() }
@@ -204,19 +195,15 @@ class JcPlayerManager
         if (playlist.isEmpty()) {
             throw AudioListNullPointerException()
         } else {
-            currentAudio?.let {
-                try {
-                    val nextJcAudio = playlist[currentPositionList + position]
-                    this.currentJcAudio = nextJcAudio
+            try {
+                val nextJcAudio = playlist[currentPositionList + position]
 
-                    jcPlayerService?.let { service ->
-                        service.stop()
-                        notifyOnPlaying(service.play(nextJcAudio))
-                    }
-
-                } catch (e: IndexOutOfBoundsException) {
-                    playAudio(playlist[0])
+                jcPlayerService?.let { service ->
+                    service.stop()
+                    notifyOnPlaying(service.play(nextJcAudio))
                 }
+            } catch (e: IndexOutOfBoundsException) {
+                playAudio(playlist[0])
             }
 
             updatePositionAudioList()
@@ -231,19 +218,17 @@ class JcPlayerManager
         if (playlist.isEmpty()) {
             throw AudioListNullPointerException()
         } else {
-            currentJcAudio?.let {
-                try {
-                    val previousJcAudio = playlist[currentPositionList - position]
-                    this.currentJcAudio = previousJcAudio
 
-                    jcPlayerService?.let { service ->
-                        service.stop()
-                        notifyOnPlaying(service.play(previousJcAudio))
-                    }
+            try {
+                val previousJcAudio = playlist[currentPositionList - position]
 
-                } catch (e: IndexOutOfBoundsException) {
-                    playAudio(playlist[0])
+                jcPlayerService?.let { service ->
+                    service.stop()
+                    notifyOnPlaying(service.play(previousJcAudio))
                 }
+
+            } catch (e: IndexOutOfBoundsException) {
+                playAudio(playlist[0])
             }
 
             updatePositionAudioList()
@@ -269,10 +254,8 @@ class JcPlayerManager
         if (playlist.isEmpty()) {
             throw AudioListNullPointerException()
         } else {
-            currentJcAudio?.let {
-                currentJcAudio = playlist[0]
-                playAudio(it)
-            }
+            val audio = jcPlayerService?.currentAudio?.let { it } ?: let { playlist.first() }
+            playAudio(audio)
         }
     }
 
@@ -281,9 +264,7 @@ class JcPlayerManager
      * @param iconResource The icon resource path.
      */
     fun createNewNotification(iconResource: Int) {
-        currentJcAudio?.let {
-            jcNotificationPlayer?.createNotificationPlayer(it.title, iconResource)
-        }
+        jcNotificationPlayer?.createNotificationPlayer(currentAudio?.title, iconResource)
     }
 
     /**
@@ -304,13 +285,9 @@ class JcPlayerManager
      * Updates the current position of the audio list.
      */
     private fun updatePositionAudioList() {
-        for (i in playlist.indices) {
-            currentJcAudio?.let { currAudio ->
-                if (playlist[i].id == currAudio.id) {
-                    this.currentPositionList = i
-                }
-            }
-        }
+        playlist.indices
+                .filter { playlist[it].id == currentAudio?.id }
+                .forEach { this.currentPositionList = it }
     }
 
     /**

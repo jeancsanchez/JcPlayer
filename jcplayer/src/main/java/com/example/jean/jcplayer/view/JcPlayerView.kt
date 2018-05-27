@@ -34,8 +34,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     @Inject
     lateinit var jcPlayerManager: JcPlayerManager
 
-    private var isInitialized: Boolean = false
-
     val myPlaylist: List<JcAudio>?
         get() = jcPlayerManager.playlist
 
