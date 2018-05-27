@@ -17,6 +17,7 @@ import com.example.jean.jcplayer.general.errors.AudioUrlInvalidException
 import com.example.jean.jcplayer.model.JcAudio
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /**
  * This class is an Android [Service] that handles all player changes on background.
@@ -77,6 +78,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 }
 
                 isPlaying = true
+                onTimeChange()
             }
 
             JcStatus.PlayState.STOP -> {
@@ -99,7 +101,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 isPlaying = false
             }
 
-            JcStatus.PlayState.UNINTIALIZED -> {
+            JcStatus.PlayState.PREPARING -> {
                 isPlaying = false
             }
 
@@ -188,8 +190,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             throwError(jcAudio.path, jcAudio.origin)
         }
 
-        onTimeChange()
-        return updateStatus(jcAudio, JcStatus.PlayState.PLAY)
+        // PREPARING, because it's async.
+        return updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
     }
 
     fun seekTo(time: Int) {
@@ -203,7 +205,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 while (isPlaying) {
                     try {
                         onTimeChangedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
-                        Thread.sleep(200)
+                        Thread.sleep(TimeUnit.SECONDS.toMillis(1))
                     } catch (e: IllegalStateException) {
                         e.printStackTrace()
                     } catch (e: InterruptedException) {

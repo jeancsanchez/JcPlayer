@@ -12,7 +12,7 @@ public class JcStatus {
     private PlayState playState;
 
     public JcStatus() {
-        this(null, 0, 0, PlayState.UNINTIALIZED);
+        this(null, 0, 0, PlayState.PREPARING);
     }
 
     public JcStatus(JcAudio jcAudio, long duration, long currentPosition, PlayState playState) {
@@ -55,6 +55,6 @@ public class JcStatus {
     }
 
     public enum PlayState {
-        PLAY, PAUSE, STOP, CONTINUE, UNINTIALIZED
+        PLAY, PAUSE, STOP, CONTINUE, PREPARING
     }
 }
