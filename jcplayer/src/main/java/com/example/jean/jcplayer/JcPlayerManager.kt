@@ -216,7 +216,6 @@ class JcPlayerManager
 
                 } catch (e: IndexOutOfBoundsException) {
                     playAudio(playlist[0])
-                    e.printStackTrace()
                 }
             }
 
@@ -244,7 +243,6 @@ class JcPlayerManager
 
                 } catch (e: IndexOutOfBoundsException) {
                     playAudio(playlist[0])
-                    e.printStackTrace()
                 }
             }
 
