@@ -261,21 +261,20 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onClick(view: View) {
-        if (isInitialized) {
-            if (view.id == R.id.btnPlay) {
-                btnPlay?.let {
-                    YoYo.with(Techniques.Pulse)
-                            .duration(PULSE_ANIMATION_DURATION.toLong())
-                            .playOn(it)
+        if (view.id == R.id.btnPlay) {
+            btnPlay?.let {
+                YoYo.with(Techniques.Pulse)
+                        .duration(PULSE_ANIMATION_DURATION.toLong())
+                        .playOn(it)
 
-                    if (it.tag == R.drawable.ic_pause_black) {
-                        pause()
-                    } else {
-                        continueAudio()
-                    }
+                if (it.tag == R.drawable.ic_pause_black) {
+                    pause()
+                } else {
+                    continueAudio()
                 }
             }
         }
+
         if (view.id == R.id.btnNext) {
             btnNext?.let {
                 YoYo.with(Techniques.Pulse)

@@ -187,6 +187,7 @@ class JcPlayerManager
                 service.onPreparedListener = { notifyOnPrepared(it) }
                 service.onTimeChangedListener = { notifyOnTimeChanged(it) }
                 service.onCompletedListener = { notifyOnCompleted() }
+                service.onContinueListener = { notifyOnContinue(it) }
 
             } ?: let {
                 initService { playAudio(jcAudio) }

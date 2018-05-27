@@ -38,9 +38,12 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var currentTime: Int = 0
 
+    // TODO: CENTRALIZAR EM APENAS UM LISTENER E APENAS VERIFICAR NO MANAGER COM WHEN.
     var onPreparedListener: ((JcStatus) -> Unit)? = null
 
     var onTimeChangedListener: ((JcStatus) -> Unit)? = null
+
+    var onContinueListener: ((JcStatus) -> Unit)? = null
 
     var onCompletedListener: (() -> Unit)? = null
 
@@ -78,7 +81,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 }
 
                 isPlaying = true
-                onTimeChange()
             }
 
             JcStatus.PlayState.STOP -> {
@@ -107,6 +109,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
             else -> { // CONTINUE case
                 mediaPlayer?.let {
+                    it.start()
                     jcStatus.jcAudio = currentAudio
                     jcStatus.duration = it.duration.toLong()
                     jcStatus.currentPosition = it.currentPosition.toLong()
@@ -122,6 +125,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     fun play(jcAudio: JcAudio): JcStatus {
         tempJcAudio = currentAudio
         currentAudio = jcAudio
+        var status = updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
 
         if (isAudioFileValid(jcAudio.path, jcAudio.origin)) {
             try {
@@ -134,10 +138,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                             stop()
                             play(jcAudio)
                         } else {
-                            it.start()
-                            isPlaying = true
-
-                            updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+                            status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+                            onTimeChange()
+                            onContinueListener?.invoke(status)
                         }
                     }
                 } ?: let {
@@ -190,8 +193,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             throwError(jcAudio.path, jcAudio.origin)
         }
 
-        // PREPARING, because it's async.
-        return updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
+        return status
     }
 
     fun seekTo(time: Int) {
@@ -287,7 +289,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     }
 
     override fun onPrepared(mediaPlayer: MediaPlayer) {
-        onPreparedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.PLAY))
+        val status = updateStatus(currentAudio, JcStatus.PlayState.PLAY)
+        onTimeChange()
+        onPreparedListener?.invoke(status)
     }
 
 
