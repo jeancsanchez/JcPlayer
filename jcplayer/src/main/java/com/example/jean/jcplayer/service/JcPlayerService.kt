@@ -17,6 +17,7 @@ import com.example.jean.jcplayer.general.errors.AudioUrlInvalidException
 import com.example.jean.jcplayer.model.JcAudio
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /**
  * This class is an Android [Service] that handles all player changes on background.
@@ -37,9 +38,12 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var currentTime: Int = 0
 
+    // TODO: CENTRALIZAR EM APENAS UM LISTENER E APENAS VERIFICAR NO MANAGER COM WHEN.
     var onPreparedListener: ((JcStatus) -> Unit)? = null
 
     var onTimeChangedListener: ((JcStatus) -> Unit)? = null
+
+    var onContinueListener: ((JcStatus) -> Unit)? = null
 
     var onCompletedListener: (() -> Unit)? = null
 
@@ -99,12 +103,13 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 isPlaying = false
             }
 
-            JcStatus.PlayState.UNINTIALIZED -> {
+            JcStatus.PlayState.PREPARING -> {
                 isPlaying = false
             }
 
             else -> { // CONTINUE case
                 mediaPlayer?.let {
+                    it.start()
                     jcStatus.jcAudio = currentAudio
                     jcStatus.duration = it.duration.toLong()
                     jcStatus.currentPosition = it.currentPosition.toLong()
@@ -120,6 +125,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     fun play(jcAudio: JcAudio): JcStatus {
         tempJcAudio = currentAudio
         currentAudio = jcAudio
+        var status = JcStatus()
 
         if (isAudioFileValid(jcAudio.path, jcAudio.origin)) {
             try {
@@ -132,10 +138,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                             stop()
                             play(jcAudio)
                         } else {
-                            it.start()
-                            isPlaying = true
-
-                            updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+                            status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+                            onTimeChange()
+                            onContinueListener?.invoke(status)
                         }
                     }
                 } ?: let {
@@ -179,6 +184,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                         it.setOnBufferingUpdateListener(this)
                         it.setOnCompletionListener(this)
                         it.setOnErrorListener(this)
+
+                        status = updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
                     }
                 }
             } catch (e: IOException) {
@@ -188,8 +195,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             throwError(jcAudio.path, jcAudio.origin)
         }
 
-        onTimeChange()
-        return updateStatus(jcAudio, JcStatus.PlayState.PLAY)
+        return status
     }
 
     fun seekTo(time: Int) {
@@ -203,7 +209,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 while (isPlaying) {
                     try {
                         onTimeChangedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
-                        Thread.sleep(200)
+                        Thread.sleep(TimeUnit.SECONDS.toMillis(1))
                     } catch (e: IllegalStateException) {
                         e.printStackTrace()
                     } catch (e: InterruptedException) {
@@ -285,7 +291,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     }
 
     override fun onPrepared(mediaPlayer: MediaPlayer) {
-        onPreparedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.PLAY))
+        val status = updateStatus(currentAudio, JcStatus.PlayState.PLAY)
+        onTimeChange()
+        onPreparedListener?.invoke(status)
     }
 
 

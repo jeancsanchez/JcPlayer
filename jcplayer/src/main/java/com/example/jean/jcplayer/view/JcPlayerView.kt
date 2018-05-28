@@ -13,15 +13,12 @@ import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.example.jean.jcplayer.JcPlayerManager
 import com.example.jean.jcplayer.R
-import com.example.jean.jcplayer.di.AppModule
-import com.example.jean.jcplayer.di.DaggerAppComponent
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
-import javax.inject.Inject
 
 /**
  * This class is the JcAudio View. Handles user interactions and communicate with [JcPlayerManager].
@@ -31,10 +28,9 @@ import javax.inject.Inject
  */
 class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener, JcPlayerManagerListener {
 
-    @Inject
-    lateinit var jcPlayerManager: JcPlayerManager
-
-    private var isInitialized: Boolean = false
+    private val jcPlayerManager: JcPlayerManager by lazy {
+        JcPlayerManager.getInstance(context)
+    }
 
     val myPlaylist: List<JcAudio>?
         get() = jcPlayerManager.playlist
@@ -78,11 +74,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPrev?.setOnClickListener(this)
         btnPlay?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
-
-        DaggerAppComponent.builder()
-                .appModule(AppModule(context = context))
-                .build()
-                .inject(this)
     }
 
     /**
@@ -261,21 +252,20 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onClick(view: View) {
-        if (isInitialized) {
-            if (view.id == R.id.btnPlay) {
-                btnPlay?.let {
-                    YoYo.with(Techniques.Pulse)
-                            .duration(PULSE_ANIMATION_DURATION.toLong())
-                            .playOn(it)
+        if (view.id == R.id.btnPlay) {
+            btnPlay?.let {
+                YoYo.with(Techniques.Pulse)
+                        .duration(PULSE_ANIMATION_DURATION.toLong())
+                        .playOn(it)
 
-                    if (it.tag == R.drawable.ic_pause_black) {
-                        pause()
-                    } else {
-                        continueAudio()
-                    }
+                if (it.tag == R.drawable.ic_pause_black) {
+                    pause()
+                } else {
+                    continueAudio()
                 }
             }
         }
+
         if (view.id == R.id.btnNext) {
             btnNext?.let {
                 YoYo.with(Techniques.Pulse)

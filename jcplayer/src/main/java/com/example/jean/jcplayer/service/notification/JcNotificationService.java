@@ -18,8 +18,6 @@ import com.example.jean.jcplayer.service.JcPlayerManagerListener;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
-
 /**
  * This class is a Android [Service] that handles notification changes on background.
  *
@@ -50,7 +48,6 @@ public class JcNotificationService implements JcPlayerManagerListener {
     private Notification notification;
     private NotificationCompat.Builder notificationCompat;
 
-    @Inject
     public JcNotificationService(Context context) {
         this.context = context;
     }
