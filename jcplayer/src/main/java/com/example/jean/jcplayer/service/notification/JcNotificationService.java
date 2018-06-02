@@ -14,6 +14,7 @@ import android.widget.RemoteViews;
 import com.example.jean.jcplayer.JcPlayerManager;
 import com.example.jean.jcplayer.R;
 import com.example.jean.jcplayer.general.JcStatus;
+import com.example.jean.jcplayer.general.PlayerUtil;
 import com.example.jean.jcplayer.service.JcPlayerManagerListener;
 
 import org.jetbrains.annotations.NotNull;
@@ -143,14 +144,8 @@ public class JcNotificationService implements JcPlayerManagerListener {
 
     @Override
     public void onTimeChanged(@NonNull JcStatus status) {
-        long aux = status.getCurrentPosition() / 1000;
-        int minutes = (int) (aux / 60);
-        int seconds = (int) (aux % 60);
-        final String sMinutes = minutes < 10 ? "0" + minutes : minutes + "";
-        final String sSeconds = seconds < 10 ? "0" + seconds : seconds + "";
-        this.time = sMinutes + ":" + sSeconds;
-
-        this.title = title;
+        this.time = PlayerUtil.toTimeSongString((int) status.getCurrentPosition());
+        this.title = status.getJcAudio().getTitle();
         createNotificationPlayer(title, iconResource);
     }
 

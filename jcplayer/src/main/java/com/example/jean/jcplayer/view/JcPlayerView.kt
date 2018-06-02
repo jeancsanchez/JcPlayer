@@ -14,6 +14,7 @@ import com.daimajia.androidanimations.library.YoYo
 import com.example.jean.jcplayer.JcPlayerManager
 import com.example.jean.jcplayer.R
 import com.example.jean.jcplayer.general.JcStatus
+import com.example.jean.jcplayer.general.PlayerUtil.toTimeSongString
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
@@ -382,18 +383,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         resetPlayerInfo()
         onUpdateTitle(status.jcAudio.title)
 
-        val aux = (status.duration / 1000)
-        val minute = (aux / 60).toInt()
-        val second = (aux % 60).toInt()
-
-        val sDuration = // Minutes
-                ((if (minute < 10) "0" + minute else minute.toString() + "")
-                        + ":" +
-                        // Seconds
-                        if (second < 10) "0" + second else second.toString() + "")
-
-        seekBar?.max = status.duration.toInt()
-        txtDuration?.post { txtDuration?.text = sDuration }
+        val duration = status.duration.toInt()
+        seekBar?.post { seekBar?.max = duration }
+        txtDuration?.post { txtDuration?.text = toTimeSongString(duration) }
     }
 
     override fun onCompletedAudio() {
@@ -422,14 +414,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onTimeChanged(status: JcStatus) {
-        val aux = status.currentPosition / 1000
-        val minutes = (aux / 60).toInt()
-        val seconds = (aux % 60).toInt()
-        val sMinutes = if (minutes < 10) "0" + minutes else minutes.toString() + ""
-        val sSeconds = if (seconds < 10) "0" + seconds else seconds.toString() + ""
-
-        seekBar?.progress = status.currentPosition.toInt()
-        txtCurrentDuration?.let { it.post { it.text = (sMinutes + ":" + sSeconds) } }
+        val currentPosition = status.currentPosition.toInt()
+        seekBar?.post { seekBar?.progress = currentPosition }
+        txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
     }
 
     private fun onUpdateTitle(title: String) {
