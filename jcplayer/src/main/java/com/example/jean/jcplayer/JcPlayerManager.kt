@@ -16,7 +16,7 @@ import com.example.jean.jcplayer.service.notification.JcNotificationService
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
+class JcPlayerManager(private val serviceConnection: JcServiceConnection) {
 
     private val jcNotificationPlayer: JcNotificationService? = null
 
@@ -79,19 +79,6 @@ class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
     }
 
     /**
-     * Notifies on playing for the service listeners
-     * @param status The current player status.
-     */
-    private fun notifyOnPlaying(status: JcStatus) {
-        isPlaying = true
-        isPaused = false
-
-        for (listener in managerListeners) {
-            listener.onPlaying(status)
-        }
-    }
-
-    /**
      * Notifies on paused for the service listeners
      */
     private fun notifyOnPaused(status: JcStatus) {
@@ -139,6 +126,12 @@ class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
     private fun notifyOnTimeChanged(status: JcStatus) {
         for (listener in managerListeners) {
             listener.onTimeChanged(status)
+
+            if (status.currentPosition in 1..2 /* Not to call this every second */) {
+                isPlaying = true
+                isPaused = false
+                listener.onPlaying(status)
+            }
         }
     }
 
@@ -170,8 +163,8 @@ class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
             notifyError(AudioListNullPointerException())
         } else {
             jcPlayerService?.let { service ->
-                notifyOnPlaying(service.play(jcAudio))
                 updatePositionAudioList()
+                service.play(jcAudio)
 
                 service.onPreparedListener = { notifyOnPrepared(it) }
                 service.onTimeChangedListener = { notifyOnTimeChanged(it) }
@@ -198,7 +191,7 @@ class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
 
                 jcPlayerService?.let { service ->
                     service.stop()
-                    notifyOnPlaying(service.play(nextJcAudio))
+                    service.play(nextJcAudio)
                 }
             } catch (e: IndexOutOfBoundsException) {
                 playAudio(playlist[0])
@@ -222,7 +215,7 @@ class JcPlayerManager (private val serviceConnection: JcServiceConnection) {
 
                 jcPlayerService?.let { service ->
                     service.stop()
-                    notifyOnPlaying(service.play(previousJcAudio))
+                    service.play(previousJcAudio)
                 }
 
             } catch (e: IndexOutOfBoundsException) {

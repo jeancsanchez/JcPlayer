@@ -187,13 +187,22 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     /**
+     * Shows the play button on player.
+     */
+    private fun showPlayButton() {
+        btnPlay?.visibility = View.VISIBLE
+        btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
+        btnPlay?.tag = R.drawable.ic_play_black
+    }
+
+    /**
      * Shows the pause button on player.
      */
     private fun showPauseButton() {
+        btnPlay?.visibility = View.VISIBLE
         btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
         btnPlay?.tag = R.drawable.ic_pause_black
     }
-
 
     /**
      * Goes to next audio.
@@ -253,36 +262,36 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onClick(view: View) {
-        if (view.id == R.id.btnPlay) {
-            btnPlay?.let {
-                YoYo.with(Techniques.Pulse)
-                        .duration(PULSE_ANIMATION_DURATION.toLong())
-                        .playOn(it)
+        when (view.id) {
+            R.id.btnPlay ->
+                btnPlay?.let {
+                    YoYo.with(Techniques.Pulse)
+                            .duration(PULSE_ANIMATION_DURATION.toLong())
+                            .playOn(it)
 
-                if (it.tag == R.drawable.ic_pause_black) {
-                    pause()
-                } else {
+                    if (it.tag == R.drawable.ic_pause_black) {
+                        pause()
+                        return
+                    }
+
                     continueAudio()
                 }
-            }
-        }
 
-        if (view.id == R.id.btnNext) {
-            btnNext?.let {
-                YoYo.with(Techniques.Pulse)
-                        .duration(PULSE_ANIMATION_DURATION.toLong())
-                        .playOn(it)
-                next()
-            }
-        }
+            R.id.btnNext ->
+                btnNext?.let {
+                    YoYo.with(Techniques.Pulse)
+                            .duration(PULSE_ANIMATION_DURATION.toLong())
+                            .playOn(it)
+                    next()
+                }
 
-        if (view.id == R.id.btnPrev) {
-            btnPrev?.let {
-                YoYo.with(Techniques.Pulse)
-                        .duration(PULSE_ANIMATION_DURATION.toLong())
-                        .playOn(it)
-                previous()
-            }
+            else -> /* Previous button case */
+                btnPrev?.let {
+                    YoYo.with(Techniques.Pulse)
+                            .duration(PULSE_ANIMATION_DURATION.toLong())
+                            .playOn(it)
+                    previous()
+                }
         }
     }
 
@@ -308,6 +317,104 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 it.createNewNotification(R.drawable.ic_notification_default_white)
             }
         }
+    }
+
+    override fun onPreparedAudio(status: JcStatus) {
+        dismissProgressBar()
+        resetPlayerInfo()
+        onUpdateTitle(status.jcAudio.title)
+
+        val duration = status.duration.toInt()
+        seekBar?.post { seekBar?.max = duration }
+        txtDuration?.post { txtDuration?.text = toTimeSongString(duration) }
+    }
+
+    override fun onProgressChanged(seekBar: SeekBar, i: Int, fromUser: Boolean) {
+        jcPlayerManager.let {
+            if (fromUser) {
+                it.seekTo(i)
+            }
+        }
+    }
+
+    override fun onCompletedAudio() {
+        resetPlayerInfo()
+
+        try {
+            jcPlayerManager.nextAudio()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onPaused(status: JcStatus) {
+        showPlayButton()
+    }
+
+    override fun onContinueAudio(status: JcStatus) {
+        dismissProgressBar()
+    }
+
+    override fun onPlaying(status: JcStatus) {
+        dismissProgressBar()
+        showPauseButton()
+    }
+
+    override fun onTimeChanged(status: JcStatus) {
+        val currentPosition = status.currentPosition.toInt()
+        seekBar?.post { seekBar?.progress = currentPosition }
+        txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
+    }
+
+    override fun onJcpError(throwable: Throwable) {
+        throw  throwable
+    }
+
+    override fun onStartTrackingTouch(seekBar: SeekBar) {
+        showProgressBar()
+    }
+
+    override fun onStopTrackingTouch(seekBar: SeekBar) {
+        dismissProgressBar()
+    }
+
+    /**
+     * Kills the player
+     */
+    fun kill() {
+        jcPlayerManager.kill()
+    }
+
+    private fun showProgressBar() {
+        progressBarPlayer?.visibility = ProgressBar.VISIBLE
+        btnPlay?.visibility = Button.GONE
+        btnNext?.isClickable = false
+        btnPrev?.isClickable = false
+    }
+
+    private fun dismissProgressBar() {
+        progressBarPlayer?.visibility = ProgressBar.GONE
+        showPauseButton()
+        btnNext?.isClickable = true
+        btnPrev?.isClickable = true
+    }
+
+    private fun onUpdateTitle(title: String) {
+        txtCurrentMusic?.let {
+            it.visibility = View.VISIBLE
+            YoYo.with(Techniques.FadeInLeft)
+                    .duration(TITLE_ANIMATION_DURATION.toLong())
+                    .playOn(it)
+
+            it.post { it.text = title }
+        }
+    }
+
+    private fun resetPlayerInfo() {
+        txtCurrentMusic?.post { txtCurrentMusic.text = "" }
+        seekBar?.post { seekBar?.progress = 0 }
+        txtDuration?.post { txtDuration.text = context.getString(R.string.play_initial_time) }
+        txtCurrentDuration?.post { txtCurrentDuration.text = context.getString(R.string.play_initial_time) }
     }
 
     /**
@@ -347,105 +454,5 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 playlist[i].title = title
             }
         }
-    }
-
-    private fun showProgressBar() {
-        progressBarPlayer?.visibility = ProgressBar.VISIBLE
-        btnPlay?.visibility = Button.GONE
-        btnNext?.isClickable = false
-        btnPrev?.isClickable = false
-    }
-
-    private fun dismissProgressBar() {
-        progressBarPlayer?.visibility = ProgressBar.GONE
-        btnPlay?.visibility = Button.VISIBLE
-        btnNext?.isClickable = true
-        btnPrev?.isClickable = true
-    }
-
-    private fun resetPlayerInfo() {
-        seekBar?.progress = 0
-        txtCurrentMusic?.text = ""
-        txtCurrentDuration?.text = context.getString(R.string.play_initial_time)
-        txtDuration?.text = context.getString(R.string.play_initial_time)
-    }
-
-    override fun onProgressChanged(seekBar: SeekBar, i: Int, fromUser: Boolean) {
-        jcPlayerManager.let {
-            if (fromUser) {
-                it.seekTo(i)
-            }
-        }
-    }
-
-    override fun onPreparedAudio(status: JcStatus) {
-        dismissProgressBar()
-        resetPlayerInfo()
-        onUpdateTitle(status.jcAudio.title)
-
-        val duration = status.duration.toInt()
-        seekBar?.post { seekBar?.max = duration }
-        txtDuration?.post { txtDuration?.text = toTimeSongString(duration) }
-    }
-
-    override fun onCompletedAudio() {
-        resetPlayerInfo()
-
-        try {
-            jcPlayerManager.nextAudio()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    override fun onPaused(status: JcStatus) {
-        btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
-        btnPlay?.tag = R.drawable.ic_play_black
-    }
-
-    override fun onContinueAudio(status: JcStatus) {
-        dismissProgressBar()
-    }
-
-    override fun onPlaying(status: JcStatus) {
-        dismissProgressBar()
-        btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
-        btnPlay?.tag = R.drawable.ic_pause_black
-    }
-
-    override fun onTimeChanged(status: JcStatus) {
-        val currentPosition = status.currentPosition.toInt()
-        seekBar?.post { seekBar?.progress = currentPosition }
-        txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
-    }
-
-    private fun onUpdateTitle(title: String) {
-        txtCurrentMusic?.let {
-            it.visibility = View.VISIBLE
-            YoYo.with(Techniques.FadeInLeft)
-                    .duration(TITLE_ANIMATION_DURATION.toLong())
-                    .playOn(it)
-
-            it.post { it.text = title }
-        }
-    }
-
-    override fun onJcpError(throwable: Throwable) {
-        throw  throwable
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {
-        showProgressBar()
-    }
-
-    override fun onStopTrackingTouch(seekBar: SeekBar) {
-        dismissProgressBar()
-    }
-
-    /**
-     * Kills the player
-     */
-    fun kill() {
-        jcPlayerManager.kill()
     }
 }
