@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcPlayerManager(private val serviceConnection: JcServiceConnection) {
+class JcPlayerManager private constructor(private val serviceConnection: JcServiceConnection) {
 
     lateinit var context: Context
     private var jcNotificationPlayerService: JcNotificationService? = null

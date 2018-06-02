@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcNotificationService(private val context: Context) : JcPlayerManagerListener {
+class JcNotificationService private constructor(private val context: Context) : JcPlayerManagerListener {
 
     private var title: String? = null
     private var time = "00:00"
