@@ -75,6 +75,12 @@ public class MainActivity extends AppCompatActivity
         adapterSetup();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        player.createNotification();
+    }
+
     protected void adapterSetup() {
         audioAdapter = new AudioAdapter(player.getMyPlaylist());
         audioAdapter.setOnItemClickListener(new AudioAdapter.OnItemClickListener() {

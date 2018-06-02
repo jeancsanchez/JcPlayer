@@ -9,6 +9,7 @@ import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.notification.JcNotificationService
+import java.lang.ref.WeakReference
 
 /**
  * This class is the player manager. Handles all interactions and communicates with [JcPlayerService].
@@ -18,16 +19,12 @@ import com.example.jean.jcplayer.service.notification.JcNotificationService
  */
 class JcPlayerManager(private val serviceConnection: JcServiceConnection) {
 
-    private val jcNotificationPlayer: JcNotificationService? = null
-
-    private var currentPositionList: Int = 0
-
-    var playlist: ArrayList<JcAudio> = ArrayList()
-
-    private var serviceBound = false
-
+    lateinit var context: Context
+    private var jcNotificationPlayerService: JcNotificationService? = null
     private var jcPlayerService: JcPlayerService? = null
-
+    private var serviceBound = false
+    var playlist: ArrayList<JcAudio> = ArrayList()
+    private var currentPositionList: Int = 0
     private val managerListeners: ArrayList<JcPlayerManagerListener> = ArrayList()
 
     var jcPlayerManagerListener: JcPlayerManagerListener? = null
@@ -53,18 +50,21 @@ class JcPlayerManager(private val serviceConnection: JcServiceConnection) {
     companion object {
 
         @Volatile
-        private var INSTANCE: JcPlayerManager? = null
+        private var INSTANCE: WeakReference<JcPlayerManager>? = null
 
         @JvmStatic
         fun getInstance(
                 context: Context,
                 playlist: ArrayList<JcAudio>? = null,
                 listener: JcPlayerManagerListener? = null
-        ): JcPlayerManager = INSTANCE ?: let {
-            INSTANCE = JcPlayerManager(JcServiceConnection(context)).also {
-                it.playlist = playlist ?: ArrayList()
-                it.jcPlayerManagerListener = listener
-            }
+        ): WeakReference<JcPlayerManager> = INSTANCE ?: let {
+            INSTANCE = WeakReference(
+                    JcPlayerManager(JcServiceConnection(context)).also {
+                        it.context = context
+                        it.playlist = playlist ?: ArrayList()
+                        it.jcPlayerManagerListener = listener
+                    }
+            )
             INSTANCE!!
         }
     }
@@ -255,14 +255,32 @@ class JcPlayerManager(private val serviceConnection: JcServiceConnection) {
      * @param iconResource The icon resource path.
      */
     fun createNewNotification(iconResource: Int) {
-        jcNotificationPlayer?.createNotificationPlayer(currentAudio?.title, iconResource)
+        jcNotificationPlayerService
+                ?.createNotificationPlayer(currentAudio?.title, iconResource)
+                ?: let {
+                    jcNotificationPlayerService = JcNotificationService
+                            .getInstance(context)
+                            .get()
+                            .also { jcPlayerManagerListener = it }
+
+                    createNewNotification(iconResource)
+                }
     }
 
     /**
      * Updates the current notification
      */
     fun updateNotification() {
-        jcNotificationPlayer?.updateNotification()
+        jcNotificationPlayerService
+                ?.updateNotification()
+                ?: let {
+                    jcNotificationPlayerService = JcNotificationService
+                            .getInstance(context)
+                            .get()
+                            .also { jcPlayerManagerListener = it }
+
+                    updateNotification()
+                }
     }
 
     /**
@@ -291,7 +309,7 @@ class JcPlayerManager(private val serviceConnection: JcServiceConnection) {
         }
 
         serviceConnection.disconnect()
-        jcNotificationPlayer?.destroyNotificationIfExists()
+        jcNotificationPlayerService?.destroyNotificationIfExists()
         managerListeners.clear()
         INSTANCE = null
     }

@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.view_jcplayer.view.*
 class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener, JcPlayerManagerListener {
 
     private val jcPlayerManager: JcPlayerManager by lazy {
-        JcPlayerManager.getInstance(context)
+        JcPlayerManager.getInstance(context).get()!!
     }
 
     val myPlaylist: List<JcAudio>?
