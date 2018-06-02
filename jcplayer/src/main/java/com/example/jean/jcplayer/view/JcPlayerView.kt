@@ -134,7 +134,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             if (it.contains(jcAudio).not()) {
                 it.add(lastPosition, jcAudio)
             }
-            return jcAudio.id
+
+            return jcAudio.id!!
         }
     }
 

@@ -13,9 +13,9 @@ import com.example.jean.jcplayer.general.Origin
  * Jesus loves you.
  */
 data class JcAudio constructor(
-        val id: Long? = -1,
-        val title: String,
-        val position: Int? = -1,
+        var id: Long? = -1,
+        var title: String,
+        var position: Int? = -1,
         val path: String,
         val origin: Origin
 ) : Parcelable {
