@@ -1,7 +1,6 @@
 package com.example.jean.jcplayersample;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,12 +12,11 @@ import com.example.jean.jcplayer.general.JcStatus;
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener;
 import com.example.jean.jcplayer.model.JcAudio;
 import com.example.jean.jcplayer.view.JcPlayerView;
-import com.example.jean.jcplayer.view.JcpViewListener;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements OnInvalidPathListener, JcpViewListener {
+        implements OnInvalidPathListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -137,34 +135,6 @@ public class MainActivity extends AppCompatActivity
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
-    @Override
-    public void onPausedStatus(@NonNull JcStatus jcStatus) {
-
-    }
-
-    @Override
-    public void onContinueAudioStatus(@NonNull JcStatus jcStatus) {
-
-    }
-
-    @Override
-    public void onPlayingStatus(@NonNull JcStatus jcStatus) {
-    }
-
-    @Override
-    public void onTimeChangedStatus(@NonNull JcStatus jcStatus) {
-        updateProgress(jcStatus);
-    }
-
-    @Override
-    public void onCompletedAudioStatus(@NonNull JcStatus jcStatus) {
-        updateProgress(jcStatus);
-    }
-
-    @Override
-    public void onPreparedAudioStatus(@NonNull JcStatus jcStatus) {
-
-    }
 
     private void updateProgress(final JcStatus jcStatus) {
         Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()

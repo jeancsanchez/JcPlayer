@@ -157,7 +157,7 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
      * Plays the given [JcAudio].
      * @param jcAudio The audio to be played.
      */
-    @Throws(AudioListNullPointerException::class, JcpServiceDisconnectedError::class)
+    @Throws(AudioListNullPointerException::class)
     fun playAudio(jcAudio: JcAudio) {
         if (playlist.isEmpty()) {
             notifyError(AudioListNullPointerException())
