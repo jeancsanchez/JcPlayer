@@ -34,10 +34,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var isPlaying: Boolean = false
 
-    private var duration: Int = 0
-
-    private var currentTime: Int = 0
-
     // TODO: CENTRALIZAR EM APENAS UM LISTENER E APENAS VERIFICAR NO MANAGER COM WHEN.
     var onPreparedListener: ((JcStatus) -> Unit)? = null
 
@@ -54,8 +50,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var assetFileDescriptor: AssetFileDescriptor? = null // For Asset and Raw file.
 
-    private var tempJcAudio: JcAudio? = null
-
     inner class JcPlayerServiceBinder : Binder() {
         val service: JcPlayerService
             get() = this@JcPlayerService
@@ -67,63 +61,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     fun stop(): JcStatus = updateStatus(status = JcStatus.PlayState.STOP)
 
-    private fun updateStatus(jcAudio: JcAudio? = null, status: JcStatus.PlayState): JcStatus {
-        jcStatus.jcAudio = jcAudio
-        jcStatus.duration = duration.toLong()
-        jcStatus.currentPosition = currentTime.toLong()
-        jcStatus.playState = status
-
-        when (status) {
-            JcStatus.PlayState.PLAY -> {
-                mediaPlayer?.start() ?: let {
-                    jcStatus.duration = 0
-                    jcStatus.currentPosition = 0
-                }
-
-                isPlaying = true
-            }
-
-            JcStatus.PlayState.STOP -> {
-                mediaPlayer?.let {
-                    it.stop()
-                    it.release()
-                    mediaPlayer = null
-                }
-
-                isPlaying = false
-            }
-
-            JcStatus.PlayState.PAUSE -> {
-                mediaPlayer?.let {
-                    it.pause()
-                    duration = it.duration
-                    currentTime = it.currentPosition
-                }
-
-                isPlaying = false
-            }
-
-            JcStatus.PlayState.PREPARING -> {
-                isPlaying = false
-            }
-
-            else -> { // CONTINUE case
-                mediaPlayer?.let {
-                    it.start()
-                    jcStatus.jcAudio = currentAudio
-                    jcStatus.duration = it.duration.toLong()
-                    jcStatus.currentPosition = it.currentPosition.toLong()
-                }
-
-                isPlaying = true
-            }
-        }
-
-        return jcStatus
-    }
-
     fun play(jcAudio: JcAudio): JcStatus {
-        tempJcAudio = currentAudio
+        val tempJcAudio = currentAudio
         currentAudio = jcAudio
         var status = JcStatus()
 
@@ -138,8 +77,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                             stop()
                             play(jcAudio)
                         } else {
-                            status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
-                            onTimeChange()
+                            status = updateStatus(jcAudio, JcStatus.PlayState.CONTINUE)
+                            updateTime()
                             onContinueListener?.invoke(status)
                         }
                     }
@@ -203,7 +142,68 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         mediaPlayer?.seekTo(time)
     }
 
-    private fun onTimeChange() {
+    override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
+
+    override fun onCompletion(mediaPlayer: MediaPlayer) {
+        onCompletedListener?.invoke()
+    }
+
+    override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {
+        return false
+    }
+
+    override fun onPrepared(mediaPlayer: MediaPlayer) {
+        this.mediaPlayer = mediaPlayer
+        val status = updateStatus(currentAudio, JcStatus.PlayState.PLAY)
+
+        updateTime()
+        onPreparedListener?.invoke(status)
+    }
+
+    private fun updateStatus(jcAudio: JcAudio? = null, status: JcStatus.PlayState): JcStatus {
+        currentAudio = jcAudio
+        jcStatus.jcAudio = jcAudio
+        jcStatus.playState = status
+
+        mediaPlayer?.let {
+            jcStatus.duration = it.duration.toLong()
+            jcStatus.currentPosition = it.currentPosition.toLong()
+        }
+
+        when (status) {
+            JcStatus.PlayState.PLAY -> {
+                mediaPlayer?.start()
+                isPlaying = true
+            }
+
+            JcStatus.PlayState.STOP -> {
+                mediaPlayer?.let {
+                    it.stop()
+                    it.release()
+                    mediaPlayer = null
+
+                }
+
+                isPlaying = false
+            }
+
+            JcStatus.PlayState.PAUSE -> {
+                mediaPlayer?.pause()
+                isPlaying = false
+            }
+
+            JcStatus.PlayState.PREPARING -> isPlaying = false
+
+            else -> { // CONTINUE case
+                mediaPlayer?.start()
+                isPlaying = true
+            }
+        }
+
+        return jcStatus
+    }
+
+    private fun updateTime() {
         object : Thread() {
             override fun run() {
                 while (isPlaying) {
@@ -221,37 +221,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 }
             }
         }.start()
-    }
-
-
-    override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
-
-    override fun onCompletion(mediaPlayer: MediaPlayer) {
-        onCompletedListener?.invoke()
-    }
-
-    private fun throwError(path: String, origin: Origin) {
-        when (origin) {
-            Origin.URL -> throw AudioUrlInvalidException(path)
-
-            Origin.RAW -> try {
-                throw AudioRawInvalidException(path)
-            } catch (e: AudioRawInvalidException) {
-                e.printStackTrace()
-            }
-
-            Origin.ASSETS -> try {
-                throw AudioAssetsInvalidException(path)
-            } catch (e: AudioAssetsInvalidException) {
-                e.printStackTrace()
-            }
-
-            Origin.FILE_PATH -> try {
-                throw AudioFilePathInvalidException(path)
-            } catch (e: AudioFilePathInvalidException) {
-                e.printStackTrace()
-            }
-        }
     }
 
     private fun isAudioFileValid(path: String, origin: Origin): Boolean {
@@ -286,16 +255,29 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         }
     }
 
-    override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {
-        return false
-    }
+    private fun throwError(path: String, origin: Origin) {
+        when (origin) {
+            Origin.URL -> throw AudioUrlInvalidException(path)
 
-    override fun onPrepared(mediaPlayer: MediaPlayer) {
-        val status = updateStatus(currentAudio, JcStatus.PlayState.PLAY)
-        onTimeChange()
-        onPreparedListener?.invoke(status)
-    }
+            Origin.RAW -> try {
+                throw AudioRawInvalidException(path)
+            } catch (e: AudioRawInvalidException) {
+                e.printStackTrace()
+            }
 
+            Origin.ASSETS -> try {
+                throw AudioAssetsInvalidException(path)
+            } catch (e: AudioAssetsInvalidException) {
+                e.printStackTrace()
+            }
+
+            Origin.FILE_PATH -> try {
+                throw AudioFilePathInvalidException(path)
+            } catch (e: AudioFilePathInvalidException) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun destroy() {
         stop()
