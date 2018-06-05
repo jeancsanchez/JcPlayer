@@ -1,7 +1,7 @@
 package com.example.jean.jcplayer.view
 
-import android.annotation.TargetApi
 import android.content.Context
+import android.content.res.TypedArray
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
@@ -62,10 +62,19 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
+
+        context.theme
+                .obtainStyledAttributes(attrs, R.styleable.JcPlayerView, 0, 0)
+                .also { setAttributes(it) }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
+        init()
+
+        context.theme
+                .obtainStyledAttributes(attrs, R.styleable.JcPlayerView, defStyle, 0)
+                .also { setAttributes(it) }
+    }
 
     private fun init() {
         View.inflate(context, R.layout.view_jcplayer, this)
@@ -75,6 +84,19 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPrev?.setOnClickListener(this)
         btnPlay?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
+    }
+
+    private fun setAttributes(attrs: TypedArray) {
+        txtCurrentMusic?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
+        txtCurrentDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
+        txtDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
+
+        progressBarPlayer?.setBackgroundColor(attrs.getColor(R.styleable.JcPlayerView_progress_color, -1))
+        seekBar?.setBackgroundColor(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, -1))
+
+        btnPlay?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
+        btnNext?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_next_color, -1))
+        btnPrev?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_previous_color, -1))
     }
 
     /**
