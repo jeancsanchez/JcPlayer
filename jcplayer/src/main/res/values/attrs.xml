@@ -7,21 +7,22 @@
         <attr name="seek_bar_color" format="color" />
         <attr name="progress_color" format="color" />
 
-        <attr name="button_play_color" format="color" />
-        <attr name="button_pause_color" format="color" />
-        <attr name="button_next_color" format="color" />
-        <attr name="button_previous_color" format="color" />
-        <attr name="button_random_color" format="color" />
-        <attr name="button_repeat_color" format="color" />
-        <attr name="player_background_color" format="color" />
+        <attr name="play_icon_color" format="color" />
+        <attr name="pause_icon_color" format="color" />
+        <attr name="next_icon_color" format="color" />
+        <attr name="previous_icon_color" format="color" />
+        <attr name="random_icon_color" format="color" />
+        <attr name="repeat_icon_color" format="color" />
 
-        <attr name="button_play_image" format="reference" />
-        <attr name="button_pause_image" format="reference" />
-        <attr name="button_next_image" format="reference" />
-        <attr name="button_previous_image" format="reference" />
-        <attr name="button_random_image" format="reference" />
-        <attr name="button_repeat_image" format="reference" />
-        <attr name="player_image" format="reference" />
+        <attr name="play_icon" format="reference" />
+        <attr name="pause_icon" format="reference" />
+        <attr name="next_icon" format="reference" />
+        <attr name="previous_icon" format="reference" />
+        <attr name="random_icon" format="reference" />
+        <attr name="repeat_icon" format="reference" />
+
+        <attr name="show_random_button" format="boolean" />
+        <attr name="show_repeat_button" format="boolean" />
 
     </declare-styleable>
 </resources>

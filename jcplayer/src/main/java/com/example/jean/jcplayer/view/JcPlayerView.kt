@@ -86,6 +86,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPrev?.setOnClickListener(this)
         btnPlay?.setOnClickListener(this)
         btnPause?.setOnClickListener(this)
+        btnRandom?.setOnClickListener(this)
+        btnRepeat?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
     }
 
@@ -101,20 +103,42 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             seekBar?.thumb?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
-            // TODO: change thumb in older versions (14 and 15).
+            // TODO: change thumb color in older versions (14 and 15).
         }
 
-        btnPlay.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_play_image, R.drawable.ic_play))
-        btnPlay.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_play_color, defaultColor))
+        btnPlay.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_play_icon, R.drawable.ic_play))
+        btnPlay.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_play_icon_color, defaultColor))
 
-        btnPause.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_pause_image, R.drawable.ic_pause))
-        btnPause.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_pause_color, defaultColor))
+        btnPause.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_pause_icon, R.drawable.ic_pause))
+        btnPause.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_pause_icon_color, defaultColor))
 
-        btnNext?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_next_color, defaultColor))
-        btnNext?.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_next_image, R.drawable.ic_next))
+        btnNext?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_next_icon_color, defaultColor))
+        btnNext?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_next_icon, R.drawable.ic_next))
 
-        btnPrev?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_previous_color, defaultColor))
-        btnPrev?.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_previous_image, R.drawable.ic_previous))
+        btnPrev?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_previous_icon_color, defaultColor))
+        btnPrev?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_previous_icon, R.drawable.ic_previous))
+
+        btnRandom?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_random_icon_color, defaultColor))
+        btnRandom?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_random_icon, R.drawable.ic_shuffle))
+        attrs.getBoolean(R.styleable.JcPlayerView_show_random_button, true).also { showButton ->
+            if (showButton) {
+                btnRandom?.visibility = View.VISIBLE
+                return
+            }
+
+            btnRandom?.visibility = View.GONE
+        }
+
+        btnRepeat?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor))
+        btnRepeat?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_icon, R.drawable.ic_repeat))
+        attrs.getBoolean(R.styleable.JcPlayerView_show_repeat_button, true).also { showButton ->
+            if (showButton) {
+                btnRepeat?.visibility = View.VISIBLE
+                return
+            }
+
+            btnRepeat?.visibility = View.GONE
+        }
     }
 
     /**

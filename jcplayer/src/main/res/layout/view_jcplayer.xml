@@ -80,6 +80,31 @@
         app:layout_goneMarginTop="@dimen/spacing_large" />
 
     <ImageButton
+        android:id="@+id/btnRandom"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="@dimen/spacing_normal"
+        android:layout_marginLeft="@dimen/spacing_normal"
+        android:layout_marginRight="@dimen/spacing_normal"
+        android:layout_marginStart="@dimen/spacing_normal"
+        android:background="@null"
+        app:layout_constraintBottom_toBottomOf="@id/btnPrev"
+        app:layout_constraintEnd_toStartOf="@id/view_stub"
+        app:layout_constraintStart_toEndOf="@id/btnPrev"
+        app:layout_constraintTop_toTopOf="@id/btnPrev"
+        app:layout_goneMarginEnd="@dimen/spacing_normal"
+        app:srcCompat="@drawable/ic_shuffle" />
+
+    <View
+        android:id="@+id/view_stub"
+        android:layout_width="@dimen/touch_default"
+        android:layout_height="@dimen/touch_default"
+        app:layout_constraintBottom_toBottomOf="@id/btnNext"
+        app:layout_constraintEnd_toStartOf="@id/btnNext"
+        app:layout_constraintStart_toEndOf="@id/btnPrev"
+        app:layout_constraintTop_toTopOf="@id/btnPrev" />
+
+    <ImageButton
         android:id="@+id/btnPlay"
         android:layout_width="@dimen/touch_default"
         android:layout_height="@dimen/touch_default"
@@ -91,6 +116,22 @@
         app:layout_constraintEnd_toStartOf="@id/btnNext"
         app:layout_constraintStart_toEndOf="@id/btnPrev"
         app:srcCompat="@drawable/ic_play" />
+
+    <ImageButton
+        android:id="@+id/btnRepeat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_normal"
+        android:layout_marginLeft="@dimen/spacing_normal"
+        android:layout_marginRight="@dimen/spacing_normal"
+        android:layout_marginStart="@dimen/spacing_normal"
+        android:background="@null"
+        app:layout_constraintBottom_toBottomOf="@id/btnNext"
+        app:layout_constraintEnd_toStartOf="@id/btnNext"
+        app:layout_constraintStart_toEndOf="@id/view_stub"
+        app:layout_constraintTop_toTopOf="@id/btnNext"
+        app:layout_goneMarginStart="@dimen/spacing_normal"
+        app:srcCompat="@drawable/ic_repeat" />
 
     <ImageButton
         android:id="@+id/btnPause"
