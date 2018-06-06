@@ -92,6 +92,20 @@
         app:layout_constraintStart_toEndOf="@id/btnPrev"
         app:srcCompat="@drawable/ic_play" />
 
+    <ImageButton
+        android:id="@+id/btnPause"
+        android:layout_width="@dimen/touch_default"
+        android:layout_height="@dimen/touch_default"
+        android:layout_marginBottom="@dimen/spacing_large"
+        android:background="@null"
+        android:contentDescription="@string/play_button_description"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnNext"
+        app:layout_constraintStart_toEndOf="@id/btnPrev"
+        app:srcCompat="@drawable/ic_pause" />
+
 
     <ImageButton
         android:id="@+id/btnNext"

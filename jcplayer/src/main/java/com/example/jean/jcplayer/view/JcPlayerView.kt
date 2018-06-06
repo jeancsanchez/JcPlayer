@@ -3,6 +3,7 @@ package com.example.jean.jcplayer.view
 import android.content.Context
 import android.content.res.TypedArray
 import android.os.Build
+import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
@@ -79,24 +80,34 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun init() {
         View.inflate(context, R.layout.view_jcplayer, this)
 
-        btnPlay?.tag = R.drawable.ic_play_black
         btnNext?.setOnClickListener(this)
         btnPrev?.setOnClickListener(this)
         btnPlay?.setOnClickListener(this)
+        btnPause?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
     }
 
     private fun setAttributes(attrs: TypedArray) {
-        txtCurrentMusic?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
-        txtCurrentDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
-        txtDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
+        val defaultColor = ResourcesCompat.getColor(resources, android.R.color.black, null)
 
-        progressBarPlayer?.setBackgroundColor(attrs.getColor(R.styleable.JcPlayerView_progress_color, -1))
-        seekBar?.setBackgroundColor(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, -1))
+        txtCurrentMusic?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_title_color, defaultColor))
+        txtCurrentDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_current_duration_color, defaultColor))
+        txtDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_duration_color, defaultColor))
 
-        btnPlay?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_play_color, -1))
-        btnNext?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_next_color, -1))
-        btnPrev?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_previous_color, -1))
+        progressBarPlayer?.setBackgroundColor(attrs.getColor(R.styleable.JcPlayerView_progress_color, defaultColor))
+        seekBar?.thumbTintList = attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor)
+
+        btnPlay.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_play_image, R.drawable.ic_play))
+        btnPlay.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_play_color, defaultColor))
+
+        btnPause.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_pause_image, R.drawable.ic_pause))
+        btnPause.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_pause_color, defaultColor))
+
+        btnNext?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_next_color, defaultColor))
+        btnNext?.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_next_image, R.drawable.ic_next))
+
+        btnPrev?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_previous_color, defaultColor))
+        btnPrev?.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_previous_image, R.drawable.ic_previous))
     }
 
     /**
@@ -214,17 +225,15 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      */
     private fun showPlayButton() {
         btnPlay?.visibility = View.VISIBLE
-        btnPlay?.setBackgroundResource(R.drawable.ic_play_black)
-        btnPlay?.tag = R.drawable.ic_play_black
+        btnPause?.visibility = View.GONE
     }
 
     /**
      * Shows the pause button on player.
      */
     private fun showPauseButton() {
-        btnPlay?.visibility = View.VISIBLE
-        btnPlay?.setBackgroundResource(R.drawable.ic_pause_black)
-        btnPlay?.tag = R.drawable.ic_pause_black
+        btnPlay?.visibility = View.GONE
+        btnPause?.visibility = View.VISIBLE
     }
 
     /**
@@ -292,13 +301,17 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                             .duration(PULSE_ANIMATION_DURATION.toLong())
                             .playOn(it)
 
-                    if (it.tag == R.drawable.ic_pause_black) {
-                        pause()
-                        return
-                    }
-
                     continueAudio()
                 }
+
+            R.id.btnPause -> {
+                btnPause?.let {
+                    YoYo.with(Techniques.Pulse)
+                            .duration(PULSE_ANIMATION_DURATION.toLong())
+                            .playOn(it)
+                    pause()
+                }
+            }
 
             R.id.btnNext ->
                 btnNext?.let {
