@@ -2,6 +2,7 @@ package com.example.jean.jcplayer.view
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.PorterDuff
 import android.os.Build
 import android.support.v4.content.res.ResourcesCompat
 import android.util.AttributeSet
@@ -21,6 +22,7 @@ import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
+
 
 /**
  * This class is the JcAudio View. Handles user interactions and communicate with [JcPlayerManager].
@@ -94,8 +96,13 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         txtCurrentDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_current_duration_color, defaultColor))
         txtDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_duration_color, defaultColor))
 
-        progressBarPlayer?.setBackgroundColor(attrs.getColor(R.styleable.JcPlayerView_progress_color, defaultColor))
-        seekBar?.thumbTintList = attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor)
+        progressBarPlayer?.indeterminateDrawable?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_progress_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
+        seekBar?.progressDrawable?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            seekBar?.thumb?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
+            // TODO: change thumb in older versions (14 and 15).
+        }
 
         btnPlay.setBackgroundResource(attrs.getResourceId(R.styleable.JcPlayerView_button_play_image, R.drawable.ic_play))
         btnPlay.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_button_play_color, defaultColor))
