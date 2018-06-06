@@ -106,8 +106,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             // TODO: change thumb color in older versions (14 and 15).
         }
 
-        btnPlay.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_play_icon, R.drawable.ic_play))
         btnPlay.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_play_icon_color, defaultColor))
+        btnPlay.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_play_icon, R.drawable.ic_play))
 
         btnPause.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_pause_icon, R.drawable.ic_pause))
         btnPause.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_pause_icon_color, defaultColor))
@@ -123,10 +123,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         attrs.getBoolean(R.styleable.JcPlayerView_show_random_button, true).also { showButton ->
             if (showButton) {
                 btnRandom?.visibility = View.VISIBLE
-                return
+            } else {
+                btnRandom?.visibility = View.GONE
             }
-
-            btnRandom?.visibility = View.GONE
         }
 
         btnRepeat?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor))
@@ -134,10 +133,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         attrs.getBoolean(R.styleable.JcPlayerView_show_repeat_button, true).also { showButton ->
             if (showButton) {
                 btnRepeat?.visibility = View.VISIBLE
-                return
+            } else {
+                btnRepeat?.visibility = View.GONE
             }
-
-            btnRepeat?.visibility = View.GONE
         }
     }
 
@@ -455,6 +453,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun showProgressBar() {
         progressBarPlayer?.visibility = ProgressBar.VISIBLE
         btnPlay?.visibility = Button.GONE
+        btnPause?.visibility = Button.GONE
+
         btnNext?.isClickable = false
         btnPrev?.isClickable = false
     }
