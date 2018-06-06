@@ -43,6 +43,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     var onCompletedListener: (() -> Unit)? = null
 
+    // TODO:
+    var onStopedListener: (() -> Unit)? = null
+
     var currentAudio: JcAudio? = null
         private set
 
