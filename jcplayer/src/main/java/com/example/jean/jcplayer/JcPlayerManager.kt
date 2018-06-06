@@ -10,6 +10,7 @@ import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.notification.JcNotificationService
 import java.lang.ref.WeakReference
+import java.util.*
 
 /**
  * This class is the player manager. Handles all interactions and communicates with [JcPlayerService].
@@ -40,6 +41,12 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
 
     var isPaused: Boolean = false
         private set
+
+    var onShuffleMode: Boolean = false
+
+    var repeatPlaylist: Boolean = true
+
+    var repeatCurrAudio: Boolean = false
 
     private val position = 1
 
@@ -189,15 +196,17 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
         if (playlist.isEmpty()) {
             throw AudioListNullPointerException()
         } else {
-            try {
-                val nextJcAudio = playlist[currentPositionList + position]
+            jcPlayerService?.let { service ->
+                if (repeatCurrAudio) {
+                    currentAudio?.let {
+                        service.stop()
+                        service.play(it)
+                    }
 
-                jcPlayerService?.let { service ->
+                } else {
                     service.stop()
-                    service.play(nextJcAudio)
+                    getNextAudio()?.let { service.play(it) } ?: service.stop()
                 }
-            } catch (e: IndexOutOfBoundsException) {
-                playAudio(playlist[0])
             }
 
             updatePositionAudioList()
@@ -212,17 +221,16 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
         if (playlist.isEmpty()) {
             throw AudioListNullPointerException()
         } else {
-
-            try {
-                val previousJcAudio = playlist[currentPositionList - position]
-
-                jcPlayerService?.let { service ->
+            jcPlayerService?.let { service ->
+                if (repeatCurrAudio) {
+                    currentAudio?.let {
+                        service.stop()
+                        service.play(it)
+                    }
+                } else {
                     service.stop()
-                    service.play(previousJcAudio)
+                    getPreviousAudio()?.let { service.play(it) }
                 }
-
-            } catch (e: IndexOutOfBoundsException) {
-                playAudio(playlist[0])
             }
 
             updatePositionAudioList()
@@ -300,6 +308,36 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
         playlist.indices
                 .filter { playlist[it].id == currentAudio?.id }
                 .forEach { this.currentPositionList = it }
+    }
+
+
+    private fun getNextAudio(): JcAudio? {
+        return if (onShuffleMode) {
+            playlist[Random().nextInt(playlist.size)]
+        } else {
+            try {
+                playlist[currentPositionList + position]
+            } catch (e: IndexOutOfBoundsException) {
+                if (repeatPlaylist) {
+                    playlist.first()
+                }
+
+                return null
+            }
+        }
+    }
+
+    private fun getPreviousAudio(): JcAudio? {
+        return if (onShuffleMode) {
+            playlist[Random().nextInt(playlist.size)]
+        } else {
+            try {
+                playlist[currentPositionList - position]
+
+            } catch (e: IndexOutOfBoundsException) {
+                playlist.first()
+            }
+        }
     }
 
     /**

@@ -140,6 +140,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     fun seekTo(time: Int) {
         Log.d("time = ", Integer.toString(time))
         mediaPlayer?.seekTo(time)
+        onTimeChangedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
     }
 
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}

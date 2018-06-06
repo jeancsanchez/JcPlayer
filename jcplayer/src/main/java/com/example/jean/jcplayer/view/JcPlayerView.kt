@@ -350,13 +350,24 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                     next()
                 }
 
-            else -> /* Previous button case */
+            R.id.btnPrev ->
                 btnPrev?.let {
                     YoYo.with(Techniques.Pulse)
                             .duration(PULSE_ANIMATION_DURATION.toLong())
                             .playOn(it)
                     previous()
                 }
+
+            R.id.btnRandom -> {
+                // TODO: Change layout to notify shuffle selected
+                jcPlayerManager.onShuffleMode = jcPlayerManager.onShuffleMode.not()
+            }
+
+
+            else -> { // Repeat case
+                // TODO: Change layout to notify repeat selected
+                jcPlayerManager.repeatCurrAudio = jcPlayerManager.repeatCurrAudio.not()
+            }
         }
     }
 
