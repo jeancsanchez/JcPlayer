@@ -86,7 +86,7 @@ class JcNotificationService private constructor(private val context: Context) : 
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        notification?.let { notificationManager.notify(NOTIFICATION_ID, it) }
     }
 
     fun updateNotification() {
