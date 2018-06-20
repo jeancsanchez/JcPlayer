@@ -13,6 +13,7 @@
         <attr name="previous_icon_color" format="color" />
         <attr name="random_icon_color" format="color" />
         <attr name="repeat_icon_color" format="color" />
+        <attr name="repeat_one_icon_color" format="color" />
 
         <attr name="play_icon" format="reference" />
         <attr name="pause_icon" format="reference" />
@@ -20,6 +21,7 @@
         <attr name="previous_icon" format="reference" />
         <attr name="random_icon" format="reference" />
         <attr name="repeat_icon" format="reference" />
+        <attr name="repeat_one_icon" format="reference" />
 
         <attr name="show_random_button" format="boolean" />
         <attr name="show_repeat_button" format="boolean" />

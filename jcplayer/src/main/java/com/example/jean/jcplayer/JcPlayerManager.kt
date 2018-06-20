@@ -45,10 +45,14 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
     var onShuffleMode: Boolean = false
 
     var repeatPlaylist: Boolean = true
+        private set
 
     var repeatCurrAudio: Boolean = false
+        private set
 
     private val position = 1
+
+    private var repeatCount = 0
 
     init {
         initService()
@@ -337,6 +341,31 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
             } catch (e: IndexOutOfBoundsException) {
                 playlist.first()
             }
+        }
+    }
+
+    /**
+     * Handles the repeat mode.
+     */
+    fun activeRepeat() {
+        if (repeatCount == 0) {
+            repeatPlaylist = true
+            repeatCurrAudio = false
+            repeatCount++
+            return
+        }
+
+        if (repeatCount == 1) {
+            repeatCurrAudio = true
+            repeatPlaylist = false
+            repeatCount++
+            return
+        }
+
+        if (repeatCount == 2) {
+            repeatCurrAudio = false
+            repeatPlaylist = false
+            repeatCount = 0
         }
     }
 

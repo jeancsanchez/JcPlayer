@@ -48,6 +48,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     val currentAudio: JcAudio?
         get() = jcPlayerManager.currentAudio
 
+    private var repeatCount = 0
+
     companion object {
         private const val PULSE_ANIMATION_DURATION = 200
         private const val TITLE_ANIMATION_DURATION = 600
@@ -88,6 +90,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPause?.setOnClickListener(this)
         btnRandom?.setOnClickListener(this)
         btnRepeat?.setOnClickListener(this)
+        btnRepeatOne?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
     }
 
@@ -135,6 +138,16 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 btnRepeat?.visibility = View.VISIBLE
             } else {
                 btnRepeat?.visibility = View.GONE
+            }
+        }
+
+        btnRepeatOne?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_one_icon_color, attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor)))
+        btnRepeatOne?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_one_icon, R.drawable.ic_repeat))
+        attrs.getBoolean(R.styleable.JcPlayerView_show_repeat_button, true).also { showButton ->
+            if (showButton) {
+                btnRepeatOne?.visibility = View.VISIBLE
+            } else {
+                btnRepeatOne?.visibility = View.GONE
             }
         }
     }
@@ -359,14 +372,36 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 }
 
             R.id.btnRandom -> {
-                // TODO: Change layout to notify shuffle selected
-                jcPlayerManager.onShuffleMode = jcPlayerManager.onShuffleMode.not()
+                val notActive = jcPlayerManager.onShuffleMode.not()
+
+                if (notActive) {
+                    btnRandomActive.visibility = View.GONE
+                } else {
+                    btnRandomActive.visibility = View.VISIBLE
+                }
+
+                jcPlayerManager.onShuffleMode = notActive
             }
 
 
             else -> { // Repeat case
-                // TODO: Change layout to notify repeat selected
-                jcPlayerManager.repeatCurrAudio = jcPlayerManager.repeatCurrAudio.not()
+                jcPlayerManager.activeRepeat()
+                val active = jcPlayerManager.repeatPlaylist or jcPlayerManager.repeatCurrAudio
+
+                btnRepeat?.visibility = View.VISIBLE
+                btnRepeatOne?.visibility = View.GONE
+
+                if (active) {
+                    btnRepeatActive?.visibility = View.VISIBLE
+                } else {
+                    btnRepeatActive?.visibility = View.GONE
+                }
+
+                if (jcPlayerManager.repeatCurrAudio) {
+                    btnRepeatOne?.visibility = View.VISIBLE
+                    btnRepeat?.visibility = View.GONE
+                    return
+                }
             }
         }
     }
