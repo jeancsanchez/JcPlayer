@@ -367,15 +367,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 }
 
             R.id.btnRandom -> {
-                val notActive = jcPlayerManager.onShuffleMode.not()
-
-                if (notActive) {
-                    btnRandomIndicator.visibility = View.GONE
-                } else {
-                    btnRandomIndicator.visibility = View.VISIBLE
-                }
-
-                jcPlayerManager.onShuffleMode = notActive
+                jcPlayerManager.onShuffleMode = jcPlayerManager.onShuffleMode.not()
+                btnRandomIndicator.visibility = if (jcPlayerManager.onShuffleMode) View.VISIBLE else View.GONE
             }
 
 
