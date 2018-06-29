@@ -122,6 +122,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnPrev?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_previous_icon, R.drawable.ic_previous))
 
         btnRandom?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_random_icon_color, defaultColor))
+        btnRandomIndicator?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_random_icon_color, defaultColor))
         btnRandom?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_random_icon, R.drawable.ic_shuffle))
         attrs.getBoolean(R.styleable.JcPlayerView_show_random_button, true).also { showButton ->
             if (showButton) {
@@ -132,6 +133,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
 
         btnRepeat?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor))
+        btnRepeatIndicator?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor))
         btnRepeat?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_icon, R.drawable.ic_repeat))
         attrs.getBoolean(R.styleable.JcPlayerView_show_repeat_button, true).also { showButton ->
             if (showButton) {
@@ -142,14 +144,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
 
         btnRepeatOne?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_one_icon_color, attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor)))
-        btnRepeatOne?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_one_icon, R.drawable.ic_repeat))
-        attrs.getBoolean(R.styleable.JcPlayerView_show_repeat_button, true).also { showButton ->
-            if (showButton) {
-                btnRepeatOne?.visibility = View.VISIBLE
-            } else {
-                btnRepeatOne?.visibility = View.GONE
-            }
-        }
+        btnRepeatOne?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_one_icon, R.drawable.ic_repeat_one))
     }
 
     /**
@@ -375,9 +370,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 val notActive = jcPlayerManager.onShuffleMode.not()
 
                 if (notActive) {
-                    btnRandomActive.visibility = View.GONE
+                    btnRandomIndicator.visibility = View.GONE
                 } else {
-                    btnRandomActive.visibility = View.VISIBLE
+                    btnRandomIndicator.visibility = View.VISIBLE
                 }
 
                 jcPlayerManager.onShuffleMode = notActive
@@ -392,15 +387,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 btnRepeatOne?.visibility = View.GONE
 
                 if (active) {
-                    btnRepeatActive?.visibility = View.VISIBLE
+                    btnRepeatIndicator?.visibility = View.VISIBLE
                 } else {
-                    btnRepeatActive?.visibility = View.GONE
+                    btnRepeatIndicator?.visibility = View.GONE
                 }
 
                 if (jcPlayerManager.repeatCurrAudio) {
                     btnRepeatOne?.visibility = View.VISIBLE
                     btnRepeat?.visibility = View.GONE
-                    return
                 }
             }
         }

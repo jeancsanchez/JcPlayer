@@ -96,15 +96,16 @@
         app:srcCompat="@drawable/ic_shuffle" />
 
     <ImageButton
-        android:id="@+id/btnRandomActive"
+        android:id="@+id/btnRandomIndicator"
         android:layout_width="5dp"
         android:layout_height="5dp"
+        android:layout_marginBottom="2dp"
         android:layout_marginTop="@dimen/spacing_small"
         android:background="@null"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/view_stub"
         app:layout_constraintEnd_toStartOf="@id/view_stub"
         app:layout_constraintStart_toEndOf="@id/btnPrev"
-        app:layout_constraintTop_toBottomOf="@id/btnRandom"
         app:srcCompat="@drawable/ic_fiber_manual_record" />
 
     <View
@@ -146,15 +147,16 @@
         app:srcCompat="@drawable/ic_repeat" />
 
     <ImageButton
-        android:id="@+id/btnRepeatActive"
+        android:id="@+id/btnRepeatIndicator"
         android:layout_width="5dp"
         android:layout_height="5dp"
+        android:layout_marginBottom="2dp"
         android:layout_marginTop="@dimen/spacing_small"
         android:background="@null"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/view_stub"
         app:layout_constraintEnd_toStartOf="@id/btnNext"
         app:layout_constraintStart_toEndOf="@id/view_stub"
-        app:layout_constraintTop_toBottomOf="@id/btnRepeat"
         app:srcCompat="@drawable/ic_fiber_manual_record" />
 
     <ImageButton
