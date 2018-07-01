@@ -152,7 +152,6 @@ class JcNotificationService private constructor(private val context: Context) : 
         } catch (e: NullPointerException) {
             e.printStackTrace()
         }
-
     }
 
     override fun onJcpError(throwable: Throwable) {

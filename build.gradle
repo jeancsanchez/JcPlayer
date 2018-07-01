@@ -43,5 +43,5 @@ ext {
     powerMockito = '1.6.2'
     espressoVersion = '2.2.2'
     espressoRulesVersion = '0.5'
-    constraintLayoutVersion = '1.1.0'
+    constraintLayoutVersion = '1.1.2'
 }

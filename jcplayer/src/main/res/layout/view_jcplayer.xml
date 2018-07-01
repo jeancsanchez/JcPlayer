@@ -81,12 +81,9 @@
 
     <ImageButton
         android:id="@+id/btnRandom"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginEnd="@dimen/spacing_normal"
-        android:layout_marginLeft="@dimen/spacing_normal"
-        android:layout_marginRight="@dimen/spacing_normal"
-        android:layout_marginStart="@dimen/spacing_normal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/spacing_normal"
         android:background="@null"
         app:layout_constraintBottom_toBottomOf="@id/btnPrev"
         app:layout_constraintEnd_toStartOf="@id/view_stub"
@@ -122,22 +119,21 @@
         android:layout_width="@dimen/touch_default"
         android:layout_height="@dimen/touch_default"
         android:layout_marginBottom="@dimen/spacing_large"
+        android:layout_marginTop="@dimen/spacing_normal"
         android:background="@null"
         android:contentDescription="@string/play_button_description"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/view_stub"
         app:layout_constraintEnd_toStartOf="@id/btnNext"
         app:layout_constraintStart_toEndOf="@id/btnPrev"
+        app:layout_constraintTop_toTopOf="@id/view_stub"
         app:srcCompat="@drawable/ic_play" />
 
     <ImageButton
         android:id="@+id/btnRepeat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/spacing_normal"
-        android:layout_marginLeft="@dimen/spacing_normal"
-        android:layout_marginRight="@dimen/spacing_normal"
-        android:layout_marginStart="@dimen/spacing_normal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/spacing_normal"
         android:background="@null"
         app:layout_constraintBottom_toBottomOf="@id/btnNext"
         app:layout_constraintEnd_toStartOf="@id/btnNext"
@@ -161,12 +157,9 @@
 
     <ImageButton
         android:id="@+id/btnRepeatOne"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/spacing_normal"
-        android:layout_marginLeft="@dimen/spacing_normal"
-        android:layout_marginRight="@dimen/spacing_normal"
-        android:layout_marginStart="@dimen/spacing_normal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/spacing_normal"
         android:background="@null"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/btnNext"
@@ -215,10 +208,11 @@
         android:layout_marginBottom="@dimen/spacing_large"
         android:layout_marginTop="@dimen/spacing_normal"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/view_stub"
         app:layout_constraintEnd_toStartOf="@id/btnNext"
         app:layout_constraintStart_toEndOf="@id/btnPrev"
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        app:layout_constraintTop_toTopOf="@id/view_stub"
         tools:visibility="visible" />
 
     <ImageButton
