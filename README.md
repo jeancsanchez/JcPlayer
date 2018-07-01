@@ -1,6 +1,5 @@
 # JcPlayer
-[ ![Download](https://api.bintray.com/packages/jeancsanchez/maven/JcPlayer/images/download.svg) ](https://bintray.com/jeancsanchez/maven/JcPlayer/_latestVersion)
-</br>
+[![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
 A simple audio player for Android that you can plugin to your apps quickly get audio playback working.
 </br></br>
 ![](https://github.com/jeancsanchez/JcPlayer/blob/master/sample/jcplayer-gif-definitive.gif)
@@ -28,19 +27,17 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ## Gradle Dependency (Project level)
 ```Gradle
 allprojects {
-    repositories {
-        jcenter()
-        maven {
-            url  "http://dl.bintray.com/jeancsanchez/maven"
-        }
-    }
-}
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
 ```
 ## Gradle Dependency (Module level) 
 ```Gradle
 dependencies {
     // ... other dependencies
-    compile 'io.github.jeancsanchez.jcplayer:jcplayer:{version}'
+     implementation 'com.github.jeancsanchez:JcPlayer:{version}'
 }
 ```
 
@@ -67,7 +64,7 @@ You only need  a JcPlayerView on your Layout Activity/Fragment. All the controls
     jcAudios.add(JcAudio.createFromAssets("Asset audio", "audio.mp3"));
     jcAudios.add(JcAudio.createFromRaw("Raw audio", R.raw.audio));
 
-    jcplayerView.initPlaylist(jcAudios);
+    jcplayerView.initPlaylist(jcAudios, null);
 ```
 
 ### Option 2: Initialize an anonymous playlist with a default title for all
@@ -91,11 +88,28 @@ OR
 
 ### How can I get callbacks of player status?
 ```java
-    MyActivity implements JcPlayerService.JcPlayerServiceListener {
+    MyActivity implements JcPlayerManagerListener {
         ....
-        jcplayerView.registerServiceListener(this);
+        jcplayerView.setJcPlayerManagerListener(this);
         // Just be happy :D
  }
+```
+
+## Custom layout
+You can customize the player layout handling theses attributes. 
+```xml
+    android:background
+    app:next_icon_color
+    app:pause_icon_color
+    app:play_icon_color
+    app:previous_icon_color
+    app:progress_color
+    app:random_icon_color
+    app:repeat_icon_color
+    app:seek_bar_color
+    app:text_audio_current_duration_color
+    app:text_audio_duration_color
+    app:text_audio_title_color
 ```
 
 ## How to contribute
@@ -106,6 +120,7 @@ https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/
  The list view is developer responsibilty
 
 ## TODO LIST ##
-* [ ] Set custom layouts for player.
+* [ ] On Android 6.0 the notification is not being cleared.
+* [x] Set custom layouts for player.
 * [ ] Add Instrumentation tests
 * [ ] Add unity tests.

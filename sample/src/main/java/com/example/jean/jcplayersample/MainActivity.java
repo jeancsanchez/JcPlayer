@@ -11,12 +11,13 @@ import android.widget.Toast;
 import com.example.jean.jcplayer.general.JcStatus;
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener;
 import com.example.jean.jcplayer.model.JcAudio;
+import com.example.jean.jcplayer.service.JcPlayerManagerListener;
 import com.example.jean.jcplayer.view.JcPlayerView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
-        implements OnInvalidPathListener {
+        implements OnInvalidPathListener, JcPlayerManagerListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity
 //        player.addAudio(JcAudio.createFromRaw(R.raw.a_34));
 //        player.addAudio(JcAudio.createFromFilePath(this.getFilesDir() + "/" + "121212.mmid"));
 
-        player.initPlaylist(jcAudios, null);
+        player.initPlaylist(jcAudios, this);
         adapterSetup();
     }
 
@@ -126,16 +127,41 @@ public class MainActivity extends AppCompatActivity
 //        player.next();
     }
 
-    private void removeItem(int position) {
-        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
 
-        //        jcAudios.remove(position);
-        player.removeAudio(player.getMyPlaylist().get(position));
-        audioAdapter.notifyItemRemoved(position);
+    @Override
+    public void onPreparedAudio(JcStatus status) {
 
-        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 
+    @Override
+    public void onCompletedAudio() {
+
+    }
+
+    @Override
+    public void onPaused(JcStatus status) {
+
+    }
+
+    @Override
+    public void onContinueAudio(JcStatus status) {
+
+    }
+
+    @Override
+    public void onPlaying(JcStatus status) {
+
+    }
+
+    @Override
+    public void onTimeChanged(JcStatus status) {
+        updateProgress(status);
+    }
+
+    @Override
+    public void onJcpError(Throwable throwable) {
+
+    }
 
     private void updateProgress(final JcStatus jcStatus) {
         Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()
@@ -151,5 +177,15 @@ public class MainActivity extends AppCompatActivity
                 audioAdapter.updateProgress(jcStatus.getJcAudio(), progress);
             }
         });
+    }
+
+    private void removeItem(int position) {
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
+
+        //        jcAudios.remove(position);
+        player.removeAudio(player.getMyPlaylist().get(position));
+        audioAdapter.notifyItemRemoved(position);
+
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
     }
 }

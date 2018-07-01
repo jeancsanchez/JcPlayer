@@ -48,17 +48,17 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     val currentAudio: JcAudio?
         get() = jcPlayerManager.currentAudio
 
-    private var repeatCount = 0
+    var onInvalidPathListener: OnInvalidPathListener? = null
+
+    var jcPlayerManagerListener: JcPlayerManagerListener? = null
+        set(value) {
+            jcPlayerManager.jcPlayerManagerListener = value
+        }
+
 
     companion object {
         private const val PULSE_ANIMATION_DURATION = 200
         private const val TITLE_ANIMATION_DURATION = 600
-    }
-
-    private val onInvalidPathListener = object : OnInvalidPathListener {
-        override fun onPathError(jcAudio: JcAudio) {
-            dismissProgressBar()
-        }
     }
 
     constructor(context: Context) : super(context) {
@@ -470,7 +470,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onJcpError(throwable: Throwable) {
-        throw  throwable
+        // TODO
+//        jcPlayerManager.currentAudio?.let {
+//            onInvalidPathListener?.onPathError(it)
+//        }
     }
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {
