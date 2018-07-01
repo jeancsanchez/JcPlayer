@@ -92,6 +92,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnRepeat?.setOnClickListener(this)
         btnRepeatOne?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
+        seekBar?.isEnabled = false
     }
 
     private fun setAttributes(attrs: TypedArray) {
@@ -418,6 +419,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onPreparedAudio(status: JcStatus) {
+        if (seekBar?.isEnabled == false) {
+            seekBar?.isEnabled = true
+        }
+
         dismissProgressBar()
         resetPlayerInfo()
         onUpdateTitle(status.jcAudio.title)
@@ -469,7 +474,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {
-        showProgressBar()
+        if (jcPlayerManager.currentAudio != null) {
+            showProgressBar()
+        }
     }
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {
