@@ -98,18 +98,22 @@ OR
 ## Custom layout
 You can customize the player layout handling theses attributes. 
 ```xml
-    android:background
-    app:next_icon_color
-    app:pause_icon_color
-    app:play_icon_color
-    app:previous_icon_color
-    app:progress_color
-    app:random_icon_color
-    app:repeat_icon_color
-    app:seek_bar_color
-    app:text_audio_current_duration_color
-    app:text_audio_duration_color
-    app:text_audio_title_color
+        app:next_icon
+	app:next_icon_color
+	app:pause_icon
+	app:pause_icon_color
+	app:play_icon
+	app:play_icon_color
+	app:previous_icon
+	app:previous_icon_color
+	app:progress_color
+	app:random_icon_color
+	app:repeat_icon
+	app:repeat_icon_color
+	app:seek_bar_color
+	app:text_audio_current_duration_color
+	app:text_audio_duration_color
+	app:text_audio_title_color
 ```
 
 ## How to contribute
