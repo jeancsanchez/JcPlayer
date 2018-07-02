@@ -1,4 +1,7 @@
-# JcPlayer
+<h1 align=center>
+<img src="Logotype.png" width=60%>
+</h1>
+
 [![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
 A simple audio player for Android that you can plugin to your apps quickly get audio playback working.
 </br></br>
