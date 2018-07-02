@@ -3,8 +3,10 @@
 </h1>
 
 [![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
+</br></br>
 A simple audio player for Android that you can plugin to your apps quickly get audio playback working.
 </br></br>
+
 ![](https://github.com/jeancsanchez/JcPlayer/blob/master/sample/jcplayer-gif-definitive.gif)
 
 ## New features
