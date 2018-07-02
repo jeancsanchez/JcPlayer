@@ -96,7 +96,7 @@ OR
 ```
 
 ## Custom layout
-You can customize the player layout handling theses attributes. 
+You can customize the player layout by manipulating theses attributes.
 ```xml
         app:next_icon
 	app:next_icon_color
