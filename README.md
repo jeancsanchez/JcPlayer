@@ -1,5 +1,5 @@
 <h1 align=center>
-<img src="Logotype.png" width=60%>
+<img src="logotype.png" width=60%>
 </h1>
 
 [![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
