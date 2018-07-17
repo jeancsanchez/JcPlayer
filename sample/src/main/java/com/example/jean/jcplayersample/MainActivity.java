@@ -1,6 +1,7 @@
 package com.example.jean.jcplayersample;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -154,12 +155,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTimeChanged(JcStatus status) {
+    public void onTimeChanged(@NonNull JcStatus status) {
         updateProgress(status);
     }
 
     @Override
-    public void onJcpError(Throwable throwable) {
+    public void onJcpError(@NonNull Throwable throwable) {
 
     }
 

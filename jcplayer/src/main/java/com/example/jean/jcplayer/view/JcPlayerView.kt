@@ -497,9 +497,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         progressBarPlayer?.visibility = ProgressBar.VISIBLE
         btnPlay?.visibility = Button.GONE
         btnPause?.visibility = Button.GONE
-
         btnNext?.isClickable = false
         btnPrev?.isClickable = false
+        seekBar?.isEnabled = false
+        seekBar?.progress = 0
     }
 
     private fun dismissProgressBar() {
@@ -507,6 +508,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         showPauseButton()
         btnNext?.isClickable = true
         btnPrev?.isClickable = true
+        seekBar?.isEnabled = true
+
     }
 
     private fun onUpdateTitle(title: String) {
