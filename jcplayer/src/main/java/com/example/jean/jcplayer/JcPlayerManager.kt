@@ -8,7 +8,7 @@ import com.example.jean.jcplayer.model.JcAudio
 import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import com.example.jean.jcplayer.service.JcPlayerService
 import com.example.jean.jcplayer.service.JcServiceConnection
-import com.example.jean.jcplayer.service.notification.JcNotificationService
+import com.example.jean.jcplayer.service.notification.JcNotificationPlayer
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -21,7 +21,7 @@ import java.util.*
 class JcPlayerManager private constructor(private val serviceConnection: JcServiceConnection) {
 
     lateinit var context: Context
-    private var jcNotificationPlayerService: JcNotificationService? = null
+    private var jcNotificationPlayer: JcNotificationPlayer? = null
     private var jcPlayerService: JcPlayerService? = null
     private var serviceBound = false
     var playlist: ArrayList<JcAudio> = ArrayList()
@@ -270,10 +270,10 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
      * @param iconResource The icon resource path.
      */
     fun createNewNotification(iconResource: Int) {
-        jcNotificationPlayerService
+        jcNotificationPlayer
                 ?.createNotificationPlayer(currentAudio?.title, iconResource)
                 ?: let {
-                    jcNotificationPlayerService = JcNotificationService
+                    jcNotificationPlayer = JcNotificationPlayer
                             .getInstance(context)
                             .get()
                             .also { jcPlayerManagerListener = it }
@@ -286,10 +286,10 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
      * Updates the current notification
      */
     fun updateNotification() {
-        jcNotificationPlayerService
+        jcNotificationPlayer
                 ?.updateNotification()
                 ?: let {
-                    jcNotificationPlayerService = JcNotificationService
+                    jcNotificationPlayer = JcNotificationPlayer
                             .getInstance(context)
                             .get()
                             .also { jcPlayerManagerListener = it }
@@ -375,11 +375,11 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
     fun kill() {
         jcPlayerService?.let {
             it.stop()
-            it.destroy()
+            it.onDestroy()
         }
 
         serviceConnection.disconnect()
-        jcNotificationPlayerService?.destroyNotificationIfExists()
+        jcNotificationPlayer?.destroyNotificationIfExists()
         managerListeners.clear()
         INSTANCE = null
     }

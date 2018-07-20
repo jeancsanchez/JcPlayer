@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import com.example.jean.jcplayer.model.JcAudio
-import com.example.jean.jcplayer.service.notification.JcNotificationService
+import com.example.jean.jcplayer.service.notification.JcNotificationPlayer
 import java.io.Serializable
 
 /**
@@ -45,8 +45,8 @@ class JcServiceConnection(private val context: Context) : ServiceConnection {
 
         if (serviceBound.not()) {
             val intent = Intent(context.applicationContext, JcPlayerService::class.java)
-            intent.putExtra(JcNotificationService.PLAYLIST, playlist as Serializable?)
-            intent.putExtra(JcNotificationService.CURRENT_AUDIO, currentAudio)
+            intent.putExtra(JcNotificationPlayer.PLAYLIST, playlist as Serializable?)
+            intent.putExtra(JcNotificationPlayer.CURRENT_AUDIO, currentAudio)
             context.bindService(intent, this, Context.BIND_AUTO_CREATE)
         }
     }

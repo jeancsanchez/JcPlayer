@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcNotificationService private constructor(private val context: Context) : JcPlayerManagerListener {
+class JcNotificationPlayer private constructor(private val context: Context) : JcPlayerManagerListener {
 
     private var title: String? = null
     private var time = "00:00"
@@ -54,11 +54,11 @@ class JcNotificationService private constructor(private val context: Context) : 
 
 
         @Volatile
-        private var INSTANCE: WeakReference<JcNotificationService>? = null
+        private var INSTANCE: WeakReference<JcNotificationPlayer>? = null
 
         @JvmStatic
-        fun getInstance(context: Context): WeakReference<JcNotificationService> = INSTANCE ?: let {
-            INSTANCE = WeakReference(JcNotificationService(context))
+        fun getInstance(context: Context): WeakReference<JcNotificationPlayer> = INSTANCE ?: let {
+            INSTANCE = WeakReference(JcNotificationPlayer(context))
             INSTANCE!!
         }
     }

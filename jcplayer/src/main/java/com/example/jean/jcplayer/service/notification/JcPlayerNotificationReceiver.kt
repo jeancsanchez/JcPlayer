@@ -12,26 +12,26 @@ class JcPlayerNotificationReceiver : BroadcastReceiver() {
         val jcPlayerManager = JcPlayerManager.getInstance(context)
         var action = ""
 
-        if (intent.hasExtra(JcNotificationService.ACTION)) {
-            action = intent.getStringExtra(JcNotificationService.ACTION)
+        if (intent.hasExtra(JcNotificationPlayer.ACTION)) {
+            action = intent.getStringExtra(JcNotificationPlayer.ACTION)
         }
 
         when (action) {
-            JcNotificationService.PLAY -> try {
+            JcNotificationPlayer.PLAY -> try {
                 jcPlayerManager.get()?.continueAudio()
                 jcPlayerManager.get()?.updateNotification()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
 
-            JcNotificationService.PAUSE -> try {
+            JcNotificationPlayer.PAUSE -> try {
                 jcPlayerManager.get()?.pauseAudio()
                 jcPlayerManager.get()?.updateNotification()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
 
-            JcNotificationService.NEXT -> try {
+            JcNotificationPlayer.NEXT -> try {
                 jcPlayerManager.get()?.nextAudio()
             } catch (e: AudioListNullPointerException) {
                 try {
@@ -42,7 +42,7 @@ class JcPlayerNotificationReceiver : BroadcastReceiver() {
 
             }
 
-            JcNotificationService.PREVIOUS -> try {
+            JcNotificationPlayer.PREVIOUS -> try {
                 jcPlayerManager.get()?.previousAudio()
             } catch (e: Exception) {
                 try {

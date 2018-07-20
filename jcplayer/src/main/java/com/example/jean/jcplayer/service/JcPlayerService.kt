@@ -283,7 +283,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         }
     }
 
-    fun destroy() {
+    override fun onDestroy() {
         stop()
         stopSelf()
     }
