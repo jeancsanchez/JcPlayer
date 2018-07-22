@@ -32,10 +32,10 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ## Gradle Dependency (Project level)
 ```Gradle
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		jcenter()
+	        maven { url "https://jitpack.io" }
+	    }
 	}
 ```
 ## Gradle Dependency (Module level) 
