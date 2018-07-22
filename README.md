@@ -129,7 +129,6 @@ https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/
  The list view is developer responsibilty
 
 ## TODO LIST ##
-* [ ] On Android 6.0 the notification is not being cleared.
 * [x] Set custom layouts for player.
 * [ ] Add Instrumentation tests
 * [ ] Add unity tests.
