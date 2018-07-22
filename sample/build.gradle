@@ -23,11 +23,11 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    api project(path: ':jcplayer')
+//    api project(path: ':jcplayer')
     implementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.ext.constraintLayoutVersion"
-//    implementation 'com.github.jeancsanchez:JcPlayer:master_v2-SNAPSHOT'
+    implementation 'com.github.jeancsanchez:JcPlayer:2.0'
 
     testImplementation 'junit:junit:4.12'
 }
