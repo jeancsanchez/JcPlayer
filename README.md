@@ -7,7 +7,7 @@
 A simple audio player for Android that you can plugin to your apps quickly get audio playback working.
 </br></br>
 
-![](https://github.com/jeancsanchez/JcPlayer/blob/master/sample/jcplayer-gif-definitive.gif)
+![](https://github.com/jeancsanchez/JcPlayer/blob/master_v2/sample/jcplayer_2.gif)
 
 ## New features
 - Raw files
