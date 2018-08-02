@@ -147,6 +147,15 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
     }
 
     /**
+     * Notifies on seek completed for the service listeners
+     */
+    private fun notifyOnSeekCompleted(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onSeekCompleted(status)
+        }
+    }
+
+    /**
      * Connects with audio service.
      */
     private fun initService(connectionListener: ((service: JcPlayerService?) -> Unit)? = null) =
@@ -179,6 +188,7 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
 
                 service.onPreparedListener = { notifyOnPrepared(it) }
                 service.onTimeChangedListener = { notifyOnTimeChanged(it) }
+                service.onSeekCompletedListener = { notifyOnSeekCompleted(it) }
                 service.onCompletedListener = { notifyOnCompleted() }
                 service.onContinueListener = { notifyOnContinue(it) }
 

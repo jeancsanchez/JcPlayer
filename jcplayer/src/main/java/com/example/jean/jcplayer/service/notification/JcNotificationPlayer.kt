@@ -144,6 +144,10 @@ class JcNotificationPlayer private constructor(private val context: Context) : J
         createNotificationPlayer(title, iconResource)
     }
 
+    override fun onSeekCompleted(status: JcStatus) {
+
+    }
+
 
     fun destroyNotificationIfExists() {
         try {

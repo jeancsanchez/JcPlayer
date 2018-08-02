@@ -432,13 +432,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         txtDuration?.post { txtDuration?.text = toTimeSongString(duration) }
     }
 
-    override fun onProgressChanged(seekBar: SeekBar, i: Int, fromUser: Boolean) {
-        jcPlayerManager.let {
-            if (fromUser) {
-                it.seekTo(i)
-            }
-        }
-    }
+    override fun onProgressChanged(seekBar: SeekBar, i: Int, fromUser: Boolean) {}
 
     override fun onCompletedAudio() {
         resetPlayerInfo()
@@ -469,6 +463,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
     }
 
+    override fun onSeekCompleted(status: JcStatus) {
+        dismissProgressBar()
+
+        val currentPosition = status.currentPosition.toInt()
+        seekBar?.post { seekBar?.progress = currentPosition }
+        txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
+    }
+
     override fun onJcpError(throwable: Throwable) {
         // TODO
 //        jcPlayerManager.currentAudio?.let {
@@ -476,14 +478,15 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 //        }
     }
 
-    override fun onStartTrackingTouch(seekBar: SeekBar) {
-        if (jcPlayerManager.currentAudio != null) {
-            showProgressBar()
-        }
-    }
+    override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {
-        dismissProgressBar()
+        if (jcPlayerManager.currentAudio != null) {
+            jcPlayerManager.let {
+                it.seekTo(seekBar.progress)
+                showProgressBar()
+            }
+        }
     }
 
     /**

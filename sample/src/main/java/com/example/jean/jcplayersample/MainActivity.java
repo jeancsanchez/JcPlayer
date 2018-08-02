@@ -160,6 +160,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onSeekCompleted(JcStatus status) {
+
+    }
+
+    @Override
     public void onJcpError(@NonNull Throwable throwable) {
 
     }

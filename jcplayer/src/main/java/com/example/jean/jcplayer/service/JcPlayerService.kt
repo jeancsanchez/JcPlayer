@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
  * Jesus loves you.
  */
 class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnErrorListener {
+        MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnErrorListener {
 
     private val binder = JcPlayerServiceBinder()
 
@@ -38,6 +38,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     var onPreparedListener: ((JcStatus) -> Unit)? = null
 
     var onTimeChangedListener: ((JcStatus) -> Unit)? = null
+
+    var onSeekCompletedListener: ((JcStatus) -> Unit)? = null
 
     var onContinueListener: ((JcStatus) -> Unit)? = null
 
@@ -125,6 +127,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                         it.setOnPreparedListener(this)
                         it.setOnBufferingUpdateListener(this)
                         it.setOnCompletionListener(this)
+                        it.setOnSeekCompleteListener(this)
                         it.setOnErrorListener(this)
 
                         status = updateStatus(jcAudio, JcStatus.PlayState.PREPARING)
@@ -143,13 +146,16 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     fun seekTo(time: Int) {
         Log.d("time = ", Integer.toString(time))
         mediaPlayer?.seekTo(time)
-        onTimeChangedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
     }
 
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
 
     override fun onCompletion(mediaPlayer: MediaPlayer) {
         onCompletedListener?.invoke()
+    }
+
+    override fun onSeekComplete(mediaPlayer: MediaPlayer) {
+        onSeekCompletedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
     }
 
     override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {

@@ -43,6 +43,11 @@ interface JcPlayerManagerListener {
     fun onTimeChanged(status: JcStatus)
 
     /**
+     * Called when seeking completed.
+     */
+    fun onSeekCompleted(status: JcStatus)
+
+    /**
      * Notifies some error.
      * @param throwable The error.
      */
