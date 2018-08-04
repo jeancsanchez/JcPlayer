@@ -42,7 +42,7 @@ private constructor(
     var isPlaying: Boolean = jcPlayerService?.isPlaying ?: false
         private set
 
-    var isPaused: Boolean = jcPlayerService?.isPlaying ?: true
+    var isPaused: Boolean = jcPlayerService?.isPaused ?: true
         private set
 
     var onShuffleMode: Boolean = false
@@ -302,6 +302,10 @@ private constructor(
         for (listener in managerListeners) {
             listener.onStopped(status)
         }
+    }
+
+    override fun onError(exception: Exception) {
+        notifyError(exception)
     }
 
     /**

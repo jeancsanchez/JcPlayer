@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onJcpError(@NonNull Throwable throwable) {
-
+        Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     private void updateProgress(final JcStatus jcStatus) {

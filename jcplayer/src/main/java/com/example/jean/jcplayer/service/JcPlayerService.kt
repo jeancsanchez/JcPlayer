@@ -185,8 +185,12 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
         when (status) {
             JcStatus.PlayState.PLAY -> {
-                mediaPlayer?.start()
-                isPlaying = true
+                try {
+                    mediaPlayer?.start()
+                    isPlaying = true
+                } catch (exception: Exception) {
+                    serviceListener?.onError(exception)
+                }
             }
 
             JcStatus.PlayState.STOP -> {

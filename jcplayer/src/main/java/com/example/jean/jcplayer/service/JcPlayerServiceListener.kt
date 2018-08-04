@@ -38,4 +38,9 @@ interface JcPlayerServiceListener {
      * Notifies on stopped for the service listeners
      */
     fun onStoppedListener(status: JcStatus)
+
+    /**
+     * Notifies an error for the service listeners
+     */
+    fun onError(exception: Exception)
 }
