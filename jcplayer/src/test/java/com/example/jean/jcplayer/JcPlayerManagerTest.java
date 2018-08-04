@@ -3,7 +3,7 @@
 //import com.example.jean.jcplayer.general.Origin;
 //import com.example.jean.jcplayer.general.errors.EmptyPlaylistException;
 //import com.example.jean.jcplayer.model.JcAudio;
-//import com.example.jean.jcplayer.service.JcPlayerManagerListener;
+//import com.example.jean.jcplayer.JcPlayerManagerListener;
 //import com.example.jean.jcplayer.service.JcServiceConnection;
 //
 //import org.junit.Before;

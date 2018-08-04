@@ -5,8 +5,8 @@ import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.JcpServiceDisconnectedError
 import com.example.jean.jcplayer.model.JcAudio
-import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import com.example.jean.jcplayer.service.JcPlayerService
+import com.example.jean.jcplayer.service.JcPlayerServiceListener
 import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.notification.JcNotificationPlayer
 import java.lang.ref.WeakReference
@@ -18,7 +18,10 @@ import java.util.*
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcPlayerManager private constructor(private val serviceConnection: JcServiceConnection) {
+class JcPlayerManager
+private constructor(
+        private val serviceConnection: JcServiceConnection
+) : JcPlayerServiceListener {
 
     lateinit var context: Context
     private var jcNotificationPlayer: JcNotificationPlayer? = null
@@ -36,21 +39,19 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
     val currentAudio: JcAudio?
         get() = jcPlayerService?.currentAudio
 
-    var isPlaying: Boolean = false
+    var isPlaying: Boolean = jcPlayerService?.isPlaying ?: false
         private set
 
-    var isPaused: Boolean = false
+    var isPaused: Boolean = jcPlayerService?.isPlaying ?: true
         private set
 
     var onShuffleMode: Boolean = false
 
-    var repeatPlaylist: Boolean = true
+    var repeatPlaylist: Boolean = false
         private set
 
     var repeatCurrAudio: Boolean = false
         private set
-
-    private val position = 1
 
     private var repeatCount = 0
 
@@ -77,72 +78,6 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
                     }
             )
             INSTANCE!!
-        }
-    }
-
-    /**
-     * Notifies errors for the service listeners
-     */
-    private fun notifyError(throwable: Throwable) {
-        for (listener in managerListeners) {
-            listener.onJcpError(throwable)
-        }
-    }
-
-    /**
-     * Notifies on paused for the service listeners
-     */
-    private fun notifyOnPaused(status: JcStatus) {
-        isPlaying = false
-        isPaused = true
-
-        for (listener in managerListeners) {
-            listener.onPaused(status)
-        }
-    }
-
-    /**
-     * Notifies on completed audio for the service listeners
-     */
-    private fun notifyOnCompleted() {
-        for (listener in managerListeners) {
-            listener.onCompletedAudio()
-        }
-    }
-
-    /**
-     * Notifies on continue for the service listeners
-     */
-    private fun notifyOnContinue(status: JcStatus) {
-        isPlaying = true
-        isPaused = false
-
-        for (listener in managerListeners) {
-            listener.onContinueAudio(status)
-        }
-    }
-
-    /**
-     * Notifies on prepared aduio for the service listeners
-     */
-    private fun notifyOnPrepared(status: JcStatus) {
-        for (listener in managerListeners) {
-            listener.onPreparedAudio(status)
-        }
-    }
-
-    /**
-     * Notifies on time changed for the service listeners
-     */
-    private fun notifyOnTimeChanged(status: JcStatus) {
-        for (listener in managerListeners) {
-            listener.onTimeChanged(status)
-
-            if (status.currentPosition in 1..2 /* Not to call this every second */) {
-                isPlaying = true
-                isPaused = false
-                listener.onPlaying(status)
-            }
         }
     }
 
@@ -174,13 +109,8 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
             notifyError(AudioListNullPointerException())
         } else {
             jcPlayerService?.let { service ->
-                updatePositionAudioList()
+                service.serviceListener = this
                 service.play(jcAudio)
-
-                service.onPreparedListener = { notifyOnPrepared(it) }
-                service.onTimeChangedListener = { notifyOnTimeChanged(it) }
-                service.onCompletedListener = { notifyOnCompleted() }
-                service.onContinueListener = { notifyOnContinue(it) }
 
             } ?: let {
                 initService {
@@ -209,11 +139,9 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
 
                 } else {
                     service.stop()
-                    getNextAudio()?.let { service.play(it) } ?: service.stop()
+                    getNextAudio()?.let { service.play(it) } ?: let { service.stop() }
                 }
             }
-
-            updatePositionAudioList()
         }
     }
 
@@ -236,8 +164,6 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
                     getPreviousAudio()?.let { service.play(it) }
                 }
             }
-
-            updatePositionAudioList()
         }
     }
 
@@ -247,7 +173,7 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
     fun pauseAudio() {
         jcPlayerService?.let { service ->
             currentAudio?.let {
-                notifyOnPaused(service.pause(it))
+                service.pause(it)
             }
         }
     }
@@ -305,22 +231,13 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
         jcPlayerService?.seekTo(time)
     }
 
-    /**
-     * Updates the current position of the audio list.
-     */
-    private fun updatePositionAudioList() {
-        playlist.indices
-                .filter { playlist[it].id == currentAudio?.id }
-                .forEach { this.currentPositionList = it }
-    }
-
 
     private fun getNextAudio(): JcAudio? {
         return if (onShuffleMode) {
             playlist[Random().nextInt(playlist.size)]
         } else {
             try {
-                playlist[currentPositionList + position]
+                playlist[currentPositionList.inc()]
             } catch (e: IndexOutOfBoundsException) {
                 if (repeatPlaylist) {
                     playlist.first()
@@ -336,11 +253,63 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
             playlist[Random().nextInt(playlist.size)]
         } else {
             try {
-                playlist[currentPositionList - position]
+                playlist[currentPositionList.dec()]
 
             } catch (e: IndexOutOfBoundsException) {
                 playlist.first()
             }
+        }
+    }
+
+
+    override fun onPreparedListener(status: JcStatus) {
+        updatePositionAudioList()
+
+        for (listener in managerListeners) {
+            listener.onPreparedAudio(status)
+        }
+    }
+
+    override fun onTimeChangedListener(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onTimeChanged(status)
+
+            if (status.currentPosition in 1..2 /* Not to call this every second */) {
+                listener.onPlaying(status)
+            }
+        }
+    }
+
+    override fun onContinueListener(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onContinueAudio(status)
+        }
+    }
+
+    override fun onCompletedListener() {
+        for (listener in managerListeners) {
+            listener.onCompletedAudio()
+        }
+    }
+
+    override fun onPausedListener(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onPaused(status)
+        }
+    }
+
+    override fun onStoppedListener(status: JcStatus) {
+        for (listener in managerListeners) {
+            listener.onStopped(status)
+        }
+    }
+
+    /**
+     * Notifies errors for the service listeners
+     */
+    private fun notifyError(throwable: Throwable) {
+        for (listener in managerListeners) {
+            listener.onJcpError(throwable)
         }
     }
 
@@ -367,6 +336,16 @@ class JcPlayerManager private constructor(private val serviceConnection: JcServi
             repeatPlaylist = false
             repeatCount = 0
         }
+    }
+
+    /**
+     * Updates the current position of the audio list.
+     */
+    private fun updatePositionAudioList() {
+        playlist.indices
+                .singleOrNull { playlist[it].id == currentAudio?.id }
+                ?.let { this.currentPositionList = it }
+                ?: let { this.currentPositionList = 0 }
     }
 
     /**

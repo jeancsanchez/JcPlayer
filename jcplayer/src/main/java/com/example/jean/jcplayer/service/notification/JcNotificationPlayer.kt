@@ -13,10 +13,10 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import android.widget.RemoteViews
 import com.example.jean.jcplayer.JcPlayerManager
+import com.example.jean.jcplayer.JcPlayerManagerListener
 import com.example.jean.jcplayer.R
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.PlayerUtil
-import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import java.lang.ref.WeakReference
 
 /**
@@ -130,6 +130,10 @@ class JcNotificationPlayer private constructor(private val context: Context) : J
 
     override fun onPaused(status: JcStatus) {
         createNotificationPlayer(title, iconResource)
+    }
+
+    override fun onStopped(status: JcStatus) {
+        destroyNotificationIfExists()
     }
 
     override fun onContinueAudio(status: JcStatus) {}

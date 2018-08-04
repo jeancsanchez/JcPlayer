@@ -14,13 +14,13 @@ import android.widget.SeekBar
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.example.jean.jcplayer.JcPlayerManager
+import com.example.jean.jcplayer.JcPlayerManagerListener
 import com.example.jean.jcplayer.R
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.PlayerUtil.toTimeSongString
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
-import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
 
 
@@ -450,10 +450,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
     }
 
-    override fun onPaused(status: JcStatus) {
-        showPlayButton()
-    }
-
     override fun onContinueAudio(status: JcStatus) {
         dismissProgressBar()
     }
@@ -467,6 +463,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         val currentPosition = status.currentPosition.toInt()
         seekBar?.post { seekBar?.progress = currentPosition }
         txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
+    }
+
+    override fun onPaused(status: JcStatus) {
+        showPlayButton()
+    }
+
+    override fun onStopped(status: JcStatus) {
+        showPlayButton()
     }
 
     override fun onJcpError(throwable: Throwable) {

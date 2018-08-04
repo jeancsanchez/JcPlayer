@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer.service
+package com.example.jean.jcplayer
 
 import com.example.jean.jcplayer.general.JcStatus
 
@@ -41,6 +41,12 @@ interface JcPlayerManagerListener {
      * Called when the time of the audio changed.
      */
     fun onTimeChanged(status: JcStatus)
+
+
+    /**
+     * Called when the player stops.
+     */
+    fun onStopped(status: JcStatus)
 
     /**
      * Notifies some error.
