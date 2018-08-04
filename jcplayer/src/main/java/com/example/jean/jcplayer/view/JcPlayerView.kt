@@ -193,20 +193,18 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * its id. So here we returning its id after adding to list.
      *
      * @param jcAudio audio file generated from [JcAudio]
-     * @return id of jcAudio.
+     * @return jcAudio position.
      */
-    fun addAudio(jcAudio: JcAudio): Long {
+    fun addAudio(jcAudio: JcAudio): Int {
         jcPlayerManager.playlist.let {
             val lastPosition = it.size
-
-            jcAudio.id = (lastPosition + 1).toLong()
             jcAudio.position = lastPosition + 1
 
             if (it.contains(jcAudio).not()) {
                 it.add(lastPosition, jcAudio)
             }
 
-            return jcAudio.id!!
+            return jcAudio.position!!
         }
     }
 
@@ -540,7 +538,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun sortPlaylist(playlist: List<JcAudio>) {
         for (i in playlist.indices) {
             val jcAudio = playlist[i]
-            jcAudio.id = i.toLong()
             jcAudio.position = i
         }
     }

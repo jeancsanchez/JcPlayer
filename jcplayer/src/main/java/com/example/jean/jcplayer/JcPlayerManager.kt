@@ -343,7 +343,7 @@ private constructor(
      */
     private fun updatePositionAudioList() {
         playlist.indices
-                .singleOrNull { playlist[it].id == currentAudio?.id }
+                .singleOrNull { playlist[it] == currentAudio }
                 ?.let { this.currentPositionList = it }
                 ?: let { this.currentPositionList = 0 }
     }
