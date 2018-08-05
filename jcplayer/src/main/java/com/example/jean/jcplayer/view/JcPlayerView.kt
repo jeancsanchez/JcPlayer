@@ -14,13 +14,13 @@ import android.widget.SeekBar
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.example.jean.jcplayer.JcPlayerManager
+import com.example.jean.jcplayer.JcPlayerManagerListener
 import com.example.jean.jcplayer.R
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.PlayerUtil.toTimeSongString
 import com.example.jean.jcplayer.general.errors.AudioListNullPointerException
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener
 import com.example.jean.jcplayer.model.JcAudio
-import com.example.jean.jcplayer.service.JcPlayerManagerListener
 import kotlinx.android.synthetic.main.view_jcplayer.view.*
 
 
@@ -193,20 +193,18 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * its id. So here we returning its id after adding to list.
      *
      * @param jcAudio audio file generated from [JcAudio]
-     * @return id of jcAudio.
+     * @return jcAudio position.
      */
-    fun addAudio(jcAudio: JcAudio): Long {
+    fun addAudio(jcAudio: JcAudio): Int {
         jcPlayerManager.playlist.let {
             val lastPosition = it.size
-
-            jcAudio.id = (lastPosition + 1).toLong()
             jcAudio.position = lastPosition + 1
 
             if (it.contains(jcAudio).not()) {
                 it.add(lastPosition, jcAudio)
             }
 
-            return jcAudio.id!!
+            return jcAudio.position!!
         }
     }
 
@@ -444,10 +442,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
     }
 
-    override fun onPaused(status: JcStatus) {
-        showPlayButton()
-    }
-
     override fun onContinueAudio(status: JcStatus) {
         dismissProgressBar()
     }
@@ -469,6 +463,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         val currentPosition = status.currentPosition.toInt()
         seekBar?.post { seekBar?.progress = currentPosition }
         txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
+    }
+
+    override fun onPaused(status: JcStatus) {
+        showPlayButton()
+    }
+
+    override fun onStopped(status: JcStatus) {
+        showPlayButton()
     }
 
     override fun onJcpError(throwable: Throwable) {
@@ -539,7 +541,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun sortPlaylist(playlist: List<JcAudio>) {
         for (i in playlist.indices) {
             val jcAudio = playlist[i]
-            jcAudio.id = i.toLong()
             jcAudio.position = i
         }
     }

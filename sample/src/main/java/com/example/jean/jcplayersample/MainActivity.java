@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.example.jean.jcplayer.general.JcStatus;
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener;
 import com.example.jean.jcplayer.model.JcAudio;
-import com.example.jean.jcplayer.service.JcPlayerManagerListener;
+import com.example.jean.jcplayer.JcPlayerManagerListener;
 import com.example.jean.jcplayer.view.JcPlayerView;
 
 import java.util.ArrayList;
@@ -165,12 +165,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onJcpError(@NonNull Throwable throwable) {
+    public void onStopped(JcStatus status) {
 
     }
 
+    @Override
+    public void onJcpError(@NonNull Throwable throwable) {
+        Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
     private void updateProgress(final JcStatus jcStatus) {
-        Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()
+        Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + "Song duration = " + jcStatus.getDuration()
                 + "\n song position = " + jcStatus.getCurrentPosition());
 
         runOnUiThread(new Runnable() {

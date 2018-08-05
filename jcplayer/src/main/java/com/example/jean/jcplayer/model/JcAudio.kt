@@ -13,7 +13,6 @@ import com.example.jean.jcplayer.general.Origin
  * Jesus loves you.
  */
 data class JcAudio constructor(
-        var id: Long? = -1,
         var title: String,
         var position: Int? = -1,
         val path: String,
@@ -21,7 +20,6 @@ data class JcAudio constructor(
 ) : Parcelable {
 
     constructor(source: Parcel) : this(
-            source.readValue(Long::class.java.classLoader) as Long?,
             source.readString(),
             source.readValue(Int::class.java.classLoader) as Int?,
             source.readString(),
@@ -31,7 +29,6 @@ data class JcAudio constructor(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeValue(id)
         writeString(title)
         writeValue(position)
         writeString(path)

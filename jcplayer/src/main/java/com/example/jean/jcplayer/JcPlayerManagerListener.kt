@@ -1,4 +1,4 @@
-package com.example.jean.jcplayer.service
+package com.example.jean.jcplayer
 
 import com.example.jean.jcplayer.general.JcStatus
 
@@ -46,6 +46,11 @@ interface JcPlayerManagerListener {
      * Called when seeking completed.
      */
     fun onSeekCompleted(status: JcStatus)
+
+    /**
+     * Called when the player stops.
+     */
+    fun onStopped(status: JcStatus)
 
     /**
      * Notifies some error.

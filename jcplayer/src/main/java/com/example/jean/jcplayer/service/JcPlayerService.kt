@@ -32,21 +32,11 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var mediaPlayer: MediaPlayer? = null
 
-    private var isPlaying: Boolean = false
+    var isPlaying: Boolean = false
+        private set
 
-    // TODO: CENTRALIZAR EM APENAS UM LISTENER E APENAS VERIFICAR NO MANAGER COM WHEN.
-    var onPreparedListener: ((JcStatus) -> Unit)? = null
-
-    var onTimeChangedListener: ((JcStatus) -> Unit)? = null
-
-    var onSeekCompletedListener: ((JcStatus) -> Unit)? = null
-
-    var onContinueListener: ((JcStatus) -> Unit)? = null
-
-    var onCompletedListener: (() -> Unit)? = null
-
-    // TODO:
-    var onStopedListener: (() -> Unit)? = null
+    var isPaused: Boolean = true
+        private set
 
     var currentAudio: JcAudio? = null
         private set
@@ -55,6 +45,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     private var assetFileDescriptor: AssetFileDescriptor? = null // For Asset and Raw file.
 
+    var serviceListener: JcPlayerServiceListener? = null
+
+
     inner class JcPlayerServiceBinder : Binder() {
         val service: JcPlayerService
             get() = this@JcPlayerService
@@ -62,9 +55,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
     override fun onBind(intent: Intent): IBinder? = binder
 
-    fun pause(jcAudio: JcAudio): JcStatus = updateStatus(jcAudio, JcStatus.PlayState.PAUSE)
-
-    fun stop(): JcStatus = updateStatus(status = JcStatus.PlayState.STOP)
 
     fun play(jcAudio: JcAudio): JcStatus {
         val tempJcAudio = currentAudio
@@ -84,7 +74,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                         } else {
                             status = updateStatus(jcAudio, JcStatus.PlayState.CONTINUE)
                             updateTime()
-                            onContinueListener?.invoke(status)
+                            serviceListener?.onContinueListener(status)
                         }
                     }
                 } ?: let {
@@ -143,6 +133,22 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         return status
     }
 
+    fun pause(jcAudio: JcAudio): JcStatus {
+        val status = updateStatus(jcAudio, JcStatus.PlayState.PAUSE)
+        serviceListener?.onPausedListener(status)
+        return status
+    }
+
+    fun stop(): JcStatus {
+        val status = updateStatus(status = JcStatus.PlayState.STOP)
+        serviceListener?.onStoppedListener(status)
+
+        onDestroy()
+        stopSelf()
+        return status
+    }
+
+
     fun seekTo(time: Int) {
         Log.d("time = ", Integer.toString(time))
         mediaPlayer?.seekTo(time)
@@ -151,11 +157,12 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
 
     override fun onCompletion(mediaPlayer: MediaPlayer) {
-        onCompletedListener?.invoke()
+        serviceListener?.onCompletedListener()
     }
 
     override fun onSeekComplete(mediaPlayer: MediaPlayer) {
-        onSeekCompletedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
+        val status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+        serviceListener?.onSeekCompletedListener(status)
     }
 
     override fun onError(mediaPlayer: MediaPlayer, i: Int, i1: Int): Boolean {
@@ -167,7 +174,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         val status = updateStatus(currentAudio, JcStatus.PlayState.PLAY)
 
         updateTime()
-        onPreparedListener?.invoke(status)
+        serviceListener?.onPreparedListener(status)
     }
 
     private fun updateStatus(jcAudio: JcAudio? = null, status: JcStatus.PlayState): JcStatus {
@@ -182,8 +189,12 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
         when (status) {
             JcStatus.PlayState.PLAY -> {
-                mediaPlayer?.start()
-                isPlaying = true
+                try {
+                    mediaPlayer?.start()
+                    isPlaying = true
+                } catch (exception: Exception) {
+                    serviceListener?.onError(exception)
+                }
             }
 
             JcStatus.PlayState.STOP -> {
@@ -191,7 +202,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                     it.stop()
                     it.release()
                     mediaPlayer = null
-
                 }
 
                 isPlaying = false
@@ -218,7 +228,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             override fun run() {
                 while (isPlaying) {
                     try {
-                        onTimeChangedListener?.invoke(updateStatus(currentAudio, JcStatus.PlayState.CONTINUE))
+                        val status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+                        serviceListener?.onTimeChangedListener(status)
                         Thread.sleep(TimeUnit.SECONDS.toMillis(1))
                     } catch (e: IllegalStateException) {
                         e.printStackTrace()
@@ -227,7 +238,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                     } catch (e: NullPointerException) {
                         e.printStackTrace()
                     }
-
                 }
             }
         }.start()
@@ -287,10 +297,5 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 e.printStackTrace()
             }
         }
-    }
-
-    override fun onDestroy() {
-        stop()
-        stopSelf()
     }
 }
