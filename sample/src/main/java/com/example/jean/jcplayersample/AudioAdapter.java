@@ -36,7 +36,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public long getItemId(int position) {
-        return jcAudioList.get(position).getId();
+        return position;
     }
 
     @Override

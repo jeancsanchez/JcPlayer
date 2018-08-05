@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateProgress(final JcStatus jcStatus) {
-        Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + "Song duration = " + jcStatus.getDuration()
+        Log.d(TAG, "Song duration = " + jcStatus.getDuration()
                 + "\n song position = " + jcStatus.getCurrentPosition());
 
         runOnUiThread(new Runnable() {
