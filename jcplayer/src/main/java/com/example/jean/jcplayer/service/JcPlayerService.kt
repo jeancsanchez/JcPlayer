@@ -141,9 +141,6 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     fun stop(): JcStatus {
         val status = updateStatus(status = JcStatus.PlayState.STOP)
         serviceListener?.onStoppedListener(status)
-
-        onDestroy()
-        stopSelf()
         return status
     }
 
@@ -293,5 +290,10 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 e.printStackTrace()
             }
         }
+    }
+
+    fun finalize() {
+        onDestroy()
+        stopSelf()
     }
 }

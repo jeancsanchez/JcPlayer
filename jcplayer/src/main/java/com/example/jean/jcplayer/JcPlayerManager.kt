@@ -132,14 +132,10 @@ private constructor(
         } else {
             jcPlayerService?.let { service ->
                 if (repeatCurrAudio) {
-                    currentAudio?.let {
-                        service.stop()
-                        service.play(it)
-                    }
-
+                    currentAudio?.let { service.seekTo(0) }
                 } else {
                     service.stop()
-                    getNextAudio()?.let { service.play(it) } ?: let { service.stop() }
+                    getNextAudio()?.let { service.play(it) } ?: service.finalize()
                 }
             }
         }
@@ -155,10 +151,7 @@ private constructor(
         } else {
             jcPlayerService?.let { service ->
                 if (repeatCurrAudio) {
-                    currentAudio?.let {
-                        service.stop()
-                        service.play(it)
-                    }
+                    currentAudio?.let { service.seekTo(0) }
                 } else {
                     service.stop()
                     getPreviousAudio()?.let { service.play(it) }
@@ -171,11 +164,7 @@ private constructor(
      * Pauses the current audio.
      */
     fun pauseAudio() {
-        jcPlayerService?.let { service ->
-            currentAudio?.let {
-                service.pause(it)
-            }
-        }
+        jcPlayerService?.let { service -> currentAudio?.let { service.pause(it) } }
     }
 
     /**
