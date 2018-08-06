@@ -483,12 +483,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     override fun onStartTrackingTouch(seekBar: SeekBar) {}
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {
-        if (jcPlayerManager.currentAudio != null) {
-            jcPlayerManager.let {
-                it.seekTo(seekBar.progress)
-                showProgressBar()
-            }
-        }
+        jcPlayerManager.seekTo(seekBar.progress)
+        showProgressBar()
     }
 
     /**
