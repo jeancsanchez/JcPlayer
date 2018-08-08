@@ -160,8 +160,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSeekCompleted(JcStatus status) {
-
+    public void onSeekCompleted(@NonNull JcStatus status) {
+        updateProgress(status);
     }
 
     @Override

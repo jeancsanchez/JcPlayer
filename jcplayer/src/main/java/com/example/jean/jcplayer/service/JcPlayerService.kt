@@ -161,7 +161,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
     }
 
     override fun onSeekComplete(mediaPlayer: MediaPlayer) {
-        val status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+        val status = updateStatus(currentAudio, jcStatus.playState)
         serviceListener?.onSeekCompletedListener(status)
     }
 

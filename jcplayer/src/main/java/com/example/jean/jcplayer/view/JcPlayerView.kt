@@ -459,6 +459,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
     override fun onSeekCompleted(status: JcStatus) {
         dismissProgressBar()
+        if (status.playState == JcStatus.PlayState.PAUSE) {
+            showPlayButton()
+        }
 
         val currentPosition = status.currentPosition.toInt()
         seekBar?.post { seekBar?.progress = currentPosition }
