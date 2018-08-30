@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapterViewHolder> {
-    public static final String TAG = AudioAdapter.class.getSimpleName();
+    private static final String TAG = AudioAdapter.class.getSimpleName();
     private static OnItemClickListener mListener;
     private List<JcAudio> jcAudioList;
     private SparseArray<Float> progressMap = new SparseArray<>();
@@ -31,12 +31,7 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     // Define the method that allows the parent activity or fragment to define the jcPlayerManagerListener
     public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mListener = listener;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return jcAudioList.get(position).getId();
+        mListener = listener;
     }
 
     @Override
@@ -49,18 +44,24 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
     @Override
     public void onBindViewHolder(AudioAdapterViewHolder holder, int position) {
-        String title = position+1 + "    " + jcAudioList.get(position).getTitle();
+        String title = position + 1 + "    " + jcAudioList.get(position).getTitle();
         holder.audioTitle.setText(title);
         holder.itemView.setTag(jcAudioList.get(position));
 
         applyProgressPercentage(holder, progressMap.get(position, 0.0f));
     }
 
-  /**
-   * Applying percentage to progress.
-   * @param holder ViewHolder
-   * @param percentage in float value. where 1 is equals as 100%
-   */
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    /**
+     * Applying percentage to progress.
+     *
+     * @param holder     ViewHolder
+     * @param percentage in float value. where 1 is equals as 100%
+     */
     private void applyProgressPercentage(AudioAdapterViewHolder holder, float percentage) {
         Log.d(TAG, "applyProgressPercentage() with percentage = " + percentage);
         LinearLayout.LayoutParams progress = (LinearLayout.LayoutParams) holder.viewProgress.getLayoutParams();
@@ -84,9 +85,9 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
 
 
         progressMap.put(position, progress);
-        if(progressMap.size() > 1) {
-            for(int i = 0; i < progressMap.size(); i++) {
-                if(progressMap.keyAt(i) != position) {
+        if (progressMap.size() > 1) {
+            for (int i = 0; i < progressMap.size(); i++) {
+                if (progressMap.keyAt(i) != position) {
                     Log.d(TAG, "KeyAt(" + i + ") = " + progressMap.keyAt(i));
                     notifyItemChanged(progressMap.keyAt(i));
                     progressMap.delete(progressMap.keyAt(i));
@@ -103,30 +104,31 @@ public class AudioAdapter extends RecyclerView.Adapter<AudioAdapter.AudioAdapter
         void onSongItemDeleteClicked(int position);
     }
 
-    static class AudioAdapterViewHolder extends RecyclerView.ViewHolder{
+    static class AudioAdapterViewHolder extends RecyclerView.ViewHolder {
         private TextView audioTitle;
         private Button btnDelete;
         private View viewProgress;
         private View viewAntiProgress;
 
-        public AudioAdapterViewHolder(View view){
+        public AudioAdapterViewHolder(View view) {
             super(view);
-            this.audioTitle = (TextView) view.findViewById(R.id.audio_title);
-            this.btnDelete = (Button) view.findViewById(R.id.btn_delete);
+            this.audioTitle = view.findViewById(R.id.audio_title);
+            this.btnDelete = view.findViewById(R.id.btn_delete);
             viewProgress = view.findViewById(R.id.song_progress_view);
             viewAntiProgress = view.findViewById(R.id.song_anti_progress_view);
 
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(mListener != null) {
+                    if (mListener != null) {
                         mListener.onSongItemDeleteClicked(getAdapterPosition());
                     }
                 }
             });
 
             itemView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
+                @Override
+                public void onClick(View v) {
                     // Triggers click upwards to the adapter on click
                     if (mListener != null) mListener.onItemClick(getAdapterPosition());
                 }

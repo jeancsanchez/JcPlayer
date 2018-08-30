@@ -9,10 +9,10 @@ import android.support.v7.widget.SimpleItemAnimator;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.jean.jcplayer.JcPlayerManagerListener;
 import com.example.jean.jcplayer.general.JcStatus;
 import com.example.jean.jcplayer.general.errors.OnInvalidPathListener;
 import com.example.jean.jcplayer.model.JcAudio;
-import com.example.jean.jcplayer.service.JcPlayerManagerListener;
 import com.example.jean.jcplayer.view.JcPlayerView;
 
 import java.util.ArrayList;
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateProgress(final JcStatus jcStatus) {
-        Log.d(TAG, "Song id = " + jcStatus.getJcAudio().getId() + ", song duration = " + jcStatus.getDuration()
+        Log.d(TAG, "Song duration = " + jcStatus.getDuration()
                 + "\n song position = " + jcStatus.getCurrentPosition());
 
         runOnUiThread(new Runnable() {
@@ -188,5 +188,10 @@ public class MainActivity extends AppCompatActivity
         audioAdapter.notifyItemRemoved(position);
 
         ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+    }
+
+    @Override
+    public void onStopped(JcStatus status) {
+
     }
 }

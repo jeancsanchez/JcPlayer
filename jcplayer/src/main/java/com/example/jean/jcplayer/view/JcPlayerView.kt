@@ -417,10 +417,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onPreparedAudio(status: JcStatus) {
-        if (seekBar?.isEnabled == false) {
-            seekBar?.isEnabled = true
-        }
-
         dismissProgressBar()
         resetPlayerInfo()
         onUpdateTitle(status.jcAudio.title)
@@ -464,11 +460,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     }
 
     override fun onPaused(status: JcStatus) {
-        showPlayButton()
     }
 
     override fun onStopped(status: JcStatus) {
-        showPlayButton()
     }
 
     override fun onJcpError(throwable: Throwable) {
@@ -488,30 +482,19 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         dismissProgressBar()
     }
 
-    /**
-     * Kills the player
-     */
-    fun kill() {
-        jcPlayerManager.kill()
-    }
-
     private fun showProgressBar() {
         progressBarPlayer?.visibility = ProgressBar.VISIBLE
         btnPlay?.visibility = Button.GONE
         btnPause?.visibility = Button.GONE
         btnNext?.isClickable = false
         btnPrev?.isClickable = false
-        seekBar?.isEnabled = false
-        seekBar?.progress = 0
     }
 
     private fun dismissProgressBar() {
         progressBarPlayer?.visibility = ProgressBar.GONE
-        showPauseButton()
         btnNext?.isClickable = true
         btnPrev?.isClickable = true
-        seekBar?.isEnabled = true
-
+        showPauseButton()
     }
 
     private fun onUpdateTitle(title: String) {
@@ -568,5 +551,12 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 playlist[i].title = title
             }
         }
+    }
+
+    /**
+     * Kills the player
+     */
+    fun kill() {
+        jcPlayerManager.kill()
     }
 }
