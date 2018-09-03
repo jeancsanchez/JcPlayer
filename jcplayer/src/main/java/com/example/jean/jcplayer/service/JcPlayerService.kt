@@ -193,6 +193,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             JcStatus.PlayState.STOP -> {
                 mediaPlayer?.let {
                     it.stop()
+                    it.reset()
                     it.release()
                     mediaPlayer = null
                 }

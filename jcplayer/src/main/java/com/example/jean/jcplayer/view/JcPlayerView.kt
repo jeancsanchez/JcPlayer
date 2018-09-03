@@ -92,7 +92,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         btnRepeat?.setOnClickListener(this)
         btnRepeatOne?.setOnClickListener(this)
         seekBar?.setOnSeekBarChangeListener(this)
-        seekBar?.isEnabled = false
     }
 
     private fun setAttributes(attrs: TypedArray) {
@@ -458,6 +457,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         val currentPosition = status.currentPosition.toInt()
         seekBar?.post { seekBar?.progress = currentPosition }
         txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
+
+
     }
 
     override fun onPaused(status: JcStatus) {
