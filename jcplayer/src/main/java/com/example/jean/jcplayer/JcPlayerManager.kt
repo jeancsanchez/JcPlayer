@@ -19,9 +19,7 @@ import java.util.*
  * Jesus loves you.
  */
 class JcPlayerManager
-private constructor(
-        private val serviceConnection: JcServiceConnection
-) : JcPlayerServiceListener {
+private constructor(private val serviceConnection: JcServiceConnection) : JcPlayerServiceListener {
 
     lateinit var context: Context
     private var jcNotificationPlayer: JcNotificationPlayer? = null
@@ -38,12 +36,6 @@ private constructor(
 
     val currentAudio: JcAudio?
         get() = jcPlayerService?.currentAudio
-
-    var isPlaying: Boolean = jcPlayerService?.isPlaying ?: false
-        private set
-
-    var isPaused: Boolean = jcPlayerService?.isPaused ?: true
-        private set
 
     var onShuffleMode: Boolean = false
 
@@ -339,6 +331,14 @@ private constructor(
                 .singleOrNull { playlist[it] == currentAudio }
                 ?.let { this.currentPositionList = it }
                 ?: let { this.currentPositionList = 0 }
+    }
+
+    fun isPlaying(): Boolean {
+        return jcPlayerService?.isPlaying ?: false
+    }
+
+    fun isPaused(): Boolean {
+        return jcPlayerService?.isPaused ?: true
     }
 
     /**

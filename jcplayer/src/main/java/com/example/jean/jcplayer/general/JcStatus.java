@@ -55,6 +55,6 @@ public class JcStatus {
     }
 
     public enum PlayState {
-        PLAY, PAUSE, STOP, CONTINUE, PREPARING
+        PLAY, PAUSE, STOP, CONTINUE, PREPARING, PLAYING
     }
 }

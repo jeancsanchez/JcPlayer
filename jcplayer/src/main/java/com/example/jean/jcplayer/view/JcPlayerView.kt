@@ -40,10 +40,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         get() = jcPlayerManager.playlist
 
     val isPlaying: Boolean
-        get() = jcPlayerManager.isPlaying
+        get() = jcPlayerManager.isPlaying()
 
     val isPaused: Boolean
-        get() = jcPlayerManager.isPaused
+        get() = jcPlayerManager.isPaused()
 
     val currentAudio: JcAudio?
         get() = jcPlayerManager.currentAudio
@@ -57,7 +57,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
 
     companion object {
-        private const val PULSE_ANIMATION_DURATION = 200
+        private const val PULSE_ANIMATION_DURATION = 200L
         private const val TITLE_ANIMATION_DURATION = 600
     }
 
@@ -217,7 +217,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             if (it.contains(jcAudio)) {
                 if (it.size > 1) {
                     // play next audio when currently played audio is removed.
-                    if (jcPlayerManager.isPlaying) {
+                    if (jcPlayerManager.isPlaying()) {
                         if (jcPlayerManager.currentAudio == jcAudio) {
                             it.remove(jcAudio)
                             pause()
@@ -333,35 +333,26 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         when (view.id) {
             R.id.btnPlay ->
                 btnPlay?.let {
-                    YoYo.with(Techniques.Pulse)
-                            .duration(PULSE_ANIMATION_DURATION.toLong())
-                            .playOn(it)
-
+                    applyPulseAnimation(it)
                     continueAudio()
                 }
 
             R.id.btnPause -> {
                 btnPause?.let {
-                    YoYo.with(Techniques.Pulse)
-                            .duration(PULSE_ANIMATION_DURATION.toLong())
-                            .playOn(it)
+                    applyPulseAnimation(it)
                     pause()
                 }
             }
 
             R.id.btnNext ->
                 btnNext?.let {
-                    YoYo.with(Techniques.Pulse)
-                            .duration(PULSE_ANIMATION_DURATION.toLong())
-                            .playOn(it)
+                    applyPulseAnimation(it)
                     next()
                 }
 
             R.id.btnPrev ->
                 btnPrev?.let {
-                    YoYo.with(Techniques.Pulse)
-                            .duration(PULSE_ANIMATION_DURATION.toLong())
-                            .playOn(it)
+                    applyPulseAnimation(it)
                     previous()
                 }
 
@@ -434,6 +425,20 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         }
     }
 
+    override fun onStartTrackingTouch(seekBar: SeekBar) {
+        if (jcPlayerManager.currentAudio != null) {
+            showProgressBar()
+        }
+    }
+
+    override fun onStopTrackingTouch(seekBar: SeekBar) {
+        dismissProgressBar()
+
+        if (jcPlayerManager.isPaused()) {
+            showPlayButton()
+        }
+    }
+
     override fun onCompletedAudio() {
         resetPlayerInfo()
 
@@ -457,8 +462,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         val currentPosition = status.currentPosition.toInt()
         seekBar?.post { seekBar?.progress = currentPosition }
         txtCurrentDuration?.post { txtCurrentDuration?.text = toTimeSongString(currentPosition) }
-
-
     }
 
     override fun onPaused(status: JcStatus) {
@@ -472,16 +475,6 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 //        jcPlayerManager.currentAudio?.let {
 //            onInvalidPathListener?.onPathError(it)
 //        }
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) {
-        if (jcPlayerManager.currentAudio != null) {
-            showProgressBar()
-        }
-    }
-
-    override fun onStopTrackingTouch(seekBar: SeekBar) {
-        dismissProgressBar()
     }
 
     private fun showProgressBar() {
@@ -549,6 +542,14 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
                 playlist[i].title = title
             }
         }
+    }
+
+    private fun applyPulseAnimation(view: View?) {
+        view?.postDelayed({
+            YoYo.with(Techniques.Pulse)
+                    .duration(PULSE_ANIMATION_DURATION)
+                    .playOn(view)
+        }, PULSE_ANIMATION_DURATION)
     }
 
     /**

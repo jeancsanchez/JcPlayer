@@ -7,7 +7,6 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
 import com.example.jean.jcplayer.general.JcStatus
 import com.example.jean.jcplayer.general.Origin
 import com.example.jean.jcplayer.general.errors.AudioAssetsInvalidException
@@ -146,10 +145,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
 
 
     fun seekTo(time: Int) {
-        Log.d("time = ", Integer.toString(time))
         mediaPlayer?.seekTo(time)
-        val status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
-        serviceListener?.onTimeChangedListener(status)
     }
 
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, i: Int) {}
@@ -185,6 +181,8 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 try {
                     mediaPlayer?.start()
                     isPlaying = true
+                    isPaused = false
+
                 } catch (exception: Exception) {
                     serviceListener?.onError(exception)
                 }
@@ -199,18 +197,29 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                 }
 
                 isPlaying = false
+                isPaused = true
             }
 
             JcStatus.PlayState.PAUSE -> {
                 mediaPlayer?.pause()
                 isPlaying = false
+                isPaused = true
             }
 
-            JcStatus.PlayState.PREPARING -> isPlaying = false
+            JcStatus.PlayState.PREPARING -> {
+                isPlaying = false
+                isPaused = true
+            }
+
+            JcStatus.PlayState.PLAYING -> {
+                isPlaying = true
+                isPaused = false
+            }
 
             else -> { // CONTINUE case
                 mediaPlayer?.start()
                 isPlaying = true
+                isPaused = false
             }
         }
 
@@ -222,7 +231,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             override fun run() {
                 while (isPlaying) {
                     try {
-                        val status = updateStatus(currentAudio, JcStatus.PlayState.CONTINUE)
+                        val status = updateStatus(currentAudio, JcStatus.PlayState.PLAYING)
                         serviceListener?.onTimeChangedListener(status)
                         Thread.sleep(TimeUnit.SECONDS.toMillis(1))
                     } catch (e: IllegalStateException) {

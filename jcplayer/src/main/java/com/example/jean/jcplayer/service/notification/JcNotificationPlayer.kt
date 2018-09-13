@@ -96,7 +96,7 @@ class JcNotificationPlayer private constructor(private val context: Context) : J
     private fun createNotificationPlayerView(): RemoteViews {
         val remoteView: RemoteViews
 
-        if (JcPlayerManager.getInstance(context, null, null).get()?.isPaused == true) {
+        if (JcPlayerManager.getInstance(context, null, null).get()?.isPaused() == true) {
             remoteView = RemoteViews(context.packageName, R.layout.notification_play)
             remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID))
         } else {
