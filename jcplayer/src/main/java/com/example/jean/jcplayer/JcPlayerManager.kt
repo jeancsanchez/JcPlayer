@@ -221,10 +221,10 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
                 playlist[currentPositionList.inc()]
             } catch (e: IndexOutOfBoundsException) {
                 if (repeatPlaylist) {
-                    playlist.first()
+                    return playlist.first()
                 }
 
-                return null
+                null
             }
         }
     }
@@ -237,7 +237,7 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
                 playlist[currentPositionList.dec()]
 
             } catch (e: IndexOutOfBoundsException) {
-                playlist.first()
+                return playlist.first()
             }
         }
     }
