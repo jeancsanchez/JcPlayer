@@ -103,12 +103,9 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
             jcPlayerService?.let { service ->
                 service.serviceListener = this
                 service.play(jcAudio)
-
-            } ?: let {
-                initService {
-                    jcPlayerService = it
-                    playAudio(jcAudio)
-                }
+            } ?: initService { service ->
+                jcPlayerService = service
+                playAudio(jcAudio)
             }
         }
     }
@@ -124,7 +121,10 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
         } else {
             jcPlayerService?.let { service ->
                 if (repeatCurrAudio) {
-                    currentAudio?.let { service.seekTo(0) }
+                    currentAudio?.let {
+                        service.seekTo(0)
+                        service.onPrepared(service.getMediaPlayer()!!)
+                    }
                 } else {
                     service.stop()
                     getNextAudio()?.let { service.play(it) } ?: service.finalize()
@@ -143,7 +143,10 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
         } else {
             jcPlayerService?.let { service ->
                 if (repeatCurrAudio) {
-                    currentAudio?.let { service.seekTo(0) }
+                    currentAudio?.let {
+                        service.seekTo(0)
+                        service.onPrepared(service.getMediaPlayer()!!)
+                    }
                 } else {
                     service.stop()
                     getPreviousAudio()?.let { service.play(it) }
@@ -183,7 +186,9 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
                     jcNotificationPlayer = JcNotificationPlayer
                             .getInstance(context)
                             .get()
-                            .also { jcPlayerManagerListener = it }
+                            .also { notification ->
+                                jcPlayerManagerListener = notification
+                            }
 
                     createNewNotification(iconResource)
                 }

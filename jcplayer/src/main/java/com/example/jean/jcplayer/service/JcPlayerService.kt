@@ -302,6 +302,10 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
         }
     }
 
+    fun getMediaPlayer(): MediaPlayer? {
+        return mediaPlayer
+    }
+
     fun finalize() {
         onDestroy()
         stopSelf()
