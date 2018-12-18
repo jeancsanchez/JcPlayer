@@ -13,7 +13,7 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 ## New features
 - Raw files
 - Asset Files
-- Local files
+- Custom layout
 
 ## Tested files
 - http://xxxx/abc.mp3
