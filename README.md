@@ -122,12 +122,8 @@ You can customize the player layout by manipulating these attributes.
 	app:text_audio_title_color
 ```
 
-## How to contribute
-Follow this guidelines, specially the commits style guide: </br>
-https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/code_guidelines.md
-
 ## Note
- The list view is developer responsibilty
+ The layout of the playlist is responsability of the developer.
 
 ## TODO LIST ##
 * [x] Set custom layouts for player.
