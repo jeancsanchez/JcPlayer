@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC
 import android.support.v4.app.NotificationManagerCompat
 import android.widget.RemoteViews
 import com.example.jean.jcplayer.JcPlayerManager
@@ -68,20 +69,25 @@ class JcNotificationPlayer private constructor(private val context: Context) : J
         this.iconResource = iconResourceResource
         val openUi = Intent(context, context.javaClass)
         openUi.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        //        JcPlayerManager.getInstance(context, null, null).registerNotificationListener(this);
 
         notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL)
                 .setSmallIcon(iconResourceResource)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, iconResourceResource))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContent(createNotificationPlayerView())
+                .setSound(null)
                 .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
                 .setAutoCancel(false)
                 .build()
 
         @RequiresApi(Build.VERSION_CODES.O)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL, NOTIFICATION_CHANNEL, NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL, NOTIFICATION_CHANNEL, NotificationManager.IMPORTANCE_LOW)
+            channel.lockscreenVisibility = VISIBILITY_PUBLIC
+            channel.enableLights(false)
+            channel.enableVibration(false)
+            channel.setSound(null, null)
+
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
         }
