@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/74e4745bf1174c6e87c91e79418d61bc)](https://app.codacy.com/app/jeancsanchez/JcPlayer?utm_source=github.com&utm_medium=referral&utm_content=jeancsanchez/JcPlayer&utm_campaign=Badge_Grade_Dashboard)
 [![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
 </br></br>
 
