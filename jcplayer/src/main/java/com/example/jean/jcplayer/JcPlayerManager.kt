@@ -11,6 +11,7 @@ import com.example.jean.jcplayer.service.JcServiceConnection
 import com.example.jean.jcplayer.service.notification.JcNotificationPlayer
 import java.lang.ref.WeakReference
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * This class is the player manager. Handles all interactions and communicates with [JcPlayerService].
@@ -27,11 +28,12 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
     private var serviceBound = false
     var playlist: ArrayList<JcAudio> = ArrayList()
     private var currentPositionList: Int = 0
-    private val managerListeners: ArrayList<JcPlayerManagerListener> = ArrayList()
+    private val managerListeners: CopyOnWriteArrayList<JcPlayerManagerListener> = CopyOnWriteArrayList()
 
     var jcPlayerManagerListener: JcPlayerManagerListener? = null
         set(value) {
             value?.let { managerListeners.add(it) }
+            field = value
         }
 
     val currentAudio: JcAudio?
