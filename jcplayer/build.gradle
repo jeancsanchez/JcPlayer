@@ -30,7 +30,7 @@ android {
 
 // noinspection SpellCheckingInspection
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    api fileTree(dir: 'libs', include: ['*.jar'])
 
 
     // support
@@ -44,7 +44,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // espresso UI Testing
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$rootProject.ext.espressoVersion"
@@ -52,14 +52,6 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:$rootProject.ext.espressoVersion"
     androidTestImplementation "com.android.support.test:runner:$rootProject.ext.espressoRulesVersion"
     androidTestImplementation "com.android.support.test:rules:$rootProject.ext.espressoRulesVersion"
-
-
-    // resolving espresso conflicts
-    androidTestImplementation "com.android.support:support-annotations:$rootProject.ext.supportVersion"
-    androidTestImplementation "com.android.support:support-v4:$rootProject.ext.supportVersion"
-    androidTestImplementation "com.android.support:recyclerview-v7:$rootProject.ext.supportVersion"
-    androidTestImplementation "com.android.support:appcompat-v7:$rootProject.ext.supportVersion"
-    androidTestImplementation "com.android.support:design:$rootProject.ext.supportVersion"
 
 
     // dependencies for local unit tests
