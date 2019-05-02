@@ -47,7 +47,7 @@ class JcServiceConnection(private val context: Context) : ServiceConnection {
             val intent = Intent(context.applicationContext, JcPlayerService::class.java)
             intent.putExtra(JcNotificationPlayer.PLAYLIST, playlist as Serializable?)
             intent.putExtra(JcNotificationPlayer.CURRENT_AUDIO, currentAudio)
-            context.bindService(intent, this, Context.BIND_AUTO_CREATE)
+            context.applicationContext.bindService(intent, this, Context.BIND_AUTO_CREATE)
         }
     }
 
