@@ -1,3 +1,7 @@
+<h1 align=center>
+<img src="Logotype.png" width=60%>
+</h1>
+
 [![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
 </br>
 # JcPlayer
@@ -100,8 +104,9 @@ OR
 Follow this guidelines, specially the commits style guide: </br>
 https://github.com/jeancsanchez/Android-Guidelines-and-Architecture/blob/master/code_guidelines.md
 
-## Note
- The list view is developer responsibilty
+## Notes
+- The JcpService is only started when some audio is played.
+- The list view is developer responsibilty
 
 ## TODO LIST ##
 * [ ] Set custom layouts for player.
