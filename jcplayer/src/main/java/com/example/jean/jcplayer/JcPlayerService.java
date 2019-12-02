@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
@@ -40,6 +41,8 @@ public class JcPlayerService extends Service implements
     private List<JcPlayerView.JcPlayerViewStatusListener> jcPlayerStatusListeners;
     private JcPlayerView.JcPlayerViewServiceListener notificationListener;
     private AssetFileDescriptor assetFileDescriptor = null; // For Asset and Raw file.
+	
+	private AudioAttributes stream;
 
     public class JcPlayerServiceBinder extends Binder {
         public JcPlayerService getService() {
@@ -153,6 +156,12 @@ public class JcPlayerService extends Service implements
                     mediaPlayer = new MediaPlayer();
 
                     if (jcAudio.getOrigin() == Origin.URL) {
+						stream=new AudioAttributes
+                                .Builder()
+                                .setUsage(AudioAttributes.USAGE_MEDIA)
+                                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                .build();
+                        mediaPlayer.setAudioAttributes(stream);
                         mediaPlayer.setDataSource(jcAudio.getPath());
                     } else if (jcAudio.getOrigin() == Origin.RAW) {
                         assetFileDescriptor = getApplicationContext().getResources().openRawResourceFd(Integer.parseInt(jcAudio.getPath()));
