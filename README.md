@@ -131,5 +131,7 @@ You can customize the player layout by manipulating these attributes.
 * [ ] Add Instrumentation tests
 * [ ] Add unity tests.
 
+### Please, if you liked this project, support me by being a sponsor <3
+
 ## Contributors
 [![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/0)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/0)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/1)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/1)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/2)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/2)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/3)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/3)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/4)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/4)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/5)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/5)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/6)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/6)[![](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/images/7)](https://sourcerer.io/fame/jeancsanchez/jeancsanchez/JcPlayer/links/7)
