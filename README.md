@@ -37,7 +37,6 @@ You can support us by becoming a patron on Patreon, any support is much apprecia
 
 [![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/jeancsanchez)
 
-## Feature Parity Table
 
 ## Gradle Dependency (Project level)
 ```Gradle
