@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name" title="app_name">JCPlayer</string>
-    <string name="text_test" >fadsfasdfadsf</string>
+    <string name="text_long">testestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetestestestetestestetes</string>
+    <string name="text_short">testestetestestetes</string>
     <string name="play_initial_time">00:00</string>
     <string name="track_number">Track</string>
-    <string name="play_button_description">Play button</string>
-    <string name="next_button_description">Next button</string>
-    <string name="previous_button_description">Previous button</string>
+    <string name="description_icon_player">player icon</string>
+    <string name="description_play_button">play/pause button</string>
+    <string name="description_previous_button">previous button</string>
+    <string name="description_next_button">next button</string>
+    <string name="description_repeat_button">repeat button</string>
+    <string name="description_shuffle_button">shuffle button</string>
 </resources>
