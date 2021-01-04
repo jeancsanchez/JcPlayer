@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.support.annotation.RawRes
 import com.example.jean.jcplayer.general.Origin
+import kotlinx.android.parcel.Parcelize
 
 
 /**
@@ -12,6 +13,7 @@ import com.example.jean.jcplayer.general.Origin
  * @date 27/06/16.
  * Jesus loves you.
  */
+@Parcelize
 data class JcAudio constructor(
         var title: String,
         var position: Int? = -1,
@@ -19,30 +21,7 @@ data class JcAudio constructor(
         val origin: Origin
 ) : Parcelable {
 
-    constructor(source: Parcel) : this(
-            source.readString(),
-            source.readValue(Int::class.java.classLoader) as Int?,
-            source.readString(),
-            Origin.valueOf(source.readString())
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(title)
-        writeValue(position)
-        writeString(path)
-        writeString(origin.name)
-    }
-
     companion object {
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<JcAudio> = object : Parcelable.Creator<JcAudio> {
-            override fun createFromParcel(source: Parcel): JcAudio = JcAudio(source)
-            override fun newArray(size: Int): Array<JcAudio?> = arrayOfNulls(size)
-        }
-
 
         @JvmStatic
         fun createFromRaw(@RawRes rawId: Int): JcAudio {

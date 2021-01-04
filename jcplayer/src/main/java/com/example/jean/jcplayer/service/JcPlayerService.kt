@@ -52,7 +52,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
             get() = this@JcPlayerService
     }
 
-    override fun onBind(intent: Intent): IBinder? = binder
+    override fun onBind(intent: Intent): IBinder = binder
 
 
     fun play(jcAudio: JcAudio): JcStatus {
@@ -78,9 +78,9 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                     }
                 } ?: let {
                     mediaPlayer = MediaPlayer().also {
-                        when {
-                            jcAudio.origin == Origin.URL -> it.setDataSource(jcAudio.path)
-                            jcAudio.origin == Origin.RAW -> assetFileDescriptor =
+                        when (jcAudio.origin) {
+                            Origin.URL -> it.setDataSource(jcAudio.path)
+                            Origin.RAW -> assetFileDescriptor =
                                     applicationContext.resources.openRawResourceFd(
                                             Integer.parseInt(jcAudio.path)
                                     ).also { descriptor ->
@@ -92,9 +92,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                                         descriptor.close()
                                         assetFileDescriptor = null
                                     }
-
-
-                            jcAudio.origin == Origin.ASSETS -> {
+                            Origin.ASSETS -> {
                                 assetFileDescriptor = applicationContext.assets.openFd(jcAudio.path)
                                         .also { descriptor ->
                                             it.setDataSource(
@@ -107,8 +105,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                                             assetFileDescriptor = null
                                         }
                             }
-
-                            jcAudio.origin == Origin.FILE_PATH ->
+                            Origin.FILE_PATH ->
                                 it.setDataSource(applicationContext, Uri.parse(jcAudio.path))
                         }
 
@@ -233,7 +230,7 @@ class JcPlayerService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.O
                     try {
                         val status = updateStatus(currentAudio, JcStatus.PlayState.PLAYING)
                         serviceListener?.onTimeChangedListener(status)
-                        Thread.sleep(TimeUnit.SECONDS.toMillis(1))
+                        sleep(TimeUnit.SECONDS.toMillis(1))
                     } catch (e: IllegalStateException) {
                         e.printStackTrace()
                     } catch (e: InterruptedException) {

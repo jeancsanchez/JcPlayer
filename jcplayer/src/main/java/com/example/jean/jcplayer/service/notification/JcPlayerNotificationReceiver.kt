@@ -10,7 +10,7 @@ class JcPlayerNotificationReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val jcPlayerManager = JcPlayerManager.getInstance(context)
-        var action = ""
+        var action: String? = ""
 
         if (intent.hasExtra(JcNotificationPlayer.ACTION)) {
             action = intent.getStringExtra(JcNotificationPlayer.ACTION)
