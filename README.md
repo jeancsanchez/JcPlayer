@@ -31,6 +31,13 @@ A simple audio player for Android that you can plugin to your apps quickly get a
 - http://xxxx/abc.html
 - mms://xxxx
 
+## Support us
+
+You can support us by becoming a patron on Patreon, any support is much appreciated.
+
+[![Patreon](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://www.patreon.com/jeancsanchez)
+
+
 ## Gradle Dependency (Project level)
 ```Gradle
 allprojects {
