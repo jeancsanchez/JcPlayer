@@ -32,7 +32,11 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
 
     var jcPlayerManagerListener: JcPlayerManagerListener? = null
         set(value) {
-            value?.let { managerListeners.add(it) }
+            value?.let {
+                if (managerListeners.contains(it).not()) {
+                    managerListeners.add(it)
+                }
+            }
             field = value
         }
 
@@ -151,7 +155,7 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
                     }
                 } else {
                     service.stop()
-                    getPreviousAudio()?.let { service.play(it) }
+                    getPreviousAudio().let { service.play(it) }
                 }
             }
         }
@@ -172,7 +176,7 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
         if (playlist.isEmpty()) {
             throw AudioListNullPointerException()
         } else {
-            val audio = jcPlayerService?.currentAudio?.let { it } ?: let { playlist.first() }
+            val audio = jcPlayerService?.currentAudio ?: let { playlist.first() }
             playAudio(audio)
         }
     }
@@ -236,7 +240,7 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
         }
     }
 
-    private fun getPreviousAudio(): JcAudio? {
+    private fun getPreviousAudio(): JcAudio {
         return if (onShuffleMode) {
             playlist[Random().nextInt(playlist.size)]
         } else {
