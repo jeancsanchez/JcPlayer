@@ -1,5 +1,4 @@
 [![](https://jitpack.io/v/jeancsanchez/JcPlayer.svg)](https://jitpack.io/#jeancsanchez/JcPlayer)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/74e4745bf1174c6e87c91e79418d61bc)](https://app.codacy.com/app/jeancsanchez/JcPlayer?utm_source=github.com&utm_medium=referral&utm_content=jeancsanchez/JcPlayer&utm_campaign=Badge_Grade_Dashboard)
 </br></br>
 
 <h1 align=center>
@@ -134,5 +133,5 @@ You can customize the player layout by manipulating these attributes.
 ## TODO LIST ##
 * [x] Set custom layouts for player.
 * [ ] Add Instrumentation tests
-* [ ] Add unity tests.
+* [ ] Add unit tests.
 
