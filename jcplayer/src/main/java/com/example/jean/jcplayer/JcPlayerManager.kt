@@ -358,7 +358,8 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
     fun kill() {
         jcPlayerService?.let {
             it.stop()
-            it.onDestroy()
+            it.stopSelf()
+            it.stopForeground(true)
         }
 
         serviceConnection.disconnect()
