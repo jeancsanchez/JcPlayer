@@ -405,15 +405,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * Create a notification player with same playlist with a default icon
      */
     fun createNotification() {
-        jcPlayerManager.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // For light theme
-                it.createNewNotification(R.drawable.ic_notification_default_black)
-            } else {
-                // For dark theme
-                it.createNewNotification(R.drawable.ic_notification_default_white)
-            }
-        }
+        jcPlayerManager.createNewNotification(R.drawable.ic_default_notification)
     }
 
     override fun onPreparedAudio(status: JcStatus) {

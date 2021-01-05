@@ -14,7 +14,7 @@
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/spacing_large"
         android:contentDescription="@string/description_icon_player"
-        tools:src="@drawable/ic_notification_default_black" />
+        tools:src="@drawable/ic_default_notification" />
 
     <RelativeLayout
         android:id="@+id/relativePlayersControls"
@@ -27,14 +27,14 @@
         android:layout_toRightOf="@id/icon_player">
 
         <ImageButton
-            android:id="@+id/btn_play_notification"
+            android:id="@+id/btn_pause_notification"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/spacing_normal"
-            android:background="@drawable/ic_play_black"
+            android:background="@drawable/ic_pause_black"
             android:contentDescription="@string/description_play_button" />
 
         <ImageButton
@@ -44,8 +44,8 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/spacing_xlarge"
             android:layout_marginRight="@dimen/spacing_xlarge"
-            android:layout_toStartOf="@id/btn_play_notification"
-            android:layout_toLeftOf="@id/btn_play_notification"
+            android:layout_toStartOf="@id/btn_pause_notification"
+            android:layout_toLeftOf="@id/btn_pause_notification"
             android:background="@drawable/ic_previous_black"
             android:contentDescription="@string/description_previous_button" />
 
@@ -56,8 +56,8 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/spacing_xlarge"
             android:layout_marginLeft="@dimen/spacing_xlarge"
-            android:layout_toEndOf="@id/btn_play_notification"
-            android:layout_toRightOf="@id/btn_play_notification"
+            android:layout_toEndOf="@id/btn_pause_notification"
+            android:layout_toRightOf="@id/btn_pause_notification"
             android:background="@drawable/ic_next_black"
             android:contentDescription="@string/description_next_button" />
 
@@ -87,7 +87,7 @@
             android:id="@+id/txt_duration_notification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btn_play_notification"
+            android:layout_below="@+id/btn_pause_notification"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:ellipsize="marquee"

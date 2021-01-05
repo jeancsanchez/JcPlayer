@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:background="@android:color/black">
 
     <ImageView
         android:id="@+id/icon_player"
@@ -14,7 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/spacing_large"
         android:contentDescription="@string/description_icon_player"
-        tools:src="@drawable/ic_notification_default_black" />
+        tools:src="@drawable/ic_default_notification" />
 
     <RelativeLayout
         android:id="@+id/relativePlayersControls"
@@ -34,7 +35,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/spacing_normal"
-            android:background="@drawable/ic_pause_black"
+            android:background="@drawable/ic_pause_white"
             android:contentDescription="@string/description_play_button" />
 
         <ImageButton
@@ -46,7 +47,7 @@
             android:layout_marginRight="@dimen/spacing_xlarge"
             android:layout_toStartOf="@id/btn_pause_notification"
             android:layout_toLeftOf="@id/btn_pause_notification"
-            android:background="@drawable/ic_previous_black"
+            android:background="@drawable/ic_previous_white"
             android:contentDescription="@string/description_previous_button" />
 
         <ImageButton
@@ -58,7 +59,7 @@
             android:layout_marginLeft="@dimen/spacing_xlarge"
             android:layout_toEndOf="@id/btn_pause_notification"
             android:layout_toRightOf="@id/btn_pause_notification"
-            android:background="@drawable/ic_next_black"
+            android:background="@drawable/ic_next_white"
             android:contentDescription="@string/description_next_button" />
 
         <TextView
@@ -77,7 +78,7 @@
             android:singleLine="true"
             android:text="@string/text_long"
             android:textAlignment="center"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/text_size">
 
             <requestFocus />
@@ -94,7 +95,7 @@
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:text="@string/text_short"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/text_size" />
     </RelativeLayout>
 </RelativeLayout>

@@ -15,7 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_marginBottom="@dimen/spacing_large"
         android:contentDescription="@string/description_icon_player"
-        tools:src="@drawable/ic_notification_default_white" />
+        tools:src="@drawable/ic_default_notification" />
 
     <RelativeLayout
         android:id="@+id/relativePlayersControls"
