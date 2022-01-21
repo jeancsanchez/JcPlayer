@@ -43,6 +43,9 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
     val currentAudio: JcAudio?
         get() = jcPlayerService?.currentAudio
 
+    var currentStatus: JcStatus? = null
+        private set
+
     var onShuffleMode: Boolean = false
 
     var repeatPlaylist: Boolean = false
@@ -255,6 +258,7 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
 
 
     override fun onPreparedListener(status: JcStatus) {
+        currentStatus = status
         updatePositionAudioList()
 
         for (listener in managerListeners) {
@@ -263,6 +267,8 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
     }
 
     override fun onTimeChangedListener(status: JcStatus) {
+        currentStatus = status
+
         for (listener in managerListeners) {
             listener.onTimeChanged(status)
 
@@ -273,6 +279,8 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
     }
 
     override fun onContinueListener(status: JcStatus) {
+        currentStatus = status
+
         for (listener in managerListeners) {
             listener.onContinueAudio(status)
         }
@@ -285,12 +293,16 @@ private constructor(private val serviceConnection: JcServiceConnection) : JcPlay
     }
 
     override fun onPausedListener(status: JcStatus) {
+        currentStatus = status
+
         for (listener in managerListeners) {
             listener.onPaused(status)
         }
     }
 
     override fun onStoppedListener(status: JcStatus) {
+        currentStatus = status
+
         for (listener in managerListeners) {
             listener.onStopped(status)
         }

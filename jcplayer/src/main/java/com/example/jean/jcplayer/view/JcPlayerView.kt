@@ -31,7 +31,8 @@ import kotlinx.android.synthetic.main.view_jcplayer.view.*
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener, JcPlayerManagerListener {
+class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChangeListener,
+    JcPlayerManagerListener {
 
     private val jcPlayerManager: JcPlayerManager by lazy {
         JcPlayerManager.getInstance(context).get()!!
@@ -48,6 +49,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 
     val currentAudio: JcAudio?
         get() = jcPlayerManager.currentAudio
+
+    val currentStatus: JcStatus?
+        get() = jcPlayerManager.currentStatus
+
 
     var onInvalidPathListener: OnInvalidPathListener? = null
 
@@ -71,16 +76,20 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         init()
 
         context.theme
-                .obtainStyledAttributes(attrs, R.styleable.JcPlayerView, 0, 0)
-                .also { setAttributes(it) }
+            .obtainStyledAttributes(attrs, R.styleable.JcPlayerView, 0, 0)
+            .also { setAttributes(it) }
     }
 
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    ) {
         init()
 
         context.theme
-                .obtainStyledAttributes(attrs, R.styleable.JcPlayerView, defStyle, 0)
-                .also { setAttributes(it) }
+            .obtainStyledAttributes(attrs, R.styleable.JcPlayerView, defStyle, 0)
+            .also { setAttributes(it) }
     }
 
     private fun init() {
@@ -99,33 +108,118 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun setAttributes(attrs: TypedArray) {
         val defaultColor = ResourcesCompat.getColor(resources, android.R.color.black, null)
 
-        txtCurrentMusic?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_title_color, defaultColor))
-        txtCurrentDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_current_duration_color, defaultColor))
-        txtDuration?.setTextColor(attrs.getColor(R.styleable.JcPlayerView_text_audio_duration_color, defaultColor))
+        txtCurrentMusic?.setTextColor(
+            attrs.getColor(
+                R.styleable.JcPlayerView_text_audio_title_color,
+                defaultColor
+            )
+        )
+        txtCurrentDuration?.setTextColor(
+            attrs.getColor(
+                R.styleable.JcPlayerView_text_audio_current_duration_color,
+                defaultColor
+            )
+        )
+        txtDuration?.setTextColor(
+            attrs.getColor(
+                R.styleable.JcPlayerView_text_audio_duration_color,
+                defaultColor
+            )
+        )
 
-        progressBarPlayer?.indeterminateDrawable?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_progress_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
-        seekBar?.progressDrawable?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
+        progressBarPlayer?.indeterminateDrawable?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_progress_color,
+                defaultColor
+            ), PorterDuff.Mode.SRC_ATOP
+        )
+        seekBar?.progressDrawable?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_seek_bar_color,
+                defaultColor
+            ), PorterDuff.Mode.SRC_ATOP
+        )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            seekBar?.thumb?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_seek_bar_color, defaultColor), PorterDuff.Mode.SRC_ATOP)
+            seekBar?.thumb?.setColorFilter(
+                attrs.getColor(
+                    R.styleable.JcPlayerView_seek_bar_color,
+                    defaultColor
+                ), PorterDuff.Mode.SRC_ATOP
+            )
             // TODO: change thumb color in older versions (14 and 15).
         }
 
-        btnPlay?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_play_icon_color, defaultColor))
-        btnPlay?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_play_icon, R.drawable.ic_play))
+        btnPlay?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_play_icon_color,
+                defaultColor
+            )
+        )
+        btnPlay?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_play_icon,
+                R.drawable.ic_play
+            )
+        )
 
-        btnPause?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_pause_icon, R.drawable.ic_pause))
-        btnPause?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_pause_icon_color, defaultColor))
+        btnPause?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_pause_icon,
+                R.drawable.ic_pause
+            )
+        )
+        btnPause?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_pause_icon_color,
+                defaultColor
+            )
+        )
 
-        btnNext?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_next_icon_color, defaultColor))
-        btnNext?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_next_icon, R.drawable.ic_next))
+        btnNext?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_next_icon_color,
+                defaultColor
+            )
+        )
+        btnNext?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_next_icon,
+                R.drawable.ic_next
+            )
+        )
 
-        btnPrev?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_previous_icon_color, defaultColor))
-        btnPrev?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_previous_icon, R.drawable.ic_previous))
+        btnPrev?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_previous_icon_color,
+                defaultColor
+            )
+        )
+        btnPrev?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_previous_icon,
+                R.drawable.ic_previous
+            )
+        )
 
-        btnRandom?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_random_icon_color, defaultColor))
-        btnRandomIndicator?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_random_icon_color, defaultColor))
-        btnRandom?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_random_icon, R.drawable.ic_shuffle))
+        btnRandom?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_random_icon_color,
+                defaultColor
+            )
+        )
+        btnRandomIndicator?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_random_icon_color,
+                defaultColor
+            )
+        )
+        btnRandom?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_random_icon,
+                R.drawable.ic_shuffle
+            )
+        )
         attrs.getBoolean(R.styleable.JcPlayerView_show_random_button, true).also { showButton ->
             if (showButton) {
                 btnRandom?.makeVisible()
@@ -134,9 +228,24 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             }
         }
 
-        btnRepeat?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor))
-        btnRepeatIndicator?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor))
-        btnRepeat?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_icon, R.drawable.ic_repeat))
+        btnRepeat?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_repeat_icon_color,
+                defaultColor
+            )
+        )
+        btnRepeatIndicator?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_repeat_icon_color,
+                defaultColor
+            )
+        )
+        btnRepeat?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_repeat_icon,
+                R.drawable.ic_repeat
+            )
+        )
         attrs.getBoolean(R.styleable.JcPlayerView_show_repeat_button, true).also { showButton ->
             if (showButton) {
                 btnRepeat?.makeVisible()
@@ -145,8 +254,18 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
             }
         }
 
-        btnRepeatOne?.setColorFilter(attrs.getColor(R.styleable.JcPlayerView_repeat_one_icon_color, attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor)))
-        btnRepeatOne?.setImageResource(attrs.getResourceId(R.styleable.JcPlayerView_repeat_one_icon, R.drawable.ic_repeat_one))
+        btnRepeatOne?.setColorFilter(
+            attrs.getColor(
+                R.styleable.JcPlayerView_repeat_one_icon_color,
+                attrs.getColor(R.styleable.JcPlayerView_repeat_icon_color, defaultColor)
+            )
+        )
+        btnRepeatOne?.setImageResource(
+            attrs.getResourceId(
+                R.styleable.JcPlayerView_repeat_one_icon,
+                R.drawable.ic_repeat_one
+            )
+        )
     }
 
     /**
@@ -155,7 +274,10 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
      * @param playlist List of JcAudio objects that you want play
      * @param jcPlayerManagerListener The view status jcPlayerManagerListener (optional)
      */
-    fun initPlaylist(playlist: List<JcAudio>, jcPlayerManagerListener: JcPlayerManagerListener? = null) {
+    fun initPlaylist(
+        playlist: List<JcAudio>,
+        jcPlayerManagerListener: JcPlayerManagerListener? = null
+    ) {
         /*Don't sort if the playlist have position number.
         We need to do this because there is a possibility that the user reload previous playlist
         from persistence storage like sharedPreference or SQLite.*/
@@ -478,6 +600,22 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
 //        }
     }
 
+    /**
+     * Resumes the view player with current playing audio infos
+     */
+    fun resume() {
+        currentStatus?.let { status ->
+            onPreparedAudio(status)
+            onTimeChanged(status)
+
+            if (isPlaying) {
+                showPauseButton()
+            } else {
+                showPlayButton()
+            }
+        }
+    }
+
     private fun showProgressBar() {
         progressBarPlayer?.makeVisible()
         btnPlay?.makeInvisible()
@@ -493,8 +631,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         txtCurrentMusic?.let {
             it.makeVisible()
             YoYo.with(Techniques.FadeInLeft)
-                    .duration(TITLE_ANIMATION_DURATION.toLong())
-                    .playOn(it)
+                .duration(TITLE_ANIMATION_DURATION.toLong())
+                .playOn(it)
 
             it.post { it.text = title }
         }
@@ -504,7 +642,9 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         txtCurrentMusic?.post { txtCurrentMusic.text = "" }
         seekBar?.post { seekBar?.progress = 0 }
         txtDuration?.post { txtDuration.text = context.getString(R.string.play_initial_time) }
-        txtCurrentDuration?.post { txtCurrentDuration.text = context.getString(R.string.play_initial_time) }
+        txtCurrentDuration?.post {
+            txtCurrentDuration.text = context.getString(R.string.play_initial_time)
+        }
     }
 
     /**
@@ -538,7 +678,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun generateTitleAudio(playlist: List<JcAudio>, title: String) {
         for (i in playlist.indices) {
             if (title == context.getString(R.string.track_number)) {
-                playlist[i].title = context.getString(R.string.track_number) + " " + (i + 1).toString()
+                playlist[i].title =
+                    context.getString(R.string.track_number) + " " + (i + 1).toString()
             } else {
                 playlist[i].title = title
             }
@@ -548,8 +689,8 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     private fun applyPulseAnimation(view: View?) {
         view?.postDelayed({
             YoYo.with(Techniques.Pulse)
-                    .duration(PULSE_ANIMATION_DURATION)
-                    .playOn(view)
+                .duration(PULSE_ANIMATION_DURATION)
+                .playOn(view)
         }, PULSE_ANIMATION_DURATION)
     }
 
