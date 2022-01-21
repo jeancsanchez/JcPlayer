@@ -533,7 +533,7 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
     override fun onPreparedAudio(status: JcStatus) {
         dismissProgressBar()
         resetPlayerInfo()
-        onUpdateTitle(status.jcAudio.title)
+        onUpdateTitle(status.jcAudio)
 
         val duration = status.duration.toInt()
         seekBar?.post { seekBar?.max = duration }
@@ -627,14 +627,16 @@ class JcPlayerView : LinearLayout, View.OnClickListener, SeekBar.OnSeekBarChange
         showPauseButton()
     }
 
-    private fun onUpdateTitle(title: String) {
-        txtCurrentMusic?.let {
-            it.makeVisible()
-            YoYo.with(Techniques.FadeInLeft)
-                .duration(TITLE_ANIMATION_DURATION.toLong())
-                .playOn(it)
+    private fun onUpdateTitle(audio: JcAudio?) {
+        txtCurrentMusic?.let { textView ->
+            audio?.title?.let { title ->
+                textView.makeVisible()
+                YoYo.with(Techniques.FadeInLeft)
+                    .duration(TITLE_ANIMATION_DURATION.toLong())
+                    .playOn(textView)
 
-            it.post { it.text = title }
+                textView.post { textView.text = title }
+            }
         }
     }
 

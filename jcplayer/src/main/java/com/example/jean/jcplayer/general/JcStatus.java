@@ -1,11 +1,14 @@
 package com.example.jean.jcplayer.general;
 
+import android.support.annotation.Nullable;
+
 import com.example.jean.jcplayer.model.JcAudio;
 
 /**
  * Created by rio on 02 January 2017.
  */
 public class JcStatus {
+    @Nullable
     private JcAudio jcAudio;
     private long duration;
     private long currentPosition;
