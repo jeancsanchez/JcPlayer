@@ -27,7 +27,8 @@ import java.lang.ref.WeakReference
  * @date 12/07/16.
  * Jesus loves you.
  */
-class JcNotificationPlayer private constructor(private val context: Context) : JcPlayerManagerListener {
+class JcNotificationPlayer private constructor(private val context: Context) :
+    JcPlayerManagerListener {
 
     private var title: String? = null
     private var time = "00:00"
@@ -71,18 +72,29 @@ class JcNotificationPlayer private constructor(private val context: Context) : J
         openUi.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
 
         notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL)
-                .setSmallIcon(iconResourceResource)
-                .setLargeIcon(BitmapFactory.decodeResource(context.resources, iconResourceResource))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContent(createNotificationPlayerView())
-                .setSound(null)
-                .setContentIntent(PendingIntent.getActivity(context, NOTIFICATION_ID, openUi, PendingIntent.FLAG_CANCEL_CURRENT))
-                .setAutoCancel(false)
-                .build()
+            .setSmallIcon(iconResourceResource)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, iconResourceResource))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContent(createNotificationPlayerView())
+            .setSound(null)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    NOTIFICATION_ID,
+                    openUi,
+                    buildIntentFlags()
+                )
+            )
+            .setAutoCancel(false)
+            .build()
 
         @RequiresApi(Build.VERSION_CODES.O)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL, NOTIFICATION_CHANNEL, NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(
+                NOTIFICATION_CHANNEL,
+                NOTIFICATION_CHANNEL,
+                NotificationManager.IMPORTANCE_LOW
+            )
             channel.lockscreenVisibility = VISIBILITY_PUBLIC
             channel.enableLights(false)
             channel.enableVibration(false)
@@ -104,26 +116,50 @@ class JcNotificationPlayer private constructor(private val context: Context) : J
 
         if (JcPlayerManager.getInstance(context).get()?.isPaused() == true) {
             remoteView = RemoteViews(context.packageName, R.layout.layout_paused_notification)
-            remoteView.setOnClickPendingIntent(R.id.btn_play_notification, buildPendingIntent(PLAY, PLAY_ID))
+            remoteView.setOnClickPendingIntent(
+                R.id.btn_play_notification,
+                buildPendingIntent(PLAY, PLAY_ID)
+            )
         } else {
             remoteView = RemoteViews(context.packageName, R.layout.layout_playing_notification)
-            remoteView.setOnClickPendingIntent(R.id.btn_pause_notification, buildPendingIntent(PAUSE, PAUSE_ID))
+            remoteView.setOnClickPendingIntent(
+                R.id.btn_pause_notification,
+                buildPendingIntent(PAUSE, PAUSE_ID)
+            )
         }
 
         remoteView.setTextViewText(R.id.txt_current_music_notification, title)
         remoteView.setTextViewText(R.id.txt_duration_notification, time)
         remoteView.setImageViewResource(R.id.icon_player, iconResource)
-        remoteView.setOnClickPendingIntent(R.id.btn_next_notification, buildPendingIntent(NEXT, NEXT_ID))
-        remoteView.setOnClickPendingIntent(R.id.btn_prev_notification, buildPendingIntent(PREVIOUS, PREVIOUS_ID))
+        remoteView.setOnClickPendingIntent(
+            R.id.btn_next_notification,
+            buildPendingIntent(NEXT, NEXT_ID)
+        )
+        remoteView.setOnClickPendingIntent(
+            R.id.btn_prev_notification,
+            buildPendingIntent(PREVIOUS, PREVIOUS_ID)
+        )
 
         return remoteView
     }
+    private fun buildIntentFlags(): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
 
     private fun buildPendingIntent(action: String, id: Int): PendingIntent {
-        val playIntent = Intent(context.applicationContext, JcPlayerNotificationReceiver::class.java)
+        val playIntent =
+            Intent(context.applicationContext, JcPlayerNotificationReceiver::class.java)
         playIntent.putExtra(ACTION, action)
 
-        return PendingIntent.getBroadcast(context.applicationContext, id, playIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getBroadcast(
+            context.applicationContext,
+            id,
+            playIntent,
+            buildIntentFlags()
+        )
     }
 
     override fun onPreparedAudio(status: JcStatus) {
